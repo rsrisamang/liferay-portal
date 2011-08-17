@@ -20,8 +20,8 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 /**
  * @author Brian Wing Shun Chan
  */
-public class AddPageTest extends BaseTestCase {
-	public void testAddPage() throws Exception {
+public class AddPageDLTest extends BaseTestCase {
+	public void testAddPageDL() throws Exception {
 		selenium.open("/web/guest/home/");
 		selenium.clickAt("//nav[@id='navigation']",
 			RuntimeVariables.replace("Navigation"));
@@ -64,7 +64,7 @@ public class AddPageTest extends BaseTestCase {
 
 		selenium.saveScreenShotAndSource();
 		selenium.type("//input[@type='text']",
-			RuntimeVariables.replace("Test Misc Page"));
+			RuntimeVariables.replace("Document Library Test Page"));
 		selenium.saveScreenShotAndSource();
 		selenium.clickAt("//button[@id='save']",
 			RuntimeVariables.replace("Save"));
@@ -75,7 +75,7 @@ public class AddPageTest extends BaseTestCase {
 			}
 
 			try {
-				if (selenium.isVisible("link=Test Misc Page")) {
+				if (selenium.isVisible("link=Document Library Test Page")) {
 					break;
 				}
 			}
@@ -86,8 +86,8 @@ public class AddPageTest extends BaseTestCase {
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Test Misc Page",
-			RuntimeVariables.replace("Test Misc Page"));
+		selenium.clickAt("link=Document Library Test Page",
+			RuntimeVariables.replace("Document Library Test Page"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
 	}
