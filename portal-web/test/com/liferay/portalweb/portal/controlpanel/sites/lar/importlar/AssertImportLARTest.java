@@ -47,8 +47,7 @@ public class AssertImportLARTest extends BaseTestCase {
 		selenium.saveScreenShotAndSource();
 		assertEquals(RuntimeVariables.replace("Message Boards"),
 			selenium.getText("//span[@class='portlet-title-text']"));
-		assertEquals(RuntimeVariables.replace(
-				"Message Boards\nMB Category Name"),
+		assertEquals(RuntimeVariables.replace("Message BoardsMB Category Name"),
 			selenium.getText("//tr[3]/td[1]/a"));
 		assertEquals(RuntimeVariables.replace("0"),
 			selenium.getText("//tr[3]/td[2]"));
@@ -65,7 +64,7 @@ public class AssertImportLARTest extends BaseTestCase {
 			RuntimeVariables.replace("MB Category Name"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
-		assertEquals(RuntimeVariables.replace("Message Boards"),
+		assertEquals(RuntimeVariables.replace("Message BoardsMB Category Name"),
 			selenium.getText("//h1[@class='header-title']/span"));
 		assertEquals(RuntimeVariables.replace(
 				"\u00ab Back to Message Boards Home"),
@@ -86,14 +85,15 @@ public class AssertImportLARTest extends BaseTestCase {
 		selenium.saveScreenShotAndSource();
 		assertEquals(RuntimeVariables.replace("MB Message Subject"),
 			selenium.getText("//h1[@class='header-title']/span"));
-		assertEquals(RuntimeVariables.replace("\u00ab Back to Message Boards"),
+		assertEquals(RuntimeVariables.replace(
+				"\u00ab Back to Message BoardsMB Category Name"),
 			selenium.getText("//a[@id='_19_TabsBack']"));
 		assertEquals(RuntimeVariables.replace("MB Message Subject"),
 			selenium.getText("//td[1]/a"));
 		assertEquals(RuntimeVariables.replace("exact:RE: MB Message Subject"),
 			selenium.getText("//tr[2]/td[1]/a"));
 		assertEquals(RuntimeVariables.replace("MB Message Subject"),
-			selenium.getText("//a/strong"));
+			selenium.getText("//div/a/strong"));
 		assertEquals(RuntimeVariables.replace("MB Message Body"),
 			selenium.getText("//td[2]/div[2]"));
 		assertEquals(RuntimeVariables.replace("exact:RE: MB Message Subject"),

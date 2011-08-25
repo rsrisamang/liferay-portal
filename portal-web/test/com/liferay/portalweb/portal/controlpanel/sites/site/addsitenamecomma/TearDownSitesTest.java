@@ -82,7 +82,7 @@ public class TearDownSitesTest extends BaseTestCase {
 				selenium.waitForPageToLoad("30000");
 				selenium.saveScreenShotAndSource();
 				selenium.type("//input[@id='_134_name']",
-					RuntimeVariables.replace("Community Name"));
+					RuntimeVariables.replace("Test"));
 				selenium.saveScreenShotAndSource();
 				selenium.clickAt("//input[@value='Search']",
 					RuntimeVariables.replace("Search"));
@@ -90,7 +90,7 @@ public class TearDownSitesTest extends BaseTestCase {
 				selenium.saveScreenShotAndSource();
 
 				boolean community1Present = selenium.isPartialText("//tr[3]/td[1]",
-						"Community Name");
+						"Test");
 
 				if (!community1Present) {
 					label = 2;
@@ -134,7 +134,7 @@ public class TearDownSitesTest extends BaseTestCase {
 			case 2:
 
 				boolean community2Present = selenium.isPartialText("//tr[3]/td[1]",
-						"Community Name");
+						"Test");
 
 				if (!community2Present) {
 					label = 3;
@@ -178,7 +178,7 @@ public class TearDownSitesTest extends BaseTestCase {
 			case 3:
 
 				boolean community3Present = selenium.isPartialText("//tr[3]/td[1]",
-						"Community Name");
+						"Test");
 
 				if (!community3Present) {
 					label = 4;
@@ -222,7 +222,7 @@ public class TearDownSitesTest extends BaseTestCase {
 			case 4:
 
 				boolean community4Present = selenium.isPartialText("//tr[3]/td[1]",
-						"Community Name");
+						"Test");
 
 				if (!community4Present) {
 					label = 5;
@@ -266,7 +266,7 @@ public class TearDownSitesTest extends BaseTestCase {
 			case 5:
 
 				boolean community5Present = selenium.isPartialText("//tr[3]/td[1]",
-						"Community Name");
+						"Test");
 
 				if (!community5Present) {
 					label = 6;

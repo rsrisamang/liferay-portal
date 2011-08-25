@@ -30,7 +30,7 @@ public class AddSitesPublicPagePortletTest extends BaseTestCase {
 			}
 
 			try {
-				if (selenium.isVisible("//a[@id='_145_addApplication']")) {
+				if (selenium.isVisible("link=Public Page")) {
 					break;
 				}
 			}
@@ -41,8 +41,14 @@ public class AddSitesPublicPagePortletTest extends BaseTestCase {
 		}
 
 		selenium.saveScreenShotAndSource();
+		selenium.clickAt("link=Public Page",
+			RuntimeVariables.replace("Public Page"));
+		selenium.waitForPageToLoad("30000");
+		selenium.saveScreenShotAndSource();
+		assertTrue(selenium.isPartialText("//a[@id='_145_addApplication']",
+				"More"));
 		selenium.clickAt("//a[@id='_145_addApplication']",
-			RuntimeVariables.replace("Add Application"));
+			RuntimeVariables.replace("More"));
 
 		for (int second = 0;; second++) {
 			if (second >= 60) {

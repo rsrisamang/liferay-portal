@@ -31,8 +31,8 @@ public class AssignMembersSiteTests extends BaseTests {
 		testSuite.addTestSuite(AddSitesTest.class);
 		testSuite.addTestSuite(AssignMembersSitesTest.class);
 		testSuite.addTestSuite(AssertAssignMembersSitesTest.class);
-		testSuite.addTestSuite(TearDownSitesTest.class);
 		testSuite.addTestSuite(TearDownUserTest.class);
+		testSuite.addTestSuite(TearDownSitesTest.class);
 
 		return testSuite;
 	}

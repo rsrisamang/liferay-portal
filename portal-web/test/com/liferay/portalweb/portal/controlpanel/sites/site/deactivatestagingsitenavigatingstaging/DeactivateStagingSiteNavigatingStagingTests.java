@@ -29,8 +29,8 @@ public class DeactivateStagingSiteNavigatingStagingTests
 		TestSuite testSuite = new TestSuite();
 
 		testSuite.addTestSuite(AddSitesTest.class);
-		testSuite.addTestSuite(ActivateStagingSitesTest.class);
 		testSuite.addTestSuite(AddSitesPublicPageTest.class);
+		testSuite.addTestSuite(ActivateStagingSitesTest.class);
 		testSuite.addTestSuite(
 			DeactivateStagingSitesNavigatingStagingTest.class);
 		testSuite.addTestSuite(TearDownSitesTest.class);
