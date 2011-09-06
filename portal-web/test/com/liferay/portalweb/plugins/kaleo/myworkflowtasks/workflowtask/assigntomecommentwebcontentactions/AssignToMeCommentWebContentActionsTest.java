@@ -42,7 +42,8 @@ public class AssignToMeCommentWebContentActionsTest extends BaseTestCase {
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Control Panel", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Control Panel",
+			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
 		selenium.click(RuntimeVariables.replace("link=My Workflow Tasks"));
@@ -60,7 +61,8 @@ public class AssignToMeCommentWebContentActionsTest extends BaseTestCase {
 		assertTrue(selenium.isElementPresent("//td[4]/a"));
 		assertEquals(RuntimeVariables.replace("Never"),
 			selenium.getText("//td[5]/a"));
-		selenium.clickAt("//strong/a", RuntimeVariables.replace("Actions"));
+		selenium.clickAt("//td[6]/span/ul/li/strong/a/span",
+			RuntimeVariables.replace("Actions"));
 
 		for (int second = 0;; second++) {
 			if (second >= 60) {
@@ -91,7 +93,7 @@ public class AssignToMeCommentWebContentActionsTest extends BaseTestCase {
 			}
 
 			try {
-				if (selenium.isVisible("_153_comment")) {
+				if (selenium.isVisible("//textarea[@name='_153_comment']")) {
 					break;
 				}
 			}
@@ -102,7 +104,7 @@ public class AssignToMeCommentWebContentActionsTest extends BaseTestCase {
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.type("_153_comment",
+		selenium.type("//textarea[@name='_153_comment']",
 			RuntimeVariables.replace("Web Content Comment Assign To Me"));
 		selenium.saveScreenShotAndSource();
 		selenium.clickAt("//div/button[1]", RuntimeVariables.replace("OK"));

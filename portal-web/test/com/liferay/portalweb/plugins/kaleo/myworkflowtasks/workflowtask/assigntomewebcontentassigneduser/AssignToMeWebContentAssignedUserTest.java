@@ -42,16 +42,18 @@ public class AssignToMeWebContentAssignedUserTest extends BaseTestCase {
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Control Panel", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Control Panel",
+			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Workflow", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Workflow", RuntimeVariables.replace("Workflow"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Submissions", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Submissions",
+			RuntimeVariables.replace("Submissions"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Pending", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Pending", RuntimeVariables.replace("Pending"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
 		selenium.click(RuntimeVariables.replace("//td[2]/a"));
@@ -63,7 +65,7 @@ public class AssignToMeWebContentAssignedUserTest extends BaseTestCase {
 			selenium.getText("//tr[3]/td[2]"));
 		assertEquals(RuntimeVariables.replace("No"),
 			selenium.getText("//tr[3]/td[3]"));
-		selenium.click("//span/a/span");
+		selenium.click("//td[4]/span/a/span");
 
 		for (int second = 0;; second++) {
 			if (second >= 60) {

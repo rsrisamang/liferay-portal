@@ -42,10 +42,12 @@ public class UpdateDueDateWebContentAssignedToMeActionsTest extends BaseTestCase
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=Control Panel", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Control Panel",
+			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
-		selenium.clickAt("link=My Workflow Tasks", RuntimeVariables.replace(""));
+		selenium.clickAt("link=My Workflow Tasks",
+			RuntimeVariables.replace("My Workflow Tasks"));
 		selenium.waitForPageToLoad("30000");
 		selenium.saveScreenShotAndSource();
 		assertEquals(RuntimeVariables.replace("Review"),
@@ -60,7 +62,8 @@ public class UpdateDueDateWebContentAssignedToMeActionsTest extends BaseTestCase
 		assertEquals(RuntimeVariables.replace(
 				"There are no pending tasks assigned to your roles."),
 			selenium.getText("//div[@class='portlet-msg-info']"));
-		selenium.clickAt("//strong/a", RuntimeVariables.replace("Actions"));
+		selenium.clickAt("//td[6]/span/ul/li/strong/a/span",
+			RuntimeVariables.replace("Actions"));
 
 		for (int second = 0;; second++) {
 			if (second >= 60) {
@@ -91,7 +94,7 @@ public class UpdateDueDateWebContentAssignedToMeActionsTest extends BaseTestCase
 			}
 
 			try {
-				if (selenium.isVisible("_153_dueDateMonth")) {
+				if (selenium.isVisible("//select[@id='_153_dueDateMonth']")) {
 					break;
 				}
 			}
@@ -102,15 +105,18 @@ public class UpdateDueDateWebContentAssignedToMeActionsTest extends BaseTestCase
 		}
 
 		selenium.saveScreenShotAndSource();
-		selenium.select("_153_dueDateMonth",
+		selenium.select("//select[@id='_153_dueDateMonth']",
 			RuntimeVariables.replace("label=December"));
-		selenium.select("_153_dueDateDay", RuntimeVariables.replace("label=31"));
-		selenium.select("_153_dueDateYear",
+		selenium.select("//select[@id='_153_dueDateDay']",
+			RuntimeVariables.replace("label=31"));
+		selenium.select("//select[@id='_153_dueDateYear']",
 			RuntimeVariables.replace("label=2015"));
-		selenium.select("_153_dueDateHour", RuntimeVariables.replace("label=12"));
-		selenium.select("_153_dueDateMinute",
+		selenium.select("//select[@name='_153_dueDateHour']",
+			RuntimeVariables.replace("label=12"));
+		selenium.select("//select[@name='_153_dueDateMinute']",
 			RuntimeVariables.replace("label=:00"));
-		selenium.select("_153_dueDateAmPm", RuntimeVariables.replace("label=AM"));
+		selenium.select("//select[@name='_153_dueDateAmPm']",
+			RuntimeVariables.replace("label=AM"));
 		selenium.clickAt("//div[3]/div/button[1]",
 			RuntimeVariables.replace("OK"));
 		selenium.waitForPageToLoad("30000");
