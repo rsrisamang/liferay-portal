@@ -235,7 +235,7 @@
 	</target>
 
 	<target name="build-test-ant-scripts">
-		<property name="build-test-ant-scripts.version" value="0" />
+		<property name="build-test-ant-scripts.version" value="9" />
 
 		<if>
 			<available file="portal-web/test-ant-scripts/version" />
@@ -1675,11 +1675,6 @@
 		</antcall>
 
 		<antcall target="build-test-ant-script">
-			<param name="test.ant.script.command" value="staging-community-sites" />
-			<param name="test.ant.script.suite" value="StagingCommunitySitesTestSuite" />
-		</antcall>
-
-		<antcall target="build-test-ant-script">
 			<param name="test.ant.script.command" value="staging-community-web-content-display" />
 			<param name="test.ant.script.suite" value="StagingCommunityWebContentDisplayTestSuite" />
 		</antcall>
@@ -2156,6 +2151,13 @@ message.boards.subscribe.by.default=false</echo>
 
 auto.deploy.dest.dir=${resource.repositories.root}/websphere-deploy</echo>
 			</then>
+		</if>
+		<if>
+			<isset property="set.permission.algorithm.6" />
+				<then>
+					<replace file="portal-impl/src/portal-ext.properties" token="permissions.user.check.algorithm=5" value=""/>
+					<replace file="portal-impl/src/portal-ext.properties" token="permissions.view.dynamic.inheritance=false" value=""/>
+				</then>
 		</if>
 	</target>
 
