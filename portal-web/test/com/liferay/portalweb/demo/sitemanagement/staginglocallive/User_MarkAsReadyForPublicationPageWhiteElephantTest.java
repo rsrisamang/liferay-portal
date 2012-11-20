@@ -29,32 +29,16 @@ public class User_MarkAsReadyForPublicationPageWhiteElephantTest
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'local-staging')]"));
 				assertEquals(RuntimeVariables.replace("Staging"),
 					selenium.getText(
@@ -62,10 +46,9 @@ public class User_MarkAsReadyForPublicationPageWhiteElephantTest
 				selenium.clickAt("//div[@class='staging-bar']/ul/li[2]/span/a",
 					RuntimeVariables.replace("Staging"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'local-staging')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'live-view')]"));
 
 				boolean christmasPresent = selenium.isElementPresent(
@@ -80,7 +63,6 @@ public class User_MarkAsReadyForPublicationPageWhiteElephantTest
 				selenium.clickAt("link=Christmas",
 					RuntimeVariables.replace("Christmas"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				assertEquals(RuntimeVariables.replace("Christmas"),
@@ -89,27 +71,10 @@ public class User_MarkAsReadyForPublicationPageWhiteElephantTest
 						"Christmas Site Pages Variation of Site Name"),
 					selenium.getText(
 						"//span[@class='layout-set-branch-description']"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=White Elephant")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=White Elephant");
 				selenium.clickAt("link=White Elephant",
 					RuntimeVariables.replace("White Elephant"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Draft"),
 					selenium.getText("//span[@class='workflow-status']/strong"));
 				assertEquals(RuntimeVariables.replace(
@@ -118,25 +83,8 @@ public class User_MarkAsReadyForPublicationPageWhiteElephantTest
 						"//button/span[.='Mark as Ready for Publication']"));
 				selenium.clickAt("//button/span[.='Mark as Ready for Publication']",
 					RuntimeVariables.replace("Mark as Ready for Publication"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Ready for Publication")
-												.equals(selenium.getText(
-										"//span[@class='workflow-status']/strong"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//span[@class='workflow-status']/strong",
+					"Ready for Publication");
 				assertEquals(RuntimeVariables.replace("Ready for Publication"),
 					selenium.getText("//span[@class='workflow-status']/strong"));
 

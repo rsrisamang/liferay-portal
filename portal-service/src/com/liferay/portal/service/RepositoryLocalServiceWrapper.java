@@ -244,20 +244,6 @@ public class RepositoryLocalServiceWrapper implements RepositoryLocalService,
 	}
 
 	/**
-	* Updates the repository in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param repository the repository
-	* @param merge whether to merge the repository with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the repository that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.model.Repository updateRepository(
-		com.liferay.portal.model.Repository repository, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _repositoryLocalService.updateRepository(repository, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -279,6 +265,22 @@ public class RepositoryLocalServiceWrapper implements RepositoryLocalService,
 		long parentFolderId, java.lang.String name,
 		java.lang.String description, java.lang.String portletId,
 		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
+		boolean hidden, com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _repositoryLocalService.addRepository(userId, groupId,
+			classNameId, parentFolderId, name, description, portletId,
+			typeSettingsProperties, hidden, serviceContext);
+	}
+
+	/**
+	* @deprecated {@link #addRepository(long, long, long, long, String, String,
+	String, UnicodeProperties, boolean, ServiceContext)}
+	*/
+	public long addRepository(long userId, long groupId, long classNameId,
+		long parentFolderId, java.lang.String name,
+		java.lang.String description, java.lang.String portletId,
+		com.liferay.portal.kernel.util.UnicodeProperties typeSettingsProperties,
 		com.liferay.portal.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
@@ -296,6 +298,18 @@ public class RepositoryLocalServiceWrapper implements RepositoryLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		_repositoryLocalService.deleteRepositories(groupId);
+	}
+
+	public com.liferay.portal.model.Repository fetchRepository(long groupId,
+		java.lang.String portletId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _repositoryLocalService.fetchRepository(groupId, portletId);
+	}
+
+	public com.liferay.portal.model.Repository fetchRepository(long groupId,
+		java.lang.String name, java.lang.String portletId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _repositoryLocalService.fetchRepository(groupId, name, portletId);
 	}
 
 	public com.liferay.portal.kernel.repository.LocalRepository getLocalRepositoryImpl(

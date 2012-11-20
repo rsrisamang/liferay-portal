@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Organization;
@@ -38,7 +39,6 @@ import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.service.permission.RolePermissionUtil;
 import com.liferay.portal.service.permission.UserPermissionUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.util.UniqueList;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,42 +86,6 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			boolean active, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
-		GroupPermissionUtil.check(
-			getPermissionChecker(), liveGroupId, ActionKeys.UPDATE);
-
-		return groupLocalService.addGroup(
-			getUserId(), parentGroupId, null, 0, liveGroupId, name, description,
-			type, friendlyURL, site, active, serviceContext);
-	}
-
-	/**
-	 * Adds the group using the group default live group ID.
-	 *
-	 * @param  parentGroupId the primary key of the parent group
-	 * @param  name the entity's name
-	 * @param  description the group's description (optionally
-	 *         <code>null</code>)
-	 * @param  type the group's type. For more information see {@link
-	 *         com.liferay.portal.model.GroupConstants}
-	 * @param  friendlyURL the group's friendlyURL
-	 * @param  site whether the group is to be associated with a main site
-	 * @param  active whether the group is active
-	 * @param  serviceContext the service context to be applied (optionally
-	 *         <code>null</code>). Can set asset category IDs and asset tag
-	 *         names for the group, and can set whether the group is for staging
-	 * @return the group
-	 * @throws PortalException if the user did not have permission to add the
-	 *         group, if a creator could not be found, if the group's
-	 *         information was invalid, if a layout could not be found, or if a
-	 *         valid friendly URL could not be created for the group
-	 * @throws SystemException if a system exception occurred
-	 */
-	public Group addGroup(
-			long parentGroupId, String name, String description, int type,
-			String friendlyURL, boolean site, boolean active,
-			ServiceContext serviceContext)
-		throws PortalException, SystemException {
-
 		if (!GroupPermissionUtil.contains(
 				getPermissionChecker(), parentGroupId,
 				ActionKeys.MANAGE_SUBGROUPS) &&
@@ -134,8 +98,44 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 		}
 
 		return groupLocalService.addGroup(
-			getUserId(), parentGroupId, null, 0, name, description, type,
-			friendlyURL, site, active, serviceContext);
+			getUserId(), parentGroupId, null, 0, liveGroupId, name, description,
+			type, friendlyURL, site, active, serviceContext);
+	}
+
+	/**
+	 * Adds the group using the group default live group ID.
+	 *
+	 * @param      parentGroupId the primary key of the parent group
+	 * @param      name the entity's name
+	 * @param      description the group's description (optionally
+	 *             <code>null</code>)
+	 * @param      type the group's type. For more information see {@link
+	 *             com.liferay.portal.model.GroupConstants}
+	 * @param      friendlyURL the group's friendlyURL
+	 * @param      site whether the group is to be associated with a main site
+	 * @param      active whether the group is active
+	 * @param      serviceContext the service context to be applied (optionally
+	 *             <code>null</code>). Can set asset category IDs and asset tag
+	 *             names for the group, and can set whether the group is for
+	 *             staging
+	 * @return     the group
+	 * @throws     PortalException if the user did not have permission to add
+	 *             the group, if a creator could not be found, if the group's
+	 *             information was invalid, if a layout could not be found, or
+	 *             if a valid friendly URL could not be created for the group
+	 * @throws     SystemException if a system exception occurred
+	 * @deprecated {@link #addGroup(long, long, String, String, int, String,
+	 *             boolean, boolean, ServiceContext)}
+	 */
+	public Group addGroup(
+			long parentGroupId, String name, String description, int type,
+			String friendlyURL, boolean site, boolean active,
+			ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		return addGroup(
+			parentGroupId, GroupConstants.DEFAULT_LIVE_GROUP_ID, name,
+			description, type, friendlyURL, site, active, serviceContext);
 	}
 
 	/**
@@ -259,8 +259,8 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			params.put("site", Boolean.TRUE);
 
 			return groupLocalService.search(
-				permissionChecker.getCompanyId(), null, null, null, params, 0,
-				max);
+				permissionChecker.getCompanyId(), null, null, null, params,
+				true, 0, max);
 		}
 
 		List<Group> groups = new UniqueList<Group>();
@@ -433,11 +433,24 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 				user.getCompanyId(), organizationParams, start, end);
 
 			for (Organization organization : userOrgs) {
-				userPlaces.add(0, organization.getGroup());
+				if (!organization.hasPrivateLayouts() &&
+					!organization.hasPublicLayouts()) {
+
+					userPlaces.remove(organization.getGroup());
+				}
+				else {
+					userPlaces.add(0, organization.getGroup());
+				}
 
 				if (!PropsValues.ORGANIZATIONS_MEMBERSHIP_STRICT) {
 					for (Organization ancestorOrganization :
 							organization.getAncestors()) {
+
+						if (!organization.hasPrivateLayouts() &&
+							!organization.hasPublicLayouts()) {
+
+							continue;
+						}
 
 						userPlaces.add(0, ancestorOrganization.getGroup());
 					}
@@ -568,6 +581,8 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 	 * @param  groupId the primary key of the group
 	 * @return <code>true</code> if the user is associated with the group;
 	 *         <code>false</code> otherwise
+	 * @throws PortalException if the current user did not have permission to
+	 *         view the user or group members
 	 * @throws SystemException if a system exception occurred
 	 */
 	public boolean hasUserGroup(long userId, long groupId)
@@ -586,10 +601,10 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 	}
 
 	/**
-	 * Returns a name ordered range of all the site groups and organization
-	 * groups that match the name and description, optionally including the
-	 * user's inherited organization groups and user groups. System and staged
-	 * groups are not included.
+	 * Returns an ordered range of all the site groups and organization groups
+	 * that match the name and description, optionally including the user's
+	 * inherited organization groups and user groups. System and staged groups
+	 * are not included.
 	 *
 	 * <p>
 	 * Useful when paginating results. Returns a maximum of <code>end -
@@ -623,11 +638,15 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			int start, int end)
 		throws PortalException, SystemException {
 
+		if (params == null) {
+			params = new String[0];
+		}
+
 		LinkedHashMap<String, Object> paramsObj = MapUtil.toLinkedHashMap(
 			params);
 
 		List<Group> groups = groupLocalService.search(
-			companyId, name, description, paramsObj, start, end);
+			companyId, name, description, paramsObj, true, start, end);
 
 		return filterGroups(groups);
 	}
@@ -654,11 +673,15 @@ public class GroupServiceImpl extends GroupServiceBaseImpl {
 			long companyId, String name, String description, String[] params)
 		throws SystemException {
 
+		if (params == null) {
+			params = new String[0];
+		}
+
 		LinkedHashMap<String, Object> paramsObj = MapUtil.toLinkedHashMap(
 			params);
 
 		return groupLocalService.searchCount(
-			companyId, name, description, paramsObj);
+			companyId, name, description, paramsObj, true);
 	}
 
 	/**

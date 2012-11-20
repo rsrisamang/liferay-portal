@@ -23,15 +23,15 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class SOUs_ViewMBEntryActivityFollowingTest extends BaseTestCase {
 	public void testSOUs_ViewMBEntryActivityFollowing()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/socialoffice01/so/dashboard");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Activities"),
 			selenium.getText("xPath=(//h1[@class='portlet-title']/span)[2]"));
 		assertEquals(RuntimeVariables.replace("Following"),
 			selenium.getText("link=Following"));
 		selenium.clickAt("link=Following", RuntimeVariables.replace("Following"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Microblogs Post"),
 			selenium.getText("//div[@class='activity-title']"));
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),

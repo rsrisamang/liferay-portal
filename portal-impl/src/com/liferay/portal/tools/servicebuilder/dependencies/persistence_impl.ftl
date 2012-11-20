@@ -57,7 +57,6 @@ import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.security.permission.InlineSQLHelperUtil;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
 import java.io.Serializable;
@@ -124,35 +123,37 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 					"java.lang.Integer", "java.lang.Integer", "com.liferay.portal.kernel.util.OrderByComparator"
 				});
 
-			public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_${finder.name?upper_case} = new FinderPath(
-				${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
-				${entity.name}ModelImpl.FINDER_CACHE_ENABLED,
-				${entity.name}Impl.class,
-				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-				"findBy${finder.name}",
-				new String[] {
-					<#list finderColsList as finderCol>
-						${serviceBuilder.getPrimitiveObj("${finderCol.type}")}.class.getName()
+			<#if !finder.hasCustomComparator()>
+				public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_${finder.name?upper_case} = new FinderPath(
+					${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
+					${entity.name}ModelImpl.FINDER_CACHE_ENABLED,
+					${entity.name}Impl.class,
+					FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+					"findBy${finder.name}",
+					new String[] {
+						<#list finderColsList as finderCol>
+							${serviceBuilder.getPrimitiveObj("${finderCol.type}")}.class.getName()
 
-						<#if finderCol_has_next>
-							,
-						</#if>
-					</#list>
-				}
+							<#if finderCol_has_next>
+								,
+							</#if>
+						</#list>
+					}
 
-				<#if columnBitmaskEnabled>
-					,
+					<#if columnBitmaskEnabled>
+						,
 
-					<#list finderColsList as finderCol>
-						${entity.name}ModelImpl.${finderCol.name?upper_case}_COLUMN_BITMASK
+						<#list finderColsList as finderCol>
+							${entity.name}ModelImpl.${finderCol.name?upper_case}_COLUMN_BITMASK
 
-						<#if finderCol_has_next>
-							|
-						</#if>
-					</#list>
-				</#if>
+							<#if finderCol_has_next>
+								|
+							</#if>
+						</#list>
+					</#if>
 
-				);
+					);
+			</#if>
 		<#else>
 			public static final FinderPath FINDER_PATH_FETCH_BY_${finder.name?upper_case} = new FinderPath(
 				${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
@@ -185,23 +186,25 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				);
 		</#if>
 
-		public static final FinderPath FINDER_PATH_COUNT_BY_${finder.name?upper_case} = new FinderPath(
-			${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
-			${entity.name}ModelImpl.FINDER_CACHE_ENABLED,
-			Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
-			"countBy${finder.name}",
-			new String[] {
-				<#list finderColsList as finderCol>
-					${serviceBuilder.getPrimitiveObj("${finderCol.type}")}.class.getName()
+		<#if !finder.hasCustomComparator()>
+			public static final FinderPath FINDER_PATH_COUNT_BY_${finder.name?upper_case} = new FinderPath(
+				${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
+				${entity.name}ModelImpl.FINDER_CACHE_ENABLED,
+				Long.class,
+				FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION,
+				"countBy${finder.name}",
+				new String[] {
+					<#list finderColsList as finderCol>
+						${serviceBuilder.getPrimitiveObj("${finderCol.type}")}.class.getName()
 
-					<#if finderCol_has_next>
-						,
-					</#if>
-				</#list>
-			});
+						<#if finderCol_has_next>
+							,
+						</#if>
+					</#list>
+				});
+		</#if>
 
-		<#if finder.hasArrayableOperator()>
+		<#if finder.hasArrayableOperator() || finder.hasCustomComparator()>
 			public static final FinderPath FINDER_PATH_WITH_PAGINATION_COUNT_BY_${finder.name?upper_case} = new FinderPath(
 				${entity.name}ModelImpl.ENTITY_CACHE_ENABLED,
 				${entity.name}ModelImpl.FINDER_CACHE_ENABLED,
@@ -481,7 +484,14 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, ${entity.varName});
+			if (!session.contains(${entity.varName})) {
+				${entity.varName} = (${entity.name})session.get(
+					${entity.name}Impl.class, ${entity.varName}.getPrimaryKeyObj());
+			}
+
+			if (${entity.varName} != null) {
+				session.delete(${entity.varName});
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -490,18 +500,42 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			closeSession(session);
 		}
 
-		clearCache(${entity.varName});
+		if (${entity.varName} != null) {
+			clearCache(${entity.varName});
+		}
 
 		return ${entity.varName};
 	}
 
 	@Override
-	public ${entity.name} updateImpl(${packagePath}.model.${entity.name} ${entity.varName}, boolean merge) throws SystemException {
+	public ${entity.name} updateImpl(${packagePath}.model.${entity.name} ${entity.varName}) throws SystemException {
 		${entity.varName} = toUnwrappedModel(${entity.varName});
 
 		boolean isNew = ${entity.varName}.isNew();
 
-		<#if (entity.finderColumnsList?size != 0) || entity.isHierarchicalTree()>
+		<#assign collectionFinderList = entity.getCollectionFinderList()>
+
+		<#assign castEntityModelImpl = false>
+
+		<#if entity.isHierarchicalTree()>
+			<#assign castEntityModelImpl = true>
+		</#if>
+
+		<#if collectionFinderList?size != 0>
+			<#list collectionFinderList as finder>
+				<#if !finder.hasCustomComparator()>
+					<#assign castEntityModelImpl = true>
+				</#if>
+			</#list>
+		</#if>
+
+		<#assign uniqueFinderList = entity.getUniqueFinderList()>
+
+		<#if uniqueFinderList?size != 0>
+			<#assign castEntityModelImpl = true>
+		</#if>
+
+		<#if castEntityModelImpl>
 			${entity.name}ModelImpl ${entity.varName}ModelImpl = (${entity.name}ModelImpl)${entity.varName};
 		</#if>
 
@@ -591,9 +625,14 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, ${entity.varName}, merge);
+			if (${entity.varName}.isNew()) {
+				session.save(${entity.varName});
 
-			${entity.varName}.setNew(false);
+				${entity.varName}.setNew(false);
+			}
+			else {
+				session.merge(${entity.varName});
+			}
 
 			<#if entity.hasLazyBlobColumn()>
 				session.flush();
@@ -609,8 +648,6 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 		FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITH_PAGINATION);
 
-		<#assign collectionFinderList = entity.getCollectionFinderList()>
-
 		if (isNew
 			<#if columnBitmaskEnabled>
 				|| !${entity.name}ModelImpl.COLUMN_BITMASK_ENABLED
@@ -619,10 +656,19 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		<#if collectionFinderList?size != 0>
-			else {
-				<#list collectionFinderList as finder>
-					<#assign finderColsList = finder.getColumns()>
+			<#assign hasEqualComparator = false>
+
+			<#list collectionFinderList as finder>
+				<#assign finderColsList = finder.getColumns()>
+
+				<#if !finder.hasCustomComparator()>
+					<#if !hasEqualComparator>
+						<#assign hasEqualComparator = true>
+
+						else {
+					</#if>
 
 					if (
 						<#if columnBitmaskEnabled>
@@ -684,13 +730,15 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 						FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_${finder.name?upper_case}, args);
 						FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_${finder.name?upper_case}, args);
 					}
-				</#list>
-			}
+				</#if>
+			</#list>
+
+			<#if hasEqualComparator>
+				}
+			</#if>
 		</#if>
 
 		EntityCacheUtil.putResult(${entity.name}ModelImpl.ENTITY_CACHE_ENABLED, ${entity.name}Impl.class, ${entity.varName}.getPrimaryKey(), ${entity.varName});
-
-		<#assign uniqueFinderList = entity.getUniqueFinderList()>
 
 		<#if uniqueFinderList?size &gt; 0>
 			if (isNew) {
@@ -742,7 +790,10 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 							</#list>
 						};
 
-						FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_${finder.name?upper_case}, args);
+						<#if !finder.hasCustomComparator()>
+							FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_${finder.name?upper_case}, args);
+						</#if>
+
 						FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_${finder.name?upper_case}, args);
 
 						FinderCacheUtil.putResult(
@@ -1003,28 +1054,34 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				FinderPath finderPath = null;
 				Object[] finderArgs = null;
 
-				if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
-					finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_${finder.name?upper_case};
-					finderArgs = new Object[] {
-						<#list finderColsList as finderCol>
-							${finderCol.name}
+				<#if !finder.hasCustomComparator()>
+					if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) && (orderByComparator == null)) {
+						finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_${finder.name?upper_case};
+						finderArgs = new Object[] {
+							<#list finderColsList as finderCol>
+								${finderCol.name}
 
-							<#if finderCol_has_next>
-								,
-							</#if>
-						</#list>
-					};
-				}
-				else {
-					finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_${finder.name?upper_case};
-					finderArgs = new Object[] {
-						<#list finderColsList as finderCol>
-							${finderCol.name},
-						</#list>
+								<#if finderCol_has_next>
+									,
+								</#if>
+							</#list>
+						};
+					}
+					else {
+				</#if>
 
-						start, end, orderByComparator
-					};
-				}
+				finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_${finder.name?upper_case};
+				finderArgs = new Object[] {
+					<#list finderColsList as finderCol>
+						${finderCol.name},
+					</#list>
+
+					start, end, orderByComparator
+				};
+
+				<#if !finder.hasCustomComparator()>
+					}
+				</#if>
 
 				List<${entity.name}> list = (List<${entity.name}>)FinderCacheUtil.getResult(finderPath, finderArgs, this);
 
@@ -1091,10 +1148,6 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			/**
 			 * Returns the first ${entity.humanName} in the ordered set where ${finder.getHumanConditions(false)}.
 			 *
-			 * <p>
-			 * <#include "range_comment.ftl">
-			 * </p>
-			 *
 			<#list finderColsList as finderCol>
 			 * @param ${finderCol.name} the ${finderCol.humanName}
 			</#list>
@@ -1110,6 +1163,51 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			</#list>
 
 			OrderByComparator orderByComparator) throws ${noSuchEntity}Exception, SystemException {
+				${entity.name} ${entity.varName} = fetchBy${finder.name}_First(
+
+				<#list finderColsList as finderCol>
+					${finderCol.name},
+				</#list>
+
+				orderByComparator);
+
+				if (${entity.varName} != null) {
+					return ${entity.varName};
+				}
+
+				StringBundler msg = new StringBundler(${(finderColsList?size * 2) + 2});
+
+				msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+				<#list finderColsList as finderCol>
+					msg.append("<#if finderCol_index != 0>, </#if>${finderCol.name}=");
+					msg.append(${finderCol.name});
+
+					<#if !finderCol_has_next>
+						msg.append(StringPool.CLOSE_CURLY_BRACE);
+					</#if>
+				</#list>
+
+				throw new ${noSuchEntity}Exception(msg.toString());
+			}
+
+			/**
+			 * Returns the first ${entity.humanName} in the ordered set where ${finder.getHumanConditions(false)}.
+			 *
+			<#list finderColsList as finderCol>
+			 * @param ${finderCol.name} the ${finderCol.humanName}
+			</#list>
+			 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+			 * @return the first matching ${entity.humanName}, or <code>null</code> if a matching ${entity.humanName} could not be found
+			 * @throws SystemException if a system exception occurred
+			 */
+			public ${entity.name} fetchBy${finder.name}_First(
+
+			<#list finderColsList as finderCol>
+				${finderCol.type} ${finderCol.name},
+			</#list>
+
+			OrderByComparator orderByComparator) throws SystemException {
 				List<${entity.name}> list = findBy${finder.name}(
 
 				<#list finderColsList as finderCol>
@@ -1118,33 +1216,15 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 				0, 1, orderByComparator);
 
-				if (list.isEmpty()) {
-					StringBundler msg = new StringBundler(${(finderColsList?size * 2) + 2});
-
-					msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-					<#list finderColsList as finderCol>
-						msg.append("<#if finderCol_index != 0>, </#if>${finderCol.name}=");
-						msg.append(${finderCol.name});
-
-						<#if !finderCol_has_next>
-							msg.append(StringPool.CLOSE_CURLY_BRACE);
-						</#if>
-					</#list>
-
-					throw new ${noSuchEntity}Exception(msg.toString());
-				}
-				else {
+				if (!list.isEmpty()) {
 					return list.get(0);
 				}
+
+				return null;
 			}
 
 			/**
 			 * Returns the last ${entity.humanName} in the ordered set where ${finder.getHumanConditions(false)}.
-			 *
-			 * <p>
-			 * <#include "range_comment.ftl">
-			 * </p>
 			 *
 			<#list finderColsList as finderCol>
 			 * @param ${finderCol.name} the ${finderCol.humanName}
@@ -1161,6 +1241,51 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 			</#list>
 
 			OrderByComparator orderByComparator) throws ${noSuchEntity}Exception, SystemException {
+				${entity.name} ${entity.varName} = fetchBy${finder.name}_Last(
+
+				<#list finderColsList as finderCol>
+					${finderCol.name},
+				</#list>
+
+				orderByComparator);
+
+				if (${entity.varName} != null) {
+					return ${entity.varName};
+				}
+
+				StringBundler msg = new StringBundler(${(finderColsList?size * 2) + 2});
+
+				msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+				<#list finderColsList as finderCol>
+					msg.append("<#if finderCol_index != 0>, </#if>${finderCol.name}=");
+					msg.append(${finderCol.name});
+
+					<#if !finderCol_has_next>
+						msg.append(StringPool.CLOSE_CURLY_BRACE);
+					</#if>
+				</#list>
+
+				throw new ${noSuchEntity}Exception(msg.toString());
+			}
+
+			/**
+			 * Returns the last ${entity.humanName} in the ordered set where ${finder.getHumanConditions(false)}.
+			 *
+			<#list finderColsList as finderCol>
+			 * @param ${finderCol.name} the ${finderCol.humanName}
+			</#list>
+			 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+			 * @return the last matching ${entity.humanName}, or <code>null</code> if a matching ${entity.humanName} could not be found
+			 * @throws SystemException if a system exception occurred
+			 */
+			public ${entity.name} fetchBy${finder.name}_Last(
+
+			<#list finderColsList as finderCol>
+				${finderCol.type} ${finderCol.name},
+			</#list>
+
+			OrderByComparator orderByComparator) throws SystemException {
 				int count = countBy${finder.name}(
 
 				<#list finderColsList as finderCol>
@@ -1181,33 +1306,15 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 
 				count - 1, count, orderByComparator);
 
-				if (list.isEmpty()) {
-					StringBundler msg = new StringBundler(${(finderColsList?size * 2) + 2});
-
-					msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-					<#list finderColsList as finderCol>
-						msg.append("<#if finderCol_index != 0>, </#if>${finderCol.name}=");
-						msg.append(${finderCol.name});
-
-						<#if !finderCol_has_next>
-							msg.append(StringPool.CLOSE_CURLY_BRACE);
-						</#if>
-					</#list>
-
-					throw new ${noSuchEntity}Exception(msg.toString());
-				}
-				else {
+				if (!list.isEmpty()) {
 					return list.get(0);
 				}
+
+				return null;
 			}
 
 			/**
 			 * Returns the ${entity.humanNames} before and after the current ${entity.humanName} in the ordered set where ${finder.getHumanConditions(false)}.
-			 *
-			 * <p>
-			 * <#include "range_comment.ftl">
-			 * </p>
 			 *
 			 * @param ${entity.PKVarName} the primary key of the current ${entity.humanName}
 			<#list finderColsList as finderCol>
@@ -2659,7 +2766,13 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				</#list>
 			};
 
-			Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_${finder.name?upper_case}, finderArgs, this);
+			Long count = (Long)FinderCacheUtil.getResult(
+				<#if !finder.hasCustomComparator()>
+					FINDER_PATH_COUNT_BY_${finder.name?upper_case},
+				<#else>
+					FINDER_PATH_WITH_PAGINATION_COUNT_BY_${finder.name?upper_case},
+				</#if>
+				finderArgs, this);
 
 			if (count == null) {
 				<#include "persistence_impl_count_by_query.ftl">
@@ -2687,7 +2800,13 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 						count = Long.valueOf(0);
 					}
 
-					FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_${finder.name?upper_case}, finderArgs, count);
+					FinderCacheUtil.putResult(
+						<#if !finder.hasCustomComparator()>
+							FINDER_PATH_COUNT_BY_${finder.name?upper_case},
+						<#else>
+							FINDER_PATH_WITH_PAGINATION_COUNT_BY_${finder.name?upper_case},
+						</#if>
+						finderArgs, count);
 
 					closeSession(session);
 				}
@@ -4091,8 +4210,8 @@ public class ${entity.name}PersistenceImpl extends BasePersistenceImpl<${entity.
 				_sqlUpdate = SqlUpdateFactoryUtil.getSqlUpdate(getDataSource(), "UPDATE ${entity.table} SET left${pkColumn.methodName} = (left${pkColumn.methodName} - ?) WHERE (${scopeColumn.DBName} = ?) AND (left${pkColumn.methodName} > ?)", new int[] {java.sql.Types.${serviceBuilder.getSqlType("long")}, java.sql.Types.${serviceBuilder.getSqlType("long")}, java.sql.Types.${serviceBuilder.getSqlType("long")}});
 			}
 
-			protected void shrink(long ${scopeColumn.name}, long left${pkColumn.methodName}, long delta) {
-				_sqlUpdate.update(new Object[] {delta, ${scopeColumn.name}, left${pkColumn.methodName}});
+			protected void shrink(long ${scopeColumn.name}, long right${pkColumn.methodName}, long delta) {
+				_sqlUpdate.update(new Object[] {delta, ${scopeColumn.name}, right${pkColumn.methodName}});
 			}
 
 			private SqlUpdate _sqlUpdate;

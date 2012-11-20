@@ -22,13 +22,13 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.Subscription;
 import com.liferay.portal.model.impl.SubscriptionModelImpl;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -54,19 +54,21 @@ import java.util.Set;
 public class SubscriptionPersistenceTest {
 	@After
 	public void tearDown() throws Exception {
-		Map<Serializable, BasePersistence<?>> persistedEntities = _transactionalPersistenceAdvice.getBasePersistences();
+		Map<Serializable, BasePersistence<?>> basePersistences = _transactionalPersistenceAdvice.getBasePersistences();
 
-		Set<Serializable> entityKeys = persistedEntities.keySet();
+		Set<Serializable> primaryKeys = basePersistences.keySet();
 
-		for (Serializable entitiKey : entityKeys) {
-			BasePersistence<?> persistence = persistedEntities.get(entitiKey);
+		for (Serializable primaryKey : primaryKeys) {
+			BasePersistence<?> basePersistence = basePersistences.get(primaryKey);
 
 			try {
-				persistence.remove(entitiKey);
+				basePersistence.remove(primaryKey);
 			}
 			catch (Exception e) {
-				_log.debug("The entity " + entitiKey +
-					" has been already deleted");
+				if (_log.isDebugEnabled()) {
+					_log.debug("The model with primary key " + primaryKey +
+						" was already deleted");
+				}
 			}
 		}
 
@@ -122,7 +124,7 @@ public class SubscriptionPersistenceTest {
 
 		newSubscription.setFrequency(ServiceTestUtil.randomString());
 
-		_persistence.update(newSubscription, false);
+		_persistence.update(newSubscription);
 
 		Subscription existingSubscription = _persistence.findByPrimaryKey(newSubscription.getPrimaryKey());
 
@@ -306,7 +308,7 @@ public class SubscriptionPersistenceTest {
 
 		subscription.setFrequency(ServiceTestUtil.randomString());
 
-		_persistence.update(subscription, false);
+		_persistence.update(subscription);
 
 		return subscription;
 	}

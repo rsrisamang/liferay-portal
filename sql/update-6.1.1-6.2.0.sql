@@ -1,3 +1,5 @@
+update BlogsEntry set status = 2 where status = 9;
+
 alter table Contact_ add classNameId LONG;
 alter table Contact_ add classPK LONG;
 alter table Contact_ add emailAddress VARCHAR(75) null;
@@ -230,6 +232,18 @@ update Country set name = 'yemen' where name = 'Yemen';
 update Country set name = 'zambia' where name = 'Zambia';
 update Country set name = 'zimbabwe' where name = 'Zimbabwe';
 
+alter table DDMStructure add parentStructureId LONG;
+
+alter table DDMTemplate add cacheable BOOLEAN;
+alter table DDMTemplate add smallImage BOOLEAN;
+alter table DDMTemplate add smallImageId LONG;
+alter table DDMTemplate add smallImageURL STRING;
+
+update DDMTemplate set type_ = 'display' where type_ = 'list';
+update DDMTemplate set type_ = 'form' where type_ = 'detail';
+
+alter table DLFileEntry add manualCheckInRequired BOOLEAN;
+
 alter table DLFileRank add active_ BOOLEAN;
 
 COMMIT_TRANSACTION;
@@ -242,6 +256,9 @@ COMMIT_TRANSACTION;
 
 update DLFileShortcut set active_ = TRUE;
 
+alter table DLFileVersion add checksum VARCHAR(75) null;
+
+alter table DLFolder add hidden_ BOOLEAN;
 alter table DLFolder add status INTEGER;
 alter table DLFolder add statusByUserId LONG;
 alter table DLFolder add statusByUserName VARCHAR(75) null;
@@ -249,10 +266,19 @@ alter table DLFolder add statusDate DATE null;
 
 COMMIT_TRANSACTION;
 
+update DLFolder set hidden_ = FALSE;
 update DLFolder set status = 0;
 update DLFolder set statusByUserId = userId;
 update DLFolder set statusByUserName = userName;
 update DLFolder set statusDate = modifiedDate;
+
+alter table ExpandoRow add modifiedDate DATE null;
+
+COMMIT_TRANSACTION;
+
+update ExpandoRow set modifiedDate = CURRENT_TIMESTAMP;
+
+update Group_ set site = FALSE where name = 'Control Panel';
 
 drop table Groups_Permissions;
 
@@ -272,9 +298,13 @@ create table JournalFolder (
 	description STRING null
 );
 
+update MBMessage set status = 2 where status = 9;
+
 drop table OrgGroupPermission;
 
 drop table Permission_;
+
+alter table RepositoryEntry add manualCheckInRequired BOOLEAN;
 
 drop table Resource_;
 
@@ -309,4 +339,22 @@ create table TrashVersion (
 	status INTEGER
 );
 
+alter table User_ add ldapServerId LONG;
+
+COMMIT_TRANSACTION;
+
+update User_ set ldapServerId = -1;
+
 drop table Users_Permissions;
+
+alter table WikiNode add status INTEGER;
+alter table WikiNode add statusByUserId LONG;
+alter table WikiNode add statusByUserName VARCHAR(75) null;
+alter table WikiNode add statusDate DATE null;
+
+COMMIT_TRANSACTION;
+
+update WikiNode set status = 0;
+update WikiNode set statusByUserId = userId;
+update WikiNode set statusByUserName = userName;
+update WikiNode set statusDate = modifiedDate;

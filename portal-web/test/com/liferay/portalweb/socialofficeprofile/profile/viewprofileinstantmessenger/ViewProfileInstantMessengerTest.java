@@ -22,50 +22,17 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewProfileInstantMessengerTest extends BaseTestCase {
 	public void testViewProfileInstantMessenger() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/socialoffice01/so/profile");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//li[contains(@class, 'selected')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//li[contains(@class, 'selected')]/a/span");
 		assertEquals(RuntimeVariables.replace("Profile"),
 			selenium.getText("//li[contains(@class, 'selected')]/a/span"));
 		assertEquals(RuntimeVariables.replace("Social01 Office01 User01"),
 			selenium.getText("//div[@class='lfr-contact-name']/a"));
 		assertEquals(RuntimeVariables.replace("socialoffice01@liferay.com"),
 			selenium.getText("//div[@class='lfr-contact-extra']"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@data-title='Instant Messenger']/h3")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[@data-title='Instant Messenger']/h3");
 		assertEquals(RuntimeVariables.replace("Instant Messenger:"),
 			selenium.getText("//div[@data-title='Instant Messenger']/h3"));
 		assertEquals(RuntimeVariables.replace("AIM"),
@@ -86,23 +53,23 @@ public class ViewProfileInstantMessengerTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("socialofficesn"),
 			selenium.getText(
 				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'Jabber')]/span[2]"));
-		assertEquals(RuntimeVariables.replace("MSN"),
+		assertEquals(RuntimeVariables.replace("msn"),
 			selenium.getText(
-				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'MSN')]/span"));
+				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'msn')]/span"));
 		assertEquals(RuntimeVariables.replace("socialofficesn"),
 			selenium.getText(
-				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'MSN')]/span[2]"));
+				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'msn')]/span[2]"));
 		assertEquals(RuntimeVariables.replace("Skype"),
 			selenium.getText(
 				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'Skype')]/span"));
 		assertEquals(RuntimeVariables.replace("socialofficesn"),
 			selenium.getText(
 				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'Skype')]/span[2]"));
-		assertEquals(RuntimeVariables.replace("YM"),
+		assertEquals(RuntimeVariables.replace("ym"),
 			selenium.getText(
-				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'YM')]/span"));
+				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'ym')]/span"));
 		assertEquals(RuntimeVariables.replace("socialofficesn"),
 			selenium.getText(
-				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'YM')]/span[2]"));
+				"//div[@data-title='Instant Messenger']/ul/li[contains(.,'ym')]/span[2]"));
 	}
 }

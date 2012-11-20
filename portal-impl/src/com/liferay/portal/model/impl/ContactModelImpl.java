@@ -125,6 +125,10 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 	 * @return the normal model instance
 	 */
 	public static Contact toModel(ContactSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		Contact model = new ContactImpl();
 
 		model.setContactId(soapModel.getContactId());
@@ -171,6 +175,10 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 	 * @return the normal model instances
 	 */
 	public static List<Contact> toModels(ContactSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<Contact> models = new ArrayList<Contact>(soapModels.length);
 
 		for (ContactSoap soapModel : soapModels) {
@@ -932,17 +940,6 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 	}
 
 	@Override
-	public Contact toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Contact)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			Contact.class.getName(), getPrimaryKey());
@@ -953,6 +950,16 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Contact toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Contact)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -1500,7 +1507,7 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 	}
 
 	private static ClassLoader _classLoader = Contact.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Contact.class
 		};
 	private long _contactId;
@@ -1546,5 +1553,5 @@ public class ContactModelImpl extends BaseModelImpl<Contact>
 	private String _jobClass;
 	private String _hoursOfOperation;
 	private long _columnBitmask;
-	private Contact _escapedModelProxy;
+	private Contact _escapedModel;
 }

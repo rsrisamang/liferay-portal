@@ -62,7 +62,7 @@
 			<finder-column name="companyId" />
 			<finder-column name="displayDate" comparator="&lt;" />
 		</finder>
-		<finder name="C_NeS" return-type="Collection">
+		<finder name="C_NotS" return-type="Collection">
 			<finder-column name="companyId" />
 			<finder-column name="status" comparator="!=" />
 		</finder>
@@ -78,7 +78,7 @@
 			<finder-column name="groupId" />
 			<finder-column name="displayDate" comparator="&lt;" />
 		</finder>
-		<finder name="G_NeS" return-type="Collection">
+		<finder name="G_NotS" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="status" comparator="!=" />
 		</finder>
@@ -86,7 +86,11 @@
 			<finder-column name="groupId" />
 			<finder-column name="status" />
 		</finder>
-		<finder name="C_U_NeS" return-type="Collection">
+		<finder name="LtD_S" return-type="Collection">
+			<finder-column name="displayDate" comparator="&lt;" />
+			<finder-column name="status" />
+		</finder>
+		<finder name="C_U_NotS" return-type="Collection">
 			<finder-column name="companyId" />
 			<finder-column name="userId" />
 			<finder-column name="status" comparator="!=" />
@@ -96,7 +100,7 @@
 			<finder-column name="userId" />
 			<finder-column name="status" />
 		</finder>
-		<finder name="C_LtD_NeS" return-type="Collection">
+		<finder name="C_LtD_NotS" return-type="Collection">
 			<finder-column name="companyId" />
 			<finder-column name="displayDate" comparator="&lt;" />
 			<finder-column name="status" comparator="!=" />
@@ -111,7 +115,7 @@
 			<finder-column name="userId" />
 			<finder-column name="displayDate" comparator="&lt;" />
 		</finder>
-		<finder name="G_U_NeS" return-type="Collection">
+		<finder name="G_U_NotS" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="userId" />
 			<finder-column name="status" comparator="!=" />
@@ -121,7 +125,7 @@
 			<finder-column name="userId" />
 			<finder-column name="status" />
 		</finder>
-		<finder name="G_LtD_NeS" return-type="Collection">
+		<finder name="G_LtD_NotS" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="displayDate" comparator="&lt;" />
 			<finder-column name="status" comparator="!=" />
@@ -131,7 +135,7 @@
 			<finder-column name="displayDate" comparator="&lt;" />
 			<finder-column name="status" />
 		</finder>
-		<finder name="G_U_LtD_NeS" return-type="Collection">
+		<finder name="G_U_LtD_NotS" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="userId" />
 			<finder-column name="displayDate" comparator="&lt;" />
@@ -160,7 +164,7 @@
 		<reference package-path="com.liferay.portlet.messageboards" entity="MBMessage" />
 		<reference package-path="com.liferay.portlet.ratings" entity="RatingsStats" />
 		<reference package-path="com.liferay.portlet.social" entity="SocialActivity" />
-        <reference package-path="com.liferay.portlet.social" entity="SocialActivityCounter" />
+		<reference package-path="com.liferay.portlet.social" entity="SocialActivityCounter" />
 		<reference package-path="com.liferay.portlet.trash" entity="TrashEntry" />
 	</entity>
 	<entity name="BlogsStatsUser" local-service="true" remote-service="false">

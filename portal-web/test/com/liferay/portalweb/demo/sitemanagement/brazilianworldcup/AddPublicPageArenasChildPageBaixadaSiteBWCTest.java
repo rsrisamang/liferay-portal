@@ -28,71 +28,32 @@ public class AddPublicPageArenasChildPageBaixadaSiteBWCTest extends BaseTestCase
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Control Panel")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Control Panel");
 				selenium.clickAt("link=Control Panel",
 					RuntimeVariables.replace("Control Panel"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Sites", RuntimeVariables.replace("Sites"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.type("//input[@id='_134_name']",
 					RuntimeVariables.replace("World Cup"));
 				selenium.clickAt("//input[@value='Search']",
 					RuntimeVariables.replace("Search"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("World Cup - Brazil 2014"),
 					selenium.getText("//td/a"));
 				selenium.clickAt("//td/a",
 					RuntimeVariables.replace("World Cup - Brazil 2014"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Site Pages",
 					RuntimeVariables.replace("Site Pages"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Public Pages",
 					RuntimeVariables.replace("Public Pages"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Public Pages")
-												.equals(selenium.getText(
-										"//a[@class='layout-tree']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//a[@class='layout-tree']", "Public Pages");
 				assertEquals(RuntimeVariables.replace("Public Pages"),
 					selenium.getText("//a[@class='layout-tree']"));
 
@@ -109,97 +70,30 @@ public class AddPublicPageArenasChildPageBaixadaSiteBWCTest extends BaseTestCase
 					RuntimeVariables.replace("Drop Down Arrow"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Home")
-												.equals(selenium.getText(
-										"//li/ul/li[1]/div/div[3]/a"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//li/ul/li[1]/div/div[3]/a", "Home");
 				assertEquals(RuntimeVariables.replace("Home"),
 					selenium.getText("//li/ul/li[1]/div/div[3]/a"));
 				assertEquals(RuntimeVariables.replace("Arenas"),
 					selenium.getText("//li/ul/li[2]/div/div[3]/a"));
 				selenium.clickAt("//li/ul/li[2]/div/div[3]/a",
 					RuntimeVariables.replace("Arenas"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Arenas")
-												.equals(selenium.getValue(
-										"//div[1]/fieldset/div/span[1]/span/span/span/input"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForValue("//div[1]/fieldset/div/span[1]/span/span/span/input",
+					"Arenas");
 				assertEquals("Arenas",
 					selenium.getValue(
 						"//div[1]/fieldset/div/span[1]/span/span/span/input"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//div/span/button[1]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div/span/button[1]");
 				assertEquals(RuntimeVariables.replace("Add Child Page"),
 					selenium.getText("//div/span/button[1]"));
 				selenium.clickAt("//div/span/button[1]",
 					RuntimeVariables.replace("Add Child Page"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@id='_156_name_en_US']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				selenium.type("//input[@id='_156_name_en_US']",
+				selenium.waitForVisible(
+					"//input[@id='_156_addLayoutName_en_US']");
+				selenium.type("//input[@id='_156_addLayoutName_en_US']",
 					RuntimeVariables.replace("Arena da Baixada"));
 				selenium.clickAt("//input[@value='Add Page']",
 					RuntimeVariables.replace("Add Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"Your request completed successfully."),
 					selenium.getText("//div[@class='portlet-msg-success']"));
@@ -217,25 +111,7 @@ public class AddPublicPageArenasChildPageBaixadaSiteBWCTest extends BaseTestCase
 					RuntimeVariables.replace("Drop Down Arrow"));
 
 			case 3:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Home")
-												.equals(selenium.getText(
-										"//li/ul/li[1]/div/div[3]/a"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//li/ul/li[1]/div/div[3]/a", "Home");
 				assertEquals(RuntimeVariables.replace("Home"),
 					selenium.getText("//li/ul/li[1]/div/div[3]/a"));
 				assertEquals(RuntimeVariables.replace("Arenas"),
@@ -254,25 +130,8 @@ public class AddPublicPageArenasChildPageBaixadaSiteBWCTest extends BaseTestCase
 					RuntimeVariables.replace("Drop Down Arrow"));
 
 			case 4:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Arena Pernambuco")
-												.equals(selenium.getText(
-										"//li[2]/ul/li[1]/div/div[3]/a"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//li[2]/ul/li[1]/div/div[3]/a",
+					"Arena Pernambuco");
 				assertEquals(RuntimeVariables.replace("Arena Pernambuco"),
 					selenium.getText("//li[2]/ul/li[1]/div/div[3]/a"));
 				assertEquals(RuntimeVariables.replace("Arena da Baixada"),

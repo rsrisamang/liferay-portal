@@ -17,7 +17,9 @@ package com.liferay.portalweb.portlet.blogs.portlet;
 import com.liferay.portalweb.portal.BaseTestSuite;
 import com.liferay.portalweb.portlet.blogs.portlet.addportletblogs.AddPortletBlogsTests;
 import com.liferay.portalweb.portlet.blogs.portlet.addportletblogsduplicate.AddPortletBlogsDuplicateTests;
+import com.liferay.portalweb.portlet.blogs.portlet.addportletblogsorganization.AddPortletBlogsOrganizationTests;
 import com.liferay.portalweb.portlet.blogs.portlet.addportletblogssite.AddPortletBlogsSiteTests;
+import com.liferay.portalweb.portlet.blogs.portlet.configureportletblogsscopecurrentpage.ConfigurePortletBlogsScopeCurrentPageTests;
 import com.liferay.portalweb.portlet.blogs.portlet.configureportletdisplaystyleabstract.ConfigurePortletDisplayStyleAbstractTests;
 import com.liferay.portalweb.portlet.blogs.portlet.configureportletdisplaystylefullcontent.ConfigurePortletDisplayStyleFullContentTests;
 import com.liferay.portalweb.portlet.blogs.portlet.configureportletdisplaystyletitle.ConfigurePortletDisplayStyleTitleTests;
@@ -36,7 +38,9 @@ public class PortletTestPlan extends BaseTestSuite {
 
 		testSuite.addTest(AddPortletBlogsTests.suite());
 		testSuite.addTest(AddPortletBlogsDuplicateTests.suite());
+		testSuite.addTest(AddPortletBlogsOrganizationTests.suite());
 		testSuite.addTest(AddPortletBlogsSiteTests.suite());
+		testSuite.addTest(ConfigurePortletBlogsScopeCurrentPageTests.suite());
 		testSuite.addTest(ConfigurePortletDisplayStyleAbstractTests.suite());
 		testSuite.addTest(ConfigurePortletDisplayStyleFullContentTests.suite());
 		testSuite.addTest(ConfigurePortletDisplayStyleTitleTests.suite());

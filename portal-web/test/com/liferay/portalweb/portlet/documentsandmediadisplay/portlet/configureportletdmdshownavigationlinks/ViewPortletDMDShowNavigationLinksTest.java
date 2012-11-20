@@ -23,12 +23,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewPortletDMDShowNavigationLinksTest extends BaseTestCase {
 	public void testViewPortletDMDShowNavigationLinks()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isVisible("//ul[@class='top-links-navigation']"));
 		assertEquals(RuntimeVariables.replace("Home"),
 			selenium.getText(

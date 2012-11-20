@@ -23,12 +23,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class EditMBCategoryMailingListActiveActionsTest extends BaseTestCase {
 	public void testEditMBCategoryMailingListActiveActions()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/site-name/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Message Boards Test Page",
 			RuntimeVariables.replace("Message Boards Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("MB Category Name"),
 			selenium.getText("//a/strong"));
@@ -36,54 +36,21 @@ public class EditMBCategoryMailingListActiveActionsTest extends BaseTestCase {
 			selenium.getText("//span[@title='Actions']/ul/li/strong/a/span"));
 		selenium.clickAt("//span[@title='Actions']/ul/li/strong/a/span",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@class='lfr-component lfr-menu-list']/ul/li/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@class='lfr-component lfr-menu-list']/ul/li/a");
 		assertEquals(RuntimeVariables.replace("Edit"),
 			selenium.getText(
 				"//div[@class='lfr-component lfr-menu-list']/ul/li/a"));
 		selenium.click(RuntimeVariables.replace(
 				"//div[@class='lfr-component lfr-menu-list']/ul/li/a"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertFalse(selenium.isChecked(
 				"//input[@id='_19_mailingListActiveCheckbox']"));
 		selenium.clickAt("//input[@id='_19_mailingListActiveCheckbox']",
 			RuntimeVariables.replace("Active"));
 		assertTrue(selenium.isChecked(
 				"//input[@id='_19_mailingListActiveCheckbox']"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//input[@id='_19_emailAddress']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//input[@id='_19_emailAddress']");
 		selenium.type("//input[@id='_19_emailAddress']",
 			RuntimeVariables.replace("liferay-mailinglist@googlegroups.com"));
 		selenium.clickAt("//input[@name='_19_inProtocol']",
@@ -109,23 +76,7 @@ public class EditMBCategoryMailingListActiveActionsTest extends BaseTestCase {
 		selenium.clickAt("//input[@id='_19_outCustomCheckbox']",
 			RuntimeVariables.replace("Use Customer Outgoing Server"));
 		assertTrue(selenium.isChecked("//input[@id='_19_outCustomCheckbox']"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//input[@id='_19_outEmailAddress']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//input[@id='_19_outEmailAddress']");
 		selenium.type("//input[@id='_19_outEmailAddress']",
 			RuntimeVariables.replace("liferay.qa.server.trunk@gmail.com"));
 		selenium.type("//input[@id='_19_outServerName']",
@@ -143,7 +94,6 @@ public class EditMBCategoryMailingListActiveActionsTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Save']",
 			RuntimeVariables.replace("Save"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

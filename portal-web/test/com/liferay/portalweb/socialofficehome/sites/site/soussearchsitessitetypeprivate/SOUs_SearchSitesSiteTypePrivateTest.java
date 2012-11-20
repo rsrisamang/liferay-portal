@@ -22,26 +22,10 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class SOUs_SearchSitesSiteTypePrivateTest extends BaseTestCase {
 	public void testSOUs_SearchSitesSiteTypePrivate() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/socialoffice01/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//li[contains(@class, 'selected')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//li[contains(@class, 'selected')]/a/span");
 		assertEquals(RuntimeVariables.replace("Dashboard"),
 			selenium.getText("//li[contains(@class, 'selected')]/a/span"));
 		assertEquals(RuntimeVariables.replace("Sites"),
@@ -50,48 +34,15 @@ public class SOUs_SearchSitesSiteTypePrivateTest extends BaseTestCase {
 		selenium.type("//input[@class='search-input']",
 			RuntimeVariables.replace("Private"));
 		Thread.sleep(5000);
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//li[contains(@class, 'social-office-enabled')]/span[2]/a"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//button[contains(.,'More Sites')]/span[2]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		assertEquals(RuntimeVariables.replace("More Sites"),
-			selenium.getText("//button[contains(.,'More Sites')]/span[2]"));
-		selenium.clickAt("//button[contains(.,'More Sites')]/span[2]",
-			RuntimeVariables.replace("More Sites"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"xPath=(//h1[@class='header-title']/span)[1]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//button[contains(.,'Sites Directory')]/span[2]");
+		assertEquals(RuntimeVariables.replace("Sites Directory"),
+			selenium.getText("//button[contains(.,'Sites Directory')]/span[2]"));
+		selenium.clickAt("//button[contains(.,'Sites Directory')]/span[2]",
+			RuntimeVariables.replace("Sites Directory"));
+		selenium.waitForVisible("xPath=(//h1[@class='header-title']/span)[1]");
 		assertEquals(RuntimeVariables.replace("Directory"),
 			selenium.getText("xPath=(//h1[@class='header-title']/span)[1]"));
 		selenium.select("//span[@class='sites-tabs']/span/span/span/select",
@@ -99,7 +50,7 @@ public class SOUs_SearchSitesSiteTypePrivateTest extends BaseTestCase {
 		assertTrue(selenium.isVisible(
 				"//input[@id='_5_WAR_soportlet_dialogKeywords']"));
 		selenium.type("//input[@id='_5_WAR_soportlet_dialogKeywords']",
-			RuntimeVariables.replace("Private Site2 Name"));
+			RuntimeVariables.replace("Private Site Name"));
 		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("There are no results."),
 			selenium.getText("//li[@class='empty']"));
@@ -108,7 +59,7 @@ public class SOUs_SearchSitesSiteTypePrivateTest extends BaseTestCase {
 		assertTrue(selenium.isVisible(
 				"//input[@id='_5_WAR_soportlet_dialogKeywords']"));
 		selenium.type("//input[@id='_5_WAR_soportlet_dialogKeywords']",
-			RuntimeVariables.replace("Private Site2 Name"));
+			RuntimeVariables.replace("Private Site Name"));
 		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("There are no results."),
 			selenium.getText("//li[@class='empty']"));

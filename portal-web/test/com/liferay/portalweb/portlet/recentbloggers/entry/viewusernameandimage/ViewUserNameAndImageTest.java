@@ -22,29 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewUserNameAndImageTest extends BaseTestCase {
 	public void testViewUserNameAndImage() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Recent Bloggers Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Recent Bloggers Test Page");
 		selenium.clickAt("link=Recent Bloggers Test Page",
 			RuntimeVariables.replace("Recent Bloggers Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isVisible("//img[@class='avatar']"));
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),
 			selenium.getText("//span[@class='user-name']"));
@@ -54,8 +38,8 @@ public class ViewUserNameAndImageTest extends BaseTestCase {
 			selenium.getText("//div[@class='blogger-stars']"));
 		assertTrue(selenium.isPartialText("//div[@class='blogger-date']",
 				"Date:"));
-		assertFalse(selenium.isElementPresent("//th[1]"));
-		assertFalse(selenium.isElementPresent("//th[2]"));
-		assertFalse(selenium.isElementPresent("//th[3]"));
+		assertTrue(selenium.isElementNotPresent("//th[1]"));
+		assertTrue(selenium.isElementNotPresent("//th[2]"));
+		assertTrue(selenium.isElementNotPresent("//th[3]"));
 	}
 }

@@ -224,20 +224,6 @@ public class UserLocalServiceWrapper implements UserLocalService,
 	}
 
 	/**
-	* Updates the user in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param user the user
-	* @param merge whether to merge the user with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the user that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.model.User updateUser(
-		com.liferay.portal.model.User user, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _userLocalService.updateUser(user, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -955,6 +941,21 @@ public class UserLocalServiceWrapper implements UserLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _userLocalService.encryptUserId(name);
+	}
+
+	/**
+	* Returns the user with the email address.
+	*
+	* @param companyId the primary key of the user's company
+	* @param emailAddress the user's email address
+	* @return the user with the email address, or <code>null</code> if a user
+	with the email address could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.User fetchUserByEmailAddress(
+		long companyId, java.lang.String emailAddress)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _userLocalService.fetchUserByEmailAddress(companyId, emailAddress);
 	}
 
 	/**
@@ -1834,7 +1835,9 @@ public class UserLocalServiceWrapper implements UserLocalService,
 	}
 
 	/**
-	* Returns <code>true</code> if the user's password is expiring soon.
+	* Returns <code>true</code> if the password policy is configured to warn
+	* the user that his password is expiring and the remaining time until
+	* expiration is equal or less than the configured warning time.
 	*
 	* @param user the user
 	* @return <code>true</code> if the user's password is expiring soon;
@@ -2179,6 +2182,20 @@ public class UserLocalServiceWrapper implements UserLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		_userLocalService.setUserGroupUsers(userGroupId, userIds);
+	}
+
+	/**
+	* Removes the users from the teams of a group.
+	*
+	* @param groupId the primary key of the group
+	* @param userIds the primary keys of the users
+	* @throws PortalException if a portal exception occurred
+	* @throws SystemException if a system exception occurred
+	*/
+	public void unsetGroupTeamsUsers(long groupId, long[] userIds)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_userLocalService.unsetGroupTeamsUsers(groupId, userIds);
 	}
 
 	/**

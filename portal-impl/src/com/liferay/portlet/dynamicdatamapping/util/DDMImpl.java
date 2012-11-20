@@ -22,12 +22,14 @@ import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.upload.UploadRequest;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.MimeTypesUtil;
+import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.model.BaseModel;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.documentlibrary.DuplicateDirectoryException;
 import com.liferay.portlet.documentlibrary.DuplicateFileException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
@@ -46,10 +48,15 @@ import com.liferay.portlet.dynamicdatamapping.storage.Field;
 import com.liferay.portlet.dynamicdatamapping.storage.FieldConstants;
 import com.liferay.portlet.dynamicdatamapping.storage.Fields;
 import com.liferay.portlet.dynamicdatamapping.storage.StorageEngineUtil;
+import com.liferay.portlet.dynamicdatamapping.util.comparator.StructureIdComparator;
+import com.liferay.portlet.dynamicdatamapping.util.comparator.StructureModifiedDateComparator;
+import com.liferay.portlet.dynamicdatamapping.util.comparator.TemplateIdComparator;
+import com.liferay.portlet.dynamicdatamapping.util.comparator.TemplateModifiedDateComparator;
 
 import java.io.InputStream;
 import java.io.Serializable;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +64,8 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Eduardo Lundgren
+ * @author Brian Wing Shun Chan
+ * @author Eduardo Garcia
  */
 public class DDMImpl implements DDM {
 
@@ -91,6 +100,10 @@ public class DDMImpl implements DDM {
 			DDMTemplate ddmTemplate = DDMTemplateLocalServiceUtil.getTemplate(
 				ddmTemplateId);
 
+			// Clone ddmStructure to make sure changes are never persisted
+
+			ddmStructure = (DDMStructure)ddmStructure.clone();
+
 			ddmStructure.setXsd(ddmTemplate.getScript());
 		}
 		catch (NoSuchTemplateException nste) {
@@ -107,33 +120,42 @@ public class DDMImpl implements DDM {
 
 			String fieldDataType = ddmStructure.getFieldDataType(fieldName);
 			String fieldType = ddmStructure.getFieldType(fieldName);
-			String fieldValue = (String)serviceContext.getAttribute(
+			Serializable fieldValue = serviceContext.getAttribute(
 				fieldNamespace + fieldName);
 
-			if (fieldDataType.equals(FieldConstants.FILE_UPLOAD)) {
+			if (fieldDataType.equals(FieldConstants.DATE)) {
+				int fieldValueMonth = GetterUtil.getInteger(
+					serviceContext.getAttribute(
+						fieldNamespace + fieldName + "Month"));
+				int fieldValueYear = GetterUtil.getInteger(
+					serviceContext.getAttribute(
+						fieldNamespace + fieldName + "Year"));
+				int fieldValueDay = GetterUtil.getInteger(
+					serviceContext.getAttribute(
+						fieldNamespace + fieldName + "Day"));
+
+				Date fieldValueDate = PortalUtil.getDate(
+					fieldValueMonth, fieldValueDay, fieldValueYear);
+
+				if (fieldValueDate != null) {
+					fieldValue = String.valueOf(fieldValueDate.getTime());
+				}
+			}
+
+			if ((fieldValue == null) ||
+				fieldDataType.equals(FieldConstants.FILE_UPLOAD)) {
+
 				continue;
 			}
 
 			if (fieldType.equals(DDMImpl.TYPE_RADIO) ||
 				fieldType.equals(DDMImpl.TYPE_SELECT)) {
 
-				Object value = serviceContext.getAttribute(
-					fieldNamespace + fieldName);
-
-				String[] fieldValues = {};
-
-				if (value instanceof String) {
-					fieldValues = new String[] {String.valueOf(value)};
-				}
-				else if (value instanceof String[]) {
-					fieldValues = (String[])value;
+				if (fieldValue instanceof String) {
+					fieldValue = new String[] {String.valueOf(fieldValue)};
 				}
 
-				fieldValue = JSONFactoryUtil.serialize(fieldValues);
-			}
-
-			if (fieldValue == null) {
-				continue;
+				fieldValue = JSONFactoryUtil.serialize(fieldValue);
 			}
 
 			Serializable fieldValueSerializable =
@@ -203,6 +225,48 @@ public class DDMImpl implements DDM {
 		}
 
 		return sb.toString();
+	}
+
+	public OrderByComparator getStructureOrderByComparator(
+		String orderByCol, String orderByType) {
+
+		boolean orderByAsc = false;
+
+		if (orderByType.equals("asc")) {
+			orderByAsc = true;
+		}
+
+		OrderByComparator orderByComparator = null;
+
+		if (orderByCol.equals("id")) {
+			orderByComparator = new StructureIdComparator(orderByAsc);
+		}
+		else if (orderByCol.equals("modified-date")) {
+			orderByComparator = new StructureModifiedDateComparator(orderByAsc);
+		}
+
+		return orderByComparator;
+	}
+
+	public OrderByComparator getTemplateOrderByComparator(
+		String orderByCol, String orderByType) {
+
+		boolean orderByAsc = false;
+
+		if (orderByType.equals("asc")) {
+			orderByAsc = true;
+		}
+
+		OrderByComparator orderByComparator = null;
+
+		if (orderByCol.equals("id")) {
+			orderByComparator = new TemplateIdComparator(orderByAsc);
+		}
+		else if (orderByCol.equals("modified-date")) {
+			orderByComparator = new TemplateModifiedDateComparator(orderByAsc);
+		}
+
+		return orderByComparator;
 	}
 
 	public void sendFieldFile(

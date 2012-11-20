@@ -23,8 +23,9 @@ public class Guest_AssertNoPagePrePublishOrganizationSiteTest
 	extends BaseTestCase {
 	public void testGuest_AssertNoPagePrePublishOrganizationSite()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/selenium/home/");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isElementPresent("link=Blogs Test Page"));
+		assertTrue(selenium.isElementNotPresent("link=Blogs Test Page"));
 	}
 }

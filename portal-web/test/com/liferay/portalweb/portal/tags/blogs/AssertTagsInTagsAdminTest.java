@@ -22,49 +22,23 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AssertTagsInTagsAdminTest extends BaseTestCase {
 	public void testAssertTagsInTagsAdmin() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+		assertEquals(RuntimeVariables.replace("Go to"),
+			selenium.getText("//li[@id='_145_mySites']/a/span"));
+		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Tags", RuntimeVariables.replace("Tags"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("xPath=(//span[@class='tag-item']/a)[1]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("xPath=(//span[@class='tag-item']/a)[1]");
 		assertEquals(RuntimeVariables.replace("selenium1 liferay1"),
 			selenium.getText("xPath=(//span[@class='tag-item']/a)[1]"));
 		assertEquals(RuntimeVariables.replace("selenium2 liferay2"),
@@ -73,5 +47,7 @@ public class AssertTagsInTagsAdminTest extends BaseTestCase {
 			selenium.getText("xPath=(//span[@class='tag-item']/a)[3]"));
 		assertEquals(RuntimeVariables.replace("selenium4 liferay4"),
 			selenium.getText("xPath=(//span[@class='tag-item']/a)[4]"));
+		assertEquals(RuntimeVariables.replace("test"),
+			selenium.getText("xPath=(//span[@class='tag-item']/a)[5]"));
 	}
 }

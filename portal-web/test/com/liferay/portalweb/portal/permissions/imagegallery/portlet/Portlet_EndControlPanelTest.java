@@ -27,6 +27,8 @@ public class Portlet_EndControlPanelTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 
 				boolean InControlPanel = selenium.isElementPresent(
 						"link=Back to Guest");
@@ -40,13 +42,11 @@ public class Portlet_EndControlPanelTest extends BaseTestCase {
 				selenium.clickAt("link=Back to Guest",
 					RuntimeVariables.replace(""));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				selenium.clickAt("link=Welcome - Liferay",
 					RuntimeVariables.replace(""));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 100:
 				label = -1;

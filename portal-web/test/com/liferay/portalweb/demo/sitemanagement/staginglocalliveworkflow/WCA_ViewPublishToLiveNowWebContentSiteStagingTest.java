@@ -24,8 +24,9 @@ public class WCA_ViewPublishToLiveNowWebContentSiteStagingTest
 	extends BaseTestCase {
 	public void testWCA_ViewPublishToLiveNowWebContentSiteStaging()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/community-site-test/home");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("This is a Web Content article"),
 			selenium.getText("//div[@class='journal-content-article']/p"));
 	}

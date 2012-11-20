@@ -34,6 +34,13 @@ portletURL.setParameter("mbCategoryId", String.valueOf(categoryId));
 request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 %>
 
+<portlet:actionURL var="undoTrashURL">
+	<portlet:param name="struts_action" value="/message_boards_admin/restore_thread" />
+	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
+</portlet:actionURL>
+
+<liferay-ui:trash-undo portletURL="<%= undoTrashURL %>" />
+
 <liferay-ui:tabs
 	names="message-boards-home,recent-posts,statistics,banned-users"
 	url="<%= portletURL.toString() %>"
@@ -89,7 +96,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 						<portlet:param name="parentCategoryId" value="<%= String.valueOf(categoryId) %>" />
 					</portlet:renderURL>
 
-					<aui:button href='<%= editCategoryURL %>' value='<%= (category == null) ? "add-category" : "add-subcategory" %>' />
+					<aui:button href="<%= editCategoryURL %>" value='<%= (category == null) ? "add-category" : "add-subcategory" %>' />
 				</c:if>
 
 				<c:if test="<%= showAddMessageButton %>">
@@ -99,7 +106,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 						<portlet:param name="mbCategoryId" value="<%= String.valueOf(categoryId) %>" />
 					</portlet:renderURL>
 
-					<aui:button href='<%= editMessageURL %>' value="post-new-thread" />
+					<aui:button href="<%= editMessageURL %>" value="post-new-thread" />
 				</c:if>
 
 				<c:if test="<%= showPermissionsButton %>">
@@ -310,7 +317,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 							<liferay-ui:search-container-column-text
 								href="<%= rowURL %>"
 								name="started-by"
-								value='<%= message.isAnonymous() ? LanguageUtil.get(pageContext, "anonymous") : HtmlUtil.escape(PortalUtil.getUserName(message.getUserId(), message.getUserName())) %>'
+								value='<%= message.isAnonymous() ? LanguageUtil.get(pageContext, "anonymous") : PortalUtil.getUserName(message) %>'
 							/>
 
 							<liferay-ui:search-container-column-text
@@ -395,7 +402,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 		}
 		%>
 
-		<c:if test='<%= (groupThreadsUserId > 0) %>'>
+		<c:if test="<%= (groupThreadsUserId > 0) %>">
 			<div class="portlet-msg-info">
 				<liferay-ui:message key="filter-by-user" />: <%= HtmlUtil.escape(PortalUtil.getUserName(groupThreadsUserId, StringPool.BLANK)) %>
 			</div>
@@ -487,7 +494,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 					<liferay-ui:search-container-column-text
 						href="<%= rowURL %>"
 						name="started-by"
-						value='<%= message.isAnonymous() ? LanguageUtil.get(pageContext, "anonymous") : HtmlUtil.escape(PortalUtil.getUserName(message.getUserId(), message.getUserName())) %>'
+						value='<%= message.isAnonymous() ? LanguageUtil.get(pageContext, "anonymous") : PortalUtil.getUserName(message) %>'
 					/>
 
 					<liferay-ui:search-container-column-text
@@ -570,7 +577,7 @@ request.setAttribute("view.jsp-viewCategory", Boolean.TRUE.toString());
 						<liferay-ui:message key="num-of-posts" />:
 					</dt>
 					<dd>
-						<%= numberFormat.format(MBMessageServiceUtil.getGroupMessagesCount(scopeGroupId, WorkflowConstants.STATUS_APPROVED)) %>
+						<%= numberFormat.format(MBStatsUserLocalServiceUtil.getMessageCountByGroupId(scopeGroupId)) %>
 					</dd>
 					<dt>
 						<liferay-ui:message key="num-of-participants" />:

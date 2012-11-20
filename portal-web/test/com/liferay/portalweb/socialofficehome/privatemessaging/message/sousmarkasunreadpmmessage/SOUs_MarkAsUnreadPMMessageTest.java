@@ -27,31 +27,15 @@ public class SOUs_MarkAsUnreadPMMessageTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
-				selenium.open("/user/socialoffice01/home");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Messages')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
+				selenium.open("/user/socialoffice01/so/dashboard");
+				selenium.waitForVisible(
+					"//nav/ul/li[contains(.,'Messages')]/a/span");
 				selenium.clickAt("//nav/ul/li[contains(.,'Messages')]/a/span",
 					RuntimeVariables.replace("Messages"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//tr[contains(@class, 'unread')]"));
 				assertEquals(RuntimeVariables.replace("Private Messaging"),
 					selenium.getText("//span[@class='portlet-title-default']"));
@@ -95,7 +79,6 @@ public class SOUs_MarkAsUnreadPMMessageTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Mark as Unread']",
 					RuntimeVariables.replace("Mark as Unread"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//tr[contains(@class, 'unread')]"));
 

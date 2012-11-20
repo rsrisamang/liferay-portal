@@ -27,39 +27,22 @@ public class User_ViewMBCategoryMessage1LiveTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'live-staging')]"));
 				assertEquals(RuntimeVariables.replace("MB Category Name"),
 					selenium.getText("//td[1]/a/strong"));
 				selenium.clickAt("//td[1]/a/strong",
 					RuntimeVariables.replace("MB Category Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("MB Category Name"),
 					selenium.getText("//h1[@class='header-title']/span"));
 
@@ -82,7 +65,6 @@ public class User_ViewMBCategoryMessage1LiveTest extends BaseTestCase {
 					RuntimeVariables.replace(
 						"MB Category Thread Message1 Subject"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"MB Category Thread Message1 Subject"),
 					selenium.getText("//div[@class='subject']/a/strong"));

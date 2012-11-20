@@ -102,6 +102,10 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 	 * @return the normal model instance
 	 */
 	public static ShoppingCategory toModel(ShoppingCategorySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		ShoppingCategory model = new ShoppingCategoryImpl();
 
 		model.setCategoryId(soapModel.getCategoryId());
@@ -126,6 +130,10 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 	 */
 	public static List<ShoppingCategory> toModels(
 		ShoppingCategorySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<ShoppingCategory> models = new ArrayList<ShoppingCategory>(soapModels.length);
 
 		for (ShoppingCategorySoap soapModel : soapModels) {
@@ -390,17 +398,6 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 	}
 
 	@Override
-	public ShoppingCategory toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (ShoppingCategory)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			ShoppingCategory.class.getName(), getPrimaryKey());
@@ -411,6 +408,16 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public ShoppingCategory toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (ShoppingCategory)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -647,7 +654,7 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 	}
 
 	private static ClassLoader _classLoader = ShoppingCategory.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			ShoppingCategory.class
 		};
 	private long _categoryId;
@@ -666,5 +673,5 @@ public class ShoppingCategoryModelImpl extends BaseModelImpl<ShoppingCategory>
 	private String _name;
 	private String _description;
 	private long _columnBitmask;
-	private ShoppingCategory _escapedModelProxy;
+	private ShoppingCategory _escapedModel;
 }

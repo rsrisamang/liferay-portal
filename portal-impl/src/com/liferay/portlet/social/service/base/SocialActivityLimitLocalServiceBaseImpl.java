@@ -51,6 +51,7 @@ import com.liferay.portlet.social.service.SocialActivitySettingService;
 import com.liferay.portlet.social.service.SocialRelationLocalService;
 import com.liferay.portlet.social.service.SocialRequestInterpreterLocalService;
 import com.liferay.portlet.social.service.SocialRequestLocalService;
+import com.liferay.portlet.social.service.SocialRequestService;
 import com.liferay.portlet.social.service.persistence.SocialActivityAchievementPersistence;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterFinder;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterPersistence;
@@ -100,7 +101,7 @@ public abstract class SocialActivityLimitLocalServiceBaseImpl
 		SocialActivityLimit socialActivityLimit) throws SystemException {
 		socialActivityLimit.setNew(true);
 
-		return socialActivityLimitPersistence.update(socialActivityLimit, false);
+		return socialActivityLimitPersistence.update(socialActivityLimit);
 	}
 
 	/**
@@ -273,24 +274,7 @@ public abstract class SocialActivityLimitLocalServiceBaseImpl
 	@Indexable(type = IndexableType.REINDEX)
 	public SocialActivityLimit updateSocialActivityLimit(
 		SocialActivityLimit socialActivityLimit) throws SystemException {
-		return updateSocialActivityLimit(socialActivityLimit, true);
-	}
-
-	/**
-	 * Updates the social activity limit in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param socialActivityLimit the social activity limit
-	 * @param merge whether to merge the social activity limit with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the social activity limit that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Indexable(type = IndexableType.REINDEX)
-	public SocialActivityLimit updateSocialActivityLimit(
-		SocialActivityLimit socialActivityLimit, boolean merge)
-		throws SystemException {
-		socialActivityLimit.setNew(false);
-
-		return socialActivityLimitPersistence.update(socialActivityLimit, merge);
+		return socialActivityLimitPersistence.update(socialActivityLimit);
 	}
 
 	/**
@@ -617,6 +601,25 @@ public abstract class SocialActivityLimitLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the social request remote service.
+	 *
+	 * @return the social request remote service
+	 */
+	public SocialRequestService getSocialRequestService() {
+		return socialRequestService;
+	}
+
+	/**
+	 * Sets the social request remote service.
+	 *
+	 * @param socialRequestService the social request remote service
+	 */
+	public void setSocialRequestService(
+		SocialRequestService socialRequestService) {
+		this.socialRequestService = socialRequestService;
+	}
+
+	/**
 	 * Returns the social request persistence.
 	 *
 	 * @return the social request persistence
@@ -924,6 +927,8 @@ public abstract class SocialActivityLimitLocalServiceBaseImpl
 	protected SocialRelationPersistence socialRelationPersistence;
 	@BeanReference(type = SocialRequestLocalService.class)
 	protected SocialRequestLocalService socialRequestLocalService;
+	@BeanReference(type = SocialRequestService.class)
+	protected SocialRequestService socialRequestService;
 	@BeanReference(type = SocialRequestPersistence.class)
 	protected SocialRequestPersistence socialRequestPersistence;
 	@BeanReference(type = SocialRequestInterpreterLocalService.class)

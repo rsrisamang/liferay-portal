@@ -23,100 +23,31 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class MoveDMDocument2NewFolderFolder1DADTest extends BaseTestCase {
 	public void testMoveDMDocument2NewFolderFolder1DAD()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("DM Document2 Title"),
 			selenium.getText(
 				"//div[@data-title='DM Document2 Title']/a/span[2]"));
 		selenium.mouseDown("//div[@data-title='DM Document2 Title']/a/span[2]");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@class='yui3-dd-proxy active-area-proxy']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@class='yui3-dd-proxy active-area-proxy']");
 		assertEquals(RuntimeVariables.replace("1 item is ready to be moved."),
 			selenium.getText("//div[@class='yui3-dd-proxy active-area-proxy']"));
 		Thread.sleep(5000);
 		selenium.mouseMoveAt("//div[@data-title='DM Folder1 Name']/a/span/img",
 			RuntimeVariables.replace("0,200"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace(
-							"1 item is ready to be moved to \"DM Folder1 Name\".")
-										.equals(selenium.getText(
-								"//div[@class='yui3-dd-proxy active-area-proxy']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//div[@class='yui3-dd-proxy active-area-proxy']",
+			"1 item is ready to be moved to \"DM Folder1 Name\".");
 		assertEquals(RuntimeVariables.replace(
 				"1 item is ready to be moved to \"DM Folder1 Name\"."),
 			selenium.getText("//div[@class='yui3-dd-proxy active-area-proxy']"));
 		selenium.mouseUp("//div[@data-title='DM Folder1 Name']/a/span/img");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("DM Document2 Title")
-										.equals(selenium.getText(
-								"//li[@class='move-file']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//li[@class='move-file']");
 		assertEquals(RuntimeVariables.replace("DM Document2 Title"),
 			selenium.getText("//li[@class='move-file']"));
 		assertEquals(RuntimeVariables.replace("DM Folder1 Name"),
@@ -124,11 +55,10 @@ public class MoveDMDocument2NewFolderFolder1DADTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Move']",
 			RuntimeVariables.replace("Move"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//div[@data-title='DM Document2 Title']/a/span[2]"));
 	}
 }

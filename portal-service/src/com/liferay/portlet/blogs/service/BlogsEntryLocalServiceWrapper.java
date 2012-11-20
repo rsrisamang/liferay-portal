@@ -247,20 +247,6 @@ public class BlogsEntryLocalServiceWrapper implements BlogsEntryLocalService,
 	}
 
 	/**
-	* Updates the blogs entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param blogsEntry the blogs entry
-	* @param merge whether to merge the blogs entry with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the blogs entry that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portlet.blogs.model.BlogsEntry updateBlogsEntry(
-		com.liferay.portlet.blogs.model.BlogsEntry blogsEntry, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _blogsEntryLocalService.updateBlogsEntry(blogsEntry, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -328,6 +314,12 @@ public class BlogsEntryLocalServiceWrapper implements BlogsEntryLocalService,
 			com.liferay.portal.kernel.exception.SystemException {
 		_blogsEntryLocalService.addEntryResources(entryId, groupPermissions,
 			guestPermissions);
+	}
+
+	public void checkEntries()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_blogsEntryLocalService.checkEntries();
 	}
 
 	public void deleteEntries(long groupId)

@@ -72,6 +72,7 @@ public class DLFileEntryWrapper implements DLFileEntry,
 		attributes.put("largeImageId", getLargeImageId());
 		attributes.put("custom1ImageId", getCustom1ImageId());
 		attributes.put("custom2ImageId", getCustom2ImageId());
+		attributes.put("manualCheckInRequired", getManualCheckInRequired());
 
 		return attributes;
 	}
@@ -231,6 +232,13 @@ public class DLFileEntryWrapper implements DLFileEntry,
 
 		if (custom2ImageId != null) {
 			setCustom2ImageId(custom2ImageId);
+		}
+
+		Boolean manualCheckInRequired = (Boolean)attributes.get(
+				"manualCheckInRequired");
+
+		if (manualCheckInRequired != null) {
+			setManualCheckInRequired(manualCheckInRequired);
 		}
 	}
 
@@ -760,6 +768,33 @@ public class DLFileEntryWrapper implements DLFileEntry,
 		_dlFileEntry.setCustom2ImageId(custom2ImageId);
 	}
 
+	/**
+	* Returns the manual check in required of this document library file entry.
+	*
+	* @return the manual check in required of this document library file entry
+	*/
+	public boolean getManualCheckInRequired() {
+		return _dlFileEntry.getManualCheckInRequired();
+	}
+
+	/**
+	* Returns <code>true</code> if this document library file entry is manual check in required.
+	*
+	* @return <code>true</code> if this document library file entry is manual check in required; <code>false</code> otherwise
+	*/
+	public boolean isManualCheckInRequired() {
+		return _dlFileEntry.isManualCheckInRequired();
+	}
+
+	/**
+	* Sets whether this document library file entry is manual check in required.
+	*
+	* @param manualCheckInRequired the manual check in required of this document library file entry
+	*/
+	public void setManualCheckInRequired(boolean manualCheckInRequired) {
+		_dlFileEntry.setManualCheckInRequired(manualCheckInRequired);
+	}
+
 	public boolean isNew() {
 		return _dlFileEntry.isNew();
 	}
@@ -818,6 +853,10 @@ public class DLFileEntryWrapper implements DLFileEntry,
 
 	public com.liferay.portlet.documentlibrary.model.DLFileEntry toEscapedModel() {
 		return new DLFileEntryWrapper(_dlFileEntry.toEscapedModel());
+	}
+
+	public com.liferay.portlet.documentlibrary.model.DLFileEntry toUnescapedModel() {
+		return new DLFileEntryWrapper(_dlFileEntry.toUnescapedModel());
 	}
 
 	@Override
@@ -907,12 +946,24 @@ public class DLFileEntryWrapper implements DLFileEntry,
 		return _dlFileEntry.getLuceneProperties();
 	}
 
+	public com.liferay.portlet.documentlibrary.model.DLFolder getTrashFolder() {
+		return _dlFileEntry.getTrashFolder();
+	}
+
 	public boolean hasLock() {
 		return _dlFileEntry.hasLock();
 	}
 
 	public boolean isCheckedOut() {
 		return _dlFileEntry.isCheckedOut();
+	}
+
+	public boolean isInHiddenFolder() {
+		return _dlFileEntry.isInHiddenFolder();
+	}
+
+	public boolean isInTrashFolder() {
+		return _dlFileEntry.isInTrashFolder();
 	}
 
 	public void setExtraSettingsProperties(

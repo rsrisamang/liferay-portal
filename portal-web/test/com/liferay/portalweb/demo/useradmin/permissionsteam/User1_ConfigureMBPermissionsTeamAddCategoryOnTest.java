@@ -24,16 +24,15 @@ public class User1_ConfigureMBPermissionsTeamAddCategoryOnTest
 	extends BaseTestCase {
 	public void testUser1_ConfigureMBPermissionsTeamAddCategoryOn()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/site-name/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Message Boards Test Page",
 			RuntimeVariables.replace("Message Boards Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//input[@value='Permissions']",
 			RuntimeVariables.replace("Permissions"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Team Name"),
 			selenium.getText("//tr[8]/td[1]"));
 		assertEquals(RuntimeVariables.replace("Add Category"),
@@ -43,7 +42,6 @@ public class User1_ConfigureMBPermissionsTeamAddCategoryOnTest
 		selenium.clickAt("//input[@value='Save']",
 			RuntimeVariables.replace("Save"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.portlet.WindowStateFactory;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.Http;
@@ -47,7 +48,6 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portal.util.CookieKeys;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
@@ -744,15 +744,15 @@ public class PortletURLImpl
 		Portlet portlet = (Portlet)_request.getAttribute(
 			WebKeys.RENDER_PORTLET);
 
-		if (portlet == null) {
-			return;
-		}
+		if (portlet != null) {
+			String portletId = portlet.getPortletId();
 
-		if (portlet.getPortletId().equals(_portletId) ||
-			!_portlet.isAddDefaultResource() ||
-			portlet.getPortletId().equals(PortletKeys.CONTROL_PANEL_MENU)) {
+			if (portletId.equals(_portletId) ||
+				portletId.equals(PortletKeys.CONTROL_PANEL_MENU) ||
+				!_portlet.isAddDefaultResource()) {
 
-			return;
+				return;
+			}
 		}
 
 		Set<String> portletAddDefaultResourceCheckWhiteList =
@@ -892,15 +892,6 @@ public class PortletURLImpl
 			}
 		}
 
-		String outerPortletId = PortalUtil.getOuterPortletId(_request);
-
-		if (outerPortletId != null) {
-			sb.append("p_o_p_id");
-			sb.append(StringPool.EQUAL);
-			sb.append(processValue(key, outerPortletId));
-			sb.append(StringPool.AMPERSAND);
-		}
-
 		if (_doAsUserId > 0) {
 			try {
 				Company company = PortalUtil.getCompany(_request);
@@ -1017,10 +1008,10 @@ public class PortletURLImpl
 
 			name = prependNamespace(name);
 
-			for (int i = 0; i < values.length; i++) {
+			for (String value : values) {
 				sb.append(name);
 				sb.append(StringPool.EQUAL);
-				sb.append(processValue(key, values[i]));
+				sb.append(processValue(key, value));
 				sb.append(StringPool.AMPERSAND);
 			}
 		}
@@ -1184,10 +1175,10 @@ public class PortletURLImpl
 
 			name = prependNamespace(name);
 
-			for (int i = 0; i < values.length; i++) {
+			for (String value : values) {
 				parameterSb.append(name);
 				parameterSb.append(StringPool.EQUAL);
-				parameterSb.append(HttpUtil.encodeURL(values[i]));
+				parameterSb.append(HttpUtil.encodeURL(value));
 				parameterSb.append(StringPool.AMPERSAND);
 			}
 		}
@@ -1264,7 +1255,7 @@ public class PortletURLImpl
 		for (Map.Entry<String, String[]> entry : renderParameters.entrySet()) {
 			String name = entry.getKey();
 
-			if (name.indexOf(namespace) != -1) {
+			if (name.contains(namespace)) {
 				name = name.substring(namespace.length());
 			}
 
@@ -1351,7 +1342,7 @@ public class PortletURLImpl
 
 				redirect = HttpUtil.decodeURL(redirect);
 
-				String newURL = shortenURL(redirect, --count);
+				String newURL = shortenURL(redirect, count - 1);
 
 				if (newURL != null) {
 					newURL = HttpUtil.encodeURL(newURL);

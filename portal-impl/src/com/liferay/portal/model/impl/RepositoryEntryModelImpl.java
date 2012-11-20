@@ -60,9 +60,10 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 			{ "repositoryEntryId", Types.BIGINT },
 			{ "groupId", Types.BIGINT },
 			{ "repositoryId", Types.BIGINT },
-			{ "mappedId", Types.VARCHAR }
+			{ "mappedId", Types.VARCHAR },
+			{ "manualCheckInRequired", Types.BOOLEAN }
 		};
-	public static final String TABLE_SQL_CREATE = "create table RepositoryEntry (uuid_ VARCHAR(75) null,repositoryEntryId LONG not null primary key,groupId LONG,repositoryId LONG,mappedId VARCHAR(75) null)";
+	public static final String TABLE_SQL_CREATE = "create table RepositoryEntry (uuid_ VARCHAR(75) null,repositoryEntryId LONG not null primary key,groupId LONG,repositoryId LONG,mappedId VARCHAR(75) null,manualCheckInRequired BOOLEAN)";
 	public static final String TABLE_SQL_DROP = "drop table RepositoryEntry";
 	public static final String DATA_SOURCE = "liferayDataSource";
 	public static final String SESSION_FACTORY = "liferaySessionFactory";
@@ -119,6 +120,7 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 		attributes.put("groupId", getGroupId());
 		attributes.put("repositoryId", getRepositoryId());
 		attributes.put("mappedId", getMappedId());
+		attributes.put("manualCheckInRequired", getManualCheckInRequired());
 
 		return attributes;
 	}
@@ -153,6 +155,13 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 
 		if (mappedId != null) {
 			setMappedId(mappedId);
+		}
+
+		Boolean manualCheckInRequired = (Boolean)attributes.get(
+				"manualCheckInRequired");
+
+		if (manualCheckInRequired != null) {
+			setManualCheckInRequired(manualCheckInRequired);
 		}
 	}
 
@@ -248,19 +257,20 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 		return GetterUtil.getString(_originalMappedId);
 	}
 
-	public long getColumnBitmask() {
-		return _columnBitmask;
+	public boolean getManualCheckInRequired() {
+		return _manualCheckInRequired;
 	}
 
-	@Override
-	public RepositoryEntry toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (RepositoryEntry)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
+	public boolean isManualCheckInRequired() {
+		return _manualCheckInRequired;
+	}
 
-		return _escapedModelProxy;
+	public void setManualCheckInRequired(boolean manualCheckInRequired) {
+		_manualCheckInRequired = manualCheckInRequired;
+	}
+
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
@@ -277,6 +287,16 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 	}
 
 	@Override
+	public RepositoryEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (RepositoryEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
+	}
+
+	@Override
 	public Object clone() {
 		RepositoryEntryImpl repositoryEntryImpl = new RepositoryEntryImpl();
 
@@ -285,6 +305,7 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 		repositoryEntryImpl.setGroupId(getGroupId());
 		repositoryEntryImpl.setRepositoryId(getRepositoryId());
 		repositoryEntryImpl.setMappedId(getMappedId());
+		repositoryEntryImpl.setManualCheckInRequired(getManualCheckInRequired());
 
 		repositoryEntryImpl.resetOriginalValues();
 
@@ -380,12 +401,14 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 			repositoryEntryCacheModel.mappedId = null;
 		}
 
+		repositoryEntryCacheModel.manualCheckInRequired = getManualCheckInRequired();
+
 		return repositoryEntryCacheModel;
 	}
 
 	@Override
 	public String toString() {
-		StringBundler sb = new StringBundler(11);
+		StringBundler sb = new StringBundler(13);
 
 		sb.append("{uuid=");
 		sb.append(getUuid());
@@ -397,13 +420,15 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 		sb.append(getRepositoryId());
 		sb.append(", mappedId=");
 		sb.append(getMappedId());
+		sb.append(", manualCheckInRequired=");
+		sb.append(getManualCheckInRequired());
 		sb.append("}");
 
 		return sb.toString();
 	}
 
 	public String toXmlString() {
-		StringBundler sb = new StringBundler(19);
+		StringBundler sb = new StringBundler(22);
 
 		sb.append("<model><model-name>");
 		sb.append("com.liferay.portal.model.RepositoryEntry");
@@ -429,6 +454,10 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 			"<column><column-name>mappedId</column-name><column-value><![CDATA[");
 		sb.append(getMappedId());
 		sb.append("]]></column-value></column>");
+		sb.append(
+			"<column><column-name>manualCheckInRequired</column-name><column-value><![CDATA[");
+		sb.append(getManualCheckInRequired());
+		sb.append("]]></column-value></column>");
 
 		sb.append("</model>");
 
@@ -436,7 +465,7 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 	}
 
 	private static ClassLoader _classLoader = RepositoryEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			RepositoryEntry.class
 		};
 	private String _uuid;
@@ -450,6 +479,7 @@ public class RepositoryEntryModelImpl extends BaseModelImpl<RepositoryEntry>
 	private boolean _setOriginalRepositoryId;
 	private String _mappedId;
 	private String _originalMappedId;
+	private boolean _manualCheckInRequired;
 	private long _columnBitmask;
-	private RepositoryEntry _escapedModelProxy;
+	private RepositoryEntry _escapedModel;
 }

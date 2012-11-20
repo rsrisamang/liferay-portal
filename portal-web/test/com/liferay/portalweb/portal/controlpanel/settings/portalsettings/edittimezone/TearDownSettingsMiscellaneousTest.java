@@ -22,74 +22,32 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class TearDownSettingsMiscellaneousTest extends BaseTestCase {
 	public void testTearDownSettingsMiscellaneous() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+		assertEquals(RuntimeVariables.replace("Go to"),
+			selenium.getText("//li[@id='_145_mySites']/a/span"));
+		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Portal Settings",
 			RuntimeVariables.replace("Portal Settings"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//a[@id='_130_displaySettingsLink']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		assertTrue(selenium.isPartialText(
+				"//a[@id='_130_displaySettingsLink']", "Display Settings"));
 		selenium.clickAt("//a[@id='_130_displaySettingsLink']",
 			RuntimeVariables.replace("Display Settings"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//select[@id='_130_languageId']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//select[@id='_130_languageId']");
 		selenium.select("//select[@id='_130_languageId']",
 			RuntimeVariables.replace("label=English (United States)"));
-		selenium.type("//input[@id='_130_locales']",
-			RuntimeVariables.replace(
-				"ar_SA,eu_ES,bg_BG,ca_AD,ca_ES,zh_CN,zh_TW,cs_CZ,nl_NL,en_US,et_EE,fi_FI,fr_FR,gl_ES,de_DE,el_GR,iw_IL,hi_IN,hu_HU,it_IT,ja_JP,ko_KR,nb_NO,fa_IR,pl_PL,pt_BR,pt_PT,ru_RU,sk_SK,es_ES,sv_SE,tr_TR,uk_UA,vi_VN"));
+		assertTrue(selenium.isElementNotPresent(
+				"//select[@id='_130_availableLanguageIds']/option"));
 		selenium.select("//select[@name='_130_timeZoneId']",
 			RuntimeVariables.replace("label=(UTC ) Coordinated Universal Time"));
 		selenium.select("//select[@name='_130_settings--default.regular.theme.id--']",
@@ -102,24 +60,8 @@ public class TearDownSettingsMiscellaneousTest extends BaseTestCase {
 				"Google Apps"));
 		selenium.clickAt("//a[@id='_130_googleAppsLink']",
 			RuntimeVariables.replace("Google Apps"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//input[@name='_130_settings--google.apps.username--']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//input[@name='_130_settings--google.apps.username--']");
 		selenium.type("//input[@name='_130_settings--google.apps.username--']",
 			RuntimeVariables.replace(""));
 		selenium.type("//input[@name='_130_settings--google.apps.password--']",
@@ -127,6 +69,5 @@ public class TearDownSettingsMiscellaneousTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Save']",
 			RuntimeVariables.replace("Save"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 	}
 }

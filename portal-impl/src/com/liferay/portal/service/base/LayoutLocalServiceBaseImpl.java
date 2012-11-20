@@ -223,6 +223,9 @@ import com.liferay.portlet.messageboards.service.MBMessageLocalService;
 import com.liferay.portlet.messageboards.service.MBMessageService;
 import com.liferay.portlet.messageboards.service.persistence.MBMessageFinder;
 import com.liferay.portlet.messageboards.service.persistence.MBMessagePersistence;
+import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupInstanceLocalService;
+import com.liferay.portlet.mobiledevicerules.service.MDRRuleGroupInstanceService;
+import com.liferay.portlet.mobiledevicerules.service.persistence.MDRRuleGroupInstancePersistence;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalService;
 import com.liferay.portlet.ratings.service.persistence.RatingsStatsFinder;
 import com.liferay.portlet.ratings.service.persistence.RatingsStatsPersistence;
@@ -264,7 +267,7 @@ public abstract class LayoutLocalServiceBaseImpl extends BaseLocalServiceImpl
 	public Layout addLayout(Layout layout) throws SystemException {
 		layout.setNew(true);
 
-		return layoutPersistence.update(layout, false);
+		return layoutPersistence.update(layout);
 	}
 
 	/**
@@ -446,23 +449,7 @@ public abstract class LayoutLocalServiceBaseImpl extends BaseLocalServiceImpl
 	 */
 	@Indexable(type = IndexableType.REINDEX)
 	public Layout updateLayout(Layout layout) throws SystemException {
-		return updateLayout(layout, true);
-	}
-
-	/**
-	 * Updates the layout in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param layout the layout
-	 * @param merge whether to merge the layout with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the layout that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Indexable(type = IndexableType.REINDEX)
-	public Layout updateLayout(Layout layout, boolean merge)
-		throws SystemException {
-		layout.setNew(false);
-
-		return layoutPersistence.update(layout, merge);
+		return layoutPersistence.update(layout);
 	}
 
 	/**
@@ -4032,6 +4019,63 @@ public abstract class LayoutLocalServiceBaseImpl extends BaseLocalServiceImpl
 	}
 
 	/**
+	 * Returns the m d r rule group instance local service.
+	 *
+	 * @return the m d r rule group instance local service
+	 */
+	public MDRRuleGroupInstanceLocalService getMDRRuleGroupInstanceLocalService() {
+		return mdrRuleGroupInstanceLocalService;
+	}
+
+	/**
+	 * Sets the m d r rule group instance local service.
+	 *
+	 * @param mdrRuleGroupInstanceLocalService the m d r rule group instance local service
+	 */
+	public void setMDRRuleGroupInstanceLocalService(
+		MDRRuleGroupInstanceLocalService mdrRuleGroupInstanceLocalService) {
+		this.mdrRuleGroupInstanceLocalService = mdrRuleGroupInstanceLocalService;
+	}
+
+	/**
+	 * Returns the m d r rule group instance remote service.
+	 *
+	 * @return the m d r rule group instance remote service
+	 */
+	public MDRRuleGroupInstanceService getMDRRuleGroupInstanceService() {
+		return mdrRuleGroupInstanceService;
+	}
+
+	/**
+	 * Sets the m d r rule group instance remote service.
+	 *
+	 * @param mdrRuleGroupInstanceService the m d r rule group instance remote service
+	 */
+	public void setMDRRuleGroupInstanceService(
+		MDRRuleGroupInstanceService mdrRuleGroupInstanceService) {
+		this.mdrRuleGroupInstanceService = mdrRuleGroupInstanceService;
+	}
+
+	/**
+	 * Returns the m d r rule group instance persistence.
+	 *
+	 * @return the m d r rule group instance persistence
+	 */
+	public MDRRuleGroupInstancePersistence getMDRRuleGroupInstancePersistence() {
+		return mdrRuleGroupInstancePersistence;
+	}
+
+	/**
+	 * Sets the m d r rule group instance persistence.
+	 *
+	 * @param mdrRuleGroupInstancePersistence the m d r rule group instance persistence
+	 */
+	public void setMDRRuleGroupInstancePersistence(
+		MDRRuleGroupInstancePersistence mdrRuleGroupInstancePersistence) {
+		this.mdrRuleGroupInstancePersistence = mdrRuleGroupInstancePersistence;
+	}
+
+	/**
 	 * Returns the ratings stats local service.
 	 *
 	 * @return the ratings stats local service
@@ -4526,6 +4570,12 @@ public abstract class LayoutLocalServiceBaseImpl extends BaseLocalServiceImpl
 	protected MBMessagePersistence mbMessagePersistence;
 	@BeanReference(type = MBMessageFinder.class)
 	protected MBMessageFinder mbMessageFinder;
+	@BeanReference(type = MDRRuleGroupInstanceLocalService.class)
+	protected MDRRuleGroupInstanceLocalService mdrRuleGroupInstanceLocalService;
+	@BeanReference(type = MDRRuleGroupInstanceService.class)
+	protected MDRRuleGroupInstanceService mdrRuleGroupInstanceService;
+	@BeanReference(type = MDRRuleGroupInstancePersistence.class)
+	protected MDRRuleGroupInstancePersistence mdrRuleGroupInstancePersistence;
 	@BeanReference(type = RatingsStatsLocalService.class)
 	protected RatingsStatsLocalService ratingsStatsLocalService;
 	@BeanReference(type = RatingsStatsPersistence.class)

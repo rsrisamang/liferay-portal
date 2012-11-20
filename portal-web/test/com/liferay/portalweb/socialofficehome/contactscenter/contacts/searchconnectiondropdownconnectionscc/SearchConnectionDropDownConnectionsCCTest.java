@@ -23,30 +23,14 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class SearchConnectionDropDownConnectionsCCTest extends BaseTestCase {
 	public void testSearchConnectionDropDownConnectionsCC()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Contacts Center')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//nav/ul/li[contains(.,'Contacts Center')]/a/span");
 		selenium.clickAt("//nav/ul/li[contains(.,'Contacts Center')]/a/span",
 			RuntimeVariables.replace("Contacts Center"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isVisible(
 				"//input[@id='_1_WAR_contactsportlet_name']"));
 		assertTrue(selenium.isVisible(
@@ -55,51 +39,18 @@ public class SearchConnectionDropDownConnectionsCCTest extends BaseTestCase {
 			RuntimeVariables.replace("Connections"));
 		selenium.type("//input[@id='_1_WAR_contactsportlet_name']",
 			RuntimeVariables.replace("Social01"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("User01, Social01")
-										.equals(selenium.getText(
-								"//div[contains(@class, 'lfr-contact-name')]/a"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//div[contains(@class, 'lfr-contact-name')]/a",
+			"User01, Social01");
 		assertEquals(RuntimeVariables.replace("User01, Social01"),
 			selenium.getText("//div[contains(@class, 'lfr-contact-name')]/a"));
 		assertEquals(RuntimeVariables.replace("socialoffice01@liferay.com"),
 			selenium.getText("//div[contains(@class, 'lfr-contact-extra')]"));
 		assertEquals(RuntimeVariables.replace("You have 1 connections."),
 			selenium.getText("link=You have 1 connections."));
+		Thread.sleep(5000);
 		selenium.clickAt("//div[contains(@class, 'lfr-contact-name')]/a",
 			RuntimeVariables.replace("User01, Social01"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[contains(@class, 'contacts-profile')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[contains(@class, 'contacts-profile')]");
 		assertEquals(RuntimeVariables.replace("Social01 Office01 User01"),
 			selenium.getText(
 				"//div[contains(@class, 'contacts-profile')]/div/div[2]/div/a"));

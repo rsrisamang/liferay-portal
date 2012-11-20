@@ -72,6 +72,13 @@ request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntry
 request.setAttribute("view.jsp-portletURL", portletURL);
 %>
 
+<portlet:actionURL var="undoTrashURL">
+	<portlet:param name="struts_action" value="/document_library/edit_entry" />
+	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
+</portlet:actionURL>
+
+<liferay-ui:trash-undo portletURL="<%= undoTrashURL %>" />
+
 <liferay-util:include page="/html/portlet/document_library/top_links.jsp" />
 
 <c:choose>
@@ -99,9 +106,14 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 		searchContainer.setResults(results);
 
 		String[] mediaGalleryMimeTypes = null;
+
+		request.setAttribute("view.jsp-folderId", folderId);
+		request.setAttribute("view.jsp-mediaGalleryMimeTypes", mediaGalleryMimeTypes);
+		request.setAttribute("view.jsp-results", results);
+		request.setAttribute("view.jsp-searchContainer", searchContainer);
 		%>
 
-		<%@ include file="/html/portlet/image_gallery_display/view_images.jspf" %>
+		<liferay-util:include page="/html/portlet/image_gallery_display/view_images.jsp" />
 	</c:when>
 	<c:when test='<%= topLink.equals("home") %>'>
 		<aui:layout>
@@ -128,6 +140,11 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 			List results = DLAppServiceUtil.getFoldersAndFileEntriesAndFileShortcuts(repositoryId, folderId, status, mediaGalleryMimeTypes, true, searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
 
 			searchContainer.setResults(results);
+
+			request.setAttribute("view.jsp-folderId", folderId);
+			request.setAttribute("view.jsp-mediaGalleryMimeTypes", mediaGalleryMimeTypes);
+			request.setAttribute("view.jsp-results", results);
+			request.setAttribute("view.jsp-searchContainer", searchContainer);
 			%>
 
 			<aui:column columnWidth="<%= showFolderMenu ? 75 : 100 %>" cssClass="lfr-asset-column lfr-asset-column-details" first="<%= true %>">
@@ -161,7 +178,7 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 						</liferay-ui:custom-attributes-available>
 					</c:if>
 
-					<%@ include file="/html/portlet/image_gallery_display/view_images.jspf" %>
+					<liferay-util:include page="/html/portlet/image_gallery_display/view_images.jsp" />
 				</div>
 			</aui:column>
 
@@ -220,6 +237,11 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 		List results = DLAppServiceUtil.getGroupFileEntries(repositoryId, groupImagesUserId, defaultFolderId, mediaGalleryMimeTypes, status, searchContainer.getStart(), searchContainer.getEnd(), searchContainer.getOrderByComparator());
 
 		searchContainer.setResults(results);
+
+		request.setAttribute("view.jsp-folderId", folderId);
+		request.setAttribute("view.jsp-mediaGalleryMimeTypes", mediaGalleryMimeTypes);
+		request.setAttribute("view.jsp-results", results);
+		request.setAttribute("view.jsp-searchContainer", searchContainer);
 		%>
 
 		<aui:layout>
@@ -227,7 +249,7 @@ request.setAttribute("view.jsp-portletURL", portletURL);
 				title="<%= topLink %>"
 			/>
 
-			<%@ include file="/html/portlet/image_gallery_display/view_images.jspf" %>
+			<liferay-util:include page="/html/portlet/image_gallery_display/view_images.jsp" />
 		</aui:layout>
 
 		<%

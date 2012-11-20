@@ -95,22 +95,20 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
 	public static DLFileEntryMetadata update(
-		DLFileEntryMetadata dlFileEntryMetadata, boolean merge)
-		throws SystemException {
-		return getPersistence().update(dlFileEntryMetadata, merge);
+		DLFileEntryMetadata dlFileEntryMetadata) throws SystemException {
+		return getPersistence().update(dlFileEntryMetadata);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static DLFileEntryMetadata update(
-		DLFileEntryMetadata dlFileEntryMetadata, boolean merge,
-		ServiceContext serviceContext) throws SystemException {
-		return getPersistence()
-				   .update(dlFileEntryMetadata, merge, serviceContext);
+		DLFileEntryMetadata dlFileEntryMetadata, ServiceContext serviceContext)
+		throws SystemException {
+		return getPersistence().update(dlFileEntryMetadata, serviceContext);
 	}
 
 	/**
@@ -160,10 +158,9 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata updateImpl(
-		com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata dlFileEntryMetadata,
-		boolean merge)
+		com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata dlFileEntryMetadata)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(dlFileEntryMetadata, merge);
+		return getPersistence().updateImpl(dlFileEntryMetadata);
 	}
 
 	/**
@@ -250,10 +247,6 @@ public class DLFileEntryMetadataUtil {
 	/**
 	* Returns the first document library file entry metadata in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching document library file entry metadata
@@ -269,11 +262,22 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the last document library file entry metadata in the ordered set where uuid = &#63;.
+	* Returns the first document library file entry metadata in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByUuid_First(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUuid_First(uuid, orderByComparator);
+	}
+
+	/**
+	* Returns the last document library file entry metadata in the ordered set where uuid = &#63;.
 	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -290,11 +294,22 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where uuid = &#63;.
+	* Returns the last document library file entry metadata in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByUuid_Last(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUuid_Last(uuid, orderByComparator);
+	}
+
+	/**
+	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where uuid = &#63;.
 	*
 	* @param fileEntryMetadataId the primary key of the current document library file entry metadata
 	* @param uuid the uuid
@@ -372,10 +387,6 @@ public class DLFileEntryMetadataUtil {
 	/**
 	* Returns the first document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param fileEntryTypeId the file entry type ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching document library file entry metadata
@@ -393,11 +404,24 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the last document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
+	* Returns the first document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileEntryTypeId the file entry type ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileEntryTypeId_First(
+		long fileEntryTypeId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileEntryTypeId_First(fileEntryTypeId,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the last document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
 	*
 	* @param fileEntryTypeId the file entry type ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -416,11 +440,24 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
+	* Returns the last document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileEntryTypeId the file entry type ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileEntryTypeId_Last(
+		long fileEntryTypeId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileEntryTypeId_Last(fileEntryTypeId,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileEntryTypeId = &#63;.
 	*
 	* @param fileEntryMetadataId the primary key of the current document library file entry metadata
 	* @param fileEntryTypeId the file entry type ID
@@ -496,10 +533,6 @@ public class DLFileEntryMetadataUtil {
 	/**
 	* Returns the first document library file entry metadata in the ordered set where fileEntryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param fileEntryId the file entry ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching document library file entry metadata
@@ -516,11 +549,23 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the last document library file entry metadata in the ordered set where fileEntryId = &#63;.
+	* Returns the first document library file entry metadata in the ordered set where fileEntryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileEntryId the file entry ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileEntryId_First(
+		long fileEntryId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileEntryId_First(fileEntryId, orderByComparator);
+	}
+
+	/**
+	* Returns the last document library file entry metadata in the ordered set where fileEntryId = &#63;.
 	*
 	* @param fileEntryId the file entry ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -538,11 +583,23 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileEntryId = &#63;.
+	* Returns the last document library file entry metadata in the ordered set where fileEntryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileEntryId the file entry ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileEntryId_Last(
+		long fileEntryId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileEntryId_Last(fileEntryId, orderByComparator);
+	}
+
+	/**
+	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileEntryId = &#63;.
 	*
 	* @param fileEntryMetadataId the primary key of the current document library file entry metadata
 	* @param fileEntryId the file entry ID
@@ -619,10 +676,6 @@ public class DLFileEntryMetadataUtil {
 	/**
 	* Returns the first document library file entry metadata in the ordered set where fileVersionId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param fileVersionId the file version ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching document library file entry metadata
@@ -639,11 +692,23 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the last document library file entry metadata in the ordered set where fileVersionId = &#63;.
+	* Returns the first document library file entry metadata in the ordered set where fileVersionId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileVersionId the file version ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileVersionId_First(
+		long fileVersionId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileVersionId_First(fileVersionId, orderByComparator);
+	}
+
+	/**
+	* Returns the last document library file entry metadata in the ordered set where fileVersionId = &#63;.
 	*
 	* @param fileVersionId the file version ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -661,11 +726,23 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileVersionId = &#63;.
+	* Returns the last document library file entry metadata in the ordered set where fileVersionId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param fileVersionId the file version ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByFileVersionId_Last(
+		long fileVersionId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByFileVersionId_Last(fileVersionId, orderByComparator);
+	}
+
+	/**
+	* Returns the document library file entry metadatas before and after the current document library file entry metadata in the ordered set where fileVersionId = &#63;.
 	*
 	* @param fileEntryMetadataId the primary key of the current document library file entry metadata
 	* @param fileVersionId the file version ID
@@ -728,52 +805,6 @@ public class DLFileEntryMetadataUtil {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence()
 				   .fetchByD_F(DDMStructureId, fileVersionId, retrieveFromCache);
-	}
-
-	/**
-	* Returns the document library file entry metadata where fileEntryId = &#63; and fileVersionId = &#63; or throws a {@link com.liferay.portlet.documentlibrary.NoSuchFileEntryMetadataException} if it could not be found.
-	*
-	* @param fileEntryId the file entry ID
-	* @param fileVersionId the file version ID
-	* @return the matching document library file entry metadata
-	* @throws com.liferay.portlet.documentlibrary.NoSuchFileEntryMetadataException if a matching document library file entry metadata could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata findByF_V(
-		long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.SystemException,
-			com.liferay.portlet.documentlibrary.NoSuchFileEntryMetadataException {
-		return getPersistence().findByF_V(fileEntryId, fileVersionId);
-	}
-
-	/**
-	* Returns the document library file entry metadata where fileEntryId = &#63; and fileVersionId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
-	*
-	* @param fileEntryId the file entry ID
-	* @param fileVersionId the file version ID
-	* @return the matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByF_V(
-		long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().fetchByF_V(fileEntryId, fileVersionId);
-	}
-
-	/**
-	* Returns the document library file entry metadata where fileEntryId = &#63; and fileVersionId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
-	*
-	* @param fileEntryId the file entry ID
-	* @param fileVersionId the file version ID
-	* @param retrieveFromCache whether to use the finder cache
-	* @return the matching document library file entry metadata, or <code>null</code> if a matching document library file entry metadata could not be found
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata fetchByF_V(
-		long fileEntryId, long fileVersionId, boolean retrieveFromCache)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence()
-				   .fetchByF_V(fileEntryId, fileVersionId, retrieveFromCache);
 	}
 
 	/**
@@ -885,21 +916,6 @@ public class DLFileEntryMetadataUtil {
 	}
 
 	/**
-	* Removes the document library file entry metadata where fileEntryId = &#63; and fileVersionId = &#63; from the database.
-	*
-	* @param fileEntryId the file entry ID
-	* @param fileVersionId the file version ID
-	* @return the document library file entry metadata that was removed
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata removeByF_V(
-		long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.SystemException,
-			com.liferay.portlet.documentlibrary.NoSuchFileEntryMetadataException {
-		return getPersistence().removeByF_V(fileEntryId, fileVersionId);
-	}
-
-	/**
 	* Removes all the document library file entry metadatas from the database.
 	*
 	* @throws SystemException if a system exception occurred
@@ -968,19 +984,6 @@ public class DLFileEntryMetadataUtil {
 	public static int countByD_F(long DDMStructureId, long fileVersionId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getPersistence().countByD_F(DDMStructureId, fileVersionId);
-	}
-
-	/**
-	* Returns the number of document library file entry metadatas where fileEntryId = &#63; and fileVersionId = &#63;.
-	*
-	* @param fileEntryId the file entry ID
-	* @param fileVersionId the file version ID
-	* @return the number of matching document library file entry metadatas
-	* @throws SystemException if a system exception occurred
-	*/
-	public static int countByF_V(long fileEntryId, long fileVersionId)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().countByF_V(fileEntryId, fileVersionId);
 	}
 
 	/**

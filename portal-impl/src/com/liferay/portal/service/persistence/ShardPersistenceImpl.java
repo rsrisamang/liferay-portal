@@ -278,7 +278,14 @@ public class ShardPersistenceImpl extends BasePersistenceImpl<Shard>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, shard);
+			if (!session.contains(shard)) {
+				shard = (Shard)session.get(ShardImpl.class,
+						shard.getPrimaryKeyObj());
+			}
+
+			if (shard != null) {
+				session.delete(shard);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -287,13 +294,15 @@ public class ShardPersistenceImpl extends BasePersistenceImpl<Shard>
 			closeSession(session);
 		}
 
-		clearCache(shard);
+		if (shard != null) {
+			clearCache(shard);
+		}
 
 		return shard;
 	}
 
 	@Override
-	public Shard updateImpl(com.liferay.portal.model.Shard shard, boolean merge)
+	public Shard updateImpl(com.liferay.portal.model.Shard shard)
 		throws SystemException {
 		shard = toUnwrappedModel(shard);
 
@@ -306,9 +315,14 @@ public class ShardPersistenceImpl extends BasePersistenceImpl<Shard>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, shard, merge);
+			if (shard.isNew()) {
+				session.save(shard);
 
-			shard.setNew(false);
+				shard.setNew(false);
+			}
+			else {
+				session.merge(shard);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -342,6 +356,7 @@ public class ShardPersistenceImpl extends BasePersistenceImpl<Shard>
 				Object[] args = new Object[] { shardModelImpl.getOriginalName() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_NAME, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_NAME, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_NAME,
@@ -356,6 +371,7 @@ public class ShardPersistenceImpl extends BasePersistenceImpl<Shard>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_C, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_C,

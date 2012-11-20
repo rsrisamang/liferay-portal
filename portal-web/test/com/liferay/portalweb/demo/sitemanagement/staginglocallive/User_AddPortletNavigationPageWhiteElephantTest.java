@@ -28,32 +28,16 @@ public class User_AddPortletNavigationPageWhiteElephantTest extends BaseTestCase
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'local-staging')]"));
 				assertEquals(RuntimeVariables.replace("Staging"),
 					selenium.getText(
@@ -61,10 +45,9 @@ public class User_AddPortletNavigationPageWhiteElephantTest extends BaseTestCase
 				selenium.clickAt("//div[@class='staging-bar']/ul/li[2]/span/a",
 					RuntimeVariables.replace("Staging"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'local-staging')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'live-view')]"));
 
 				boolean christmasPresent = selenium.isElementPresent(
@@ -79,7 +62,6 @@ public class User_AddPortletNavigationPageWhiteElephantTest extends BaseTestCase
 				selenium.clickAt("link=Christmas",
 					RuntimeVariables.replace("Christmas"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				assertEquals(RuntimeVariables.replace("Christmas"),
@@ -88,68 +70,36 @@ public class User_AddPortletNavigationPageWhiteElephantTest extends BaseTestCase
 						"Christmas Site Pages Variation of Site Name"),
 					selenium.getText(
 						"//span[@class='layout-set-branch-description']"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=White Elephant")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=White Elephant");
 				selenium.clickAt("link=White Elephant",
 					RuntimeVariables.replace("White Elephant"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
+				selenium.clickAt("//div[@id='dockbar']",
+					RuntimeVariables.replace("Dockbar"));
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+				assertEquals(RuntimeVariables.replace("Add"),
+					selenium.getText("//li[@id='_145_addContent']/a/span"));
+				selenium.mouseOver("//li[@id='_145_addContent']/a/span");
+				selenium.waitForVisible("//a[@id='_145_addApplication']");
 				assertTrue(selenium.isPartialText(
 						"//a[@id='_145_addApplication']", "More"));
 				selenium.clickAt("//a[@id='_145_addApplication']",
 					RuntimeVariables.replace("More"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//div[@title='Navigation']/p/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/aui/aui-live-search/aui-live-search-min.js')]");
+				selenium.waitForVisible(
+					"//input[@id='layout_configuration_content']");
+				selenium.type("//input[@id='layout_configuration_content']",
+					RuntimeVariables.replace("n"));
+				selenium.keyDown("//input[@id='layout_configuration_content']",
+					RuntimeVariables.replace("\\13"));
+				selenium.keyUp("//input[@id='layout_configuration_content']",
+					RuntimeVariables.replace("\\13"));
+				selenium.waitForVisible("//div[@title='Navigation']/p/a");
 				selenium.clickAt("//div[@title='Navigation']/p/a",
-					RuntimeVariables.replace("Navigation"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//section")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+					RuntimeVariables.replace("Add"));
+				selenium.waitForVisible("//section");
 				assertTrue(selenium.isVisible("//section"));
 
 			case 100:

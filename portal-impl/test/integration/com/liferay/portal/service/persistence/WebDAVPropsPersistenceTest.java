@@ -22,13 +22,13 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.WebDAVProps;
 import com.liferay.portal.model.impl.WebDAVPropsModelImpl;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -54,19 +54,21 @@ import java.util.Set;
 public class WebDAVPropsPersistenceTest {
 	@After
 	public void tearDown() throws Exception {
-		Map<Serializable, BasePersistence<?>> persistedEntities = _transactionalPersistenceAdvice.getBasePersistences();
+		Map<Serializable, BasePersistence<?>> basePersistences = _transactionalPersistenceAdvice.getBasePersistences();
 
-		Set<Serializable> entityKeys = persistedEntities.keySet();
+		Set<Serializable> primaryKeys = basePersistences.keySet();
 
-		for (Serializable entitiKey : entityKeys) {
-			BasePersistence<?> persistence = persistedEntities.get(entitiKey);
+		for (Serializable primaryKey : primaryKeys) {
+			BasePersistence<?> basePersistence = basePersistences.get(primaryKey);
 
 			try {
-				persistence.remove(entitiKey);
+				basePersistence.remove(primaryKey);
 			}
 			catch (Exception e) {
-				_log.debug("The entity " + entitiKey +
-					" has been already deleted");
+				if (_log.isDebugEnabled()) {
+					_log.debug("The model with primary key " + primaryKey +
+						" was already deleted");
+				}
 			}
 		}
 
@@ -118,7 +120,7 @@ public class WebDAVPropsPersistenceTest {
 
 		newWebDAVProps.setProps(ServiceTestUtil.randomString());
 
-		_persistence.update(newWebDAVProps, false);
+		_persistence.update(newWebDAVProps);
 
 		WebDAVProps existingWebDAVProps = _persistence.findByPrimaryKey(newWebDAVProps.getPrimaryKey());
 
@@ -290,7 +292,7 @@ public class WebDAVPropsPersistenceTest {
 
 		webDAVProps.setProps(ServiceTestUtil.randomString());
 
-		_persistence.update(webDAVProps, false);
+		_persistence.update(webDAVProps);
 
 		return webDAVProps;
 	}

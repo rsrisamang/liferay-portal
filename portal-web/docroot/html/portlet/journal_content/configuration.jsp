@@ -66,8 +66,26 @@ type = ParamUtil.getString(request, "type", type);
 		<%
 		String structureId = article.getStructureId();
 
+		JournalStructure structure = null;
+
+		long structureGroupId = groupId;
+
 		if (Validator.isNotNull(structureId)) {
-			List templates = JournalTemplateLocalServiceUtil.getStructureTemplates(groupId, structureId);
+			try {
+				structure = JournalStructureLocalServiceUtil.getStructure(groupId, structureId, true);
+
+				structureGroupId = structure.getGroupId();
+			}
+			catch (NoSuchStructureException nsse) {
+			}
+
+			List<JournalTemplate> templates = new ArrayList<JournalTemplate>();
+
+			templates.addAll(JournalTemplateLocalServiceUtil.getStructureTemplates(structureGroupId, structureId));
+
+			if (groupId != structureGroupId) {
+				templates.addAll(JournalTemplateLocalServiceUtil.getStructureTemplates(groupId, structureId));
+			}
 
 			if (!templates.isEmpty()) {
 				if (Validator.isNull(templateId)) {
@@ -134,6 +152,16 @@ type = ParamUtil.getString(request, "type", type);
 	dynamicRenderRequest.setParameter("groupId", String.valueOf(groupId));
 
 	ArticleSearch searchContainer = new ArticleSearch(dynamicRenderRequest, configurationRenderURL);
+
+	List<String> headerNames = searchContainer.getHeaderNames();
+
+	headerNames.clear();
+
+	headerNames.add("id");
+	headerNames.add("title");
+	headerNames.add("modified-date");
+	headerNames.add("display-date");
+	headerNames.add("author");
 	%>
 
 	<liferay-ui:search-form
@@ -151,6 +179,7 @@ type = ParamUtil.getString(request, "type", type);
 
 	ArticleSearchTerms searchTerms = (ArticleSearchTerms)searchContainer.getSearchTerms();
 
+	searchTerms.setFolderIds(new ArrayList<Long>());
 	searchTerms.setVersion(-1);
 
 	List<JournalArticle> results = null;
@@ -199,7 +228,7 @@ type = ParamUtil.getString(request, "type", type);
 
 		// Author
 
-		row.addText(HtmlUtil.escape(PortalUtil.getUserName(curArticle.getUserId(), curArticle.getUserName())), rowHREF);
+		row.addText(PortalUtil.getUserName(curArticle), rowHREF);
 
 		// Add result row
 

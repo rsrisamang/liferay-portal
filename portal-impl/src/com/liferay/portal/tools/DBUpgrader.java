@@ -24,6 +24,10 @@ import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.spring.aop.Skip;
+import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.ReflectionUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Time;
@@ -32,14 +36,24 @@ import com.liferay.portal.model.ReleaseConstants;
 import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.ReleaseLocalServiceUtil;
 import com.liferay.portal.service.ResourceActionLocalServiceUtil;
+import com.liferay.portal.spring.aop.ServiceBeanAopCacheManager;
 import com.liferay.portal.util.InitUtil;
+import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.util.dao.orm.CustomSQLUtil;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.aopalliance.intercept.MethodInvocation;
 
 import org.apache.commons.lang.time.StopWatch;
 
@@ -83,11 +97,7 @@ public class DBUpgrader {
 
 		CacheRegistryUtil.setActive(false);
 
-		// Upgrade
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("Run upgrade process");
-		}
+		// Check release
 
 		int buildNumber = ReleaseLocalServiceUtil.getBuildNumberOrCreate();
 
@@ -116,7 +126,7 @@ public class DBUpgrader {
 		CustomSQLUtil.reloadCustomSQL();
 		SQLTransformer.reloadSQLTransformer();
 
-		// Upgrade build
+		// Upgrade
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Update build " + buildNumber);
@@ -125,6 +135,10 @@ public class DBUpgrader {
 		_checkPermissionAlgorithm();
 		_checkReleaseState();
 
+		if (PropsValues.UPGRADE_DATABASE_TRANSACTIONS_DISABLED) {
+			_disableTransactions();
+		}
+
 		try {
 			StartupHelperUtil.upgradeProcess(buildNumber);
 		}
@@ -132,6 +146,11 @@ public class DBUpgrader {
 			_updateReleaseState(ReleaseConstants.STATE_UPGRADE_FAILURE);
 
 			throw e;
+		}
+		finally {
+			if (PropsValues.UPGRADE_DATABASE_TRANSACTIONS_DISABLED) {
+				_enableTransactions();
+			}
 		}
 
 		// Update company key
@@ -144,7 +163,7 @@ public class DBUpgrader {
 			_updateCompanyKey();
 		}
 
-		// Class names
+		// Check class names
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Check class names");
@@ -152,7 +171,7 @@ public class DBUpgrader {
 
 		ClassNameLocalServiceUtil.checkClassNames();
 
-		// Resource actions
+		// Check resource actions
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Check resource actions");
@@ -181,14 +200,13 @@ public class DBUpgrader {
 
 	public static void verify() throws Exception {
 
-		// Verify
+		// Check release
 
 		Release release = null;
 
 		try {
 			release = ReleaseLocalServiceUtil.getRelease(
-				ReleaseConstants.DEFAULT_SERVLET_CONTEXT_NAME,
-				ReleaseInfo.getParentBuildNumber());
+				ReleaseConstants.DEFAULT_SERVLET_CONTEXT_NAME);
 		}
 		catch (PortalException pe) {
 			release = ReleaseLocalServiceUtil.addRelease(
@@ -197,15 +215,6 @@ public class DBUpgrader {
 		}
 
 		_checkReleaseState();
-
-		try {
-			StartupHelperUtil.verifyProcess(release.isVerified());
-		}
-		catch (Exception e) {
-			_updateReleaseState(ReleaseConstants.STATE_VERIFY_FAILURE);
-
-			throw e;
-		}
 
 		// Update indexes
 
@@ -216,6 +225,34 @@ public class DBUpgrader {
 		}
 		else if (StartupHelperUtil.isUpgraded()) {
 			StartupHelperUtil.updateIndexes();
+		}
+
+		// Verify
+
+		if (PropsValues.VERIFY_DATABASE_TRANSACTIONS_DISABLED) {
+			_disableTransactions();
+		}
+
+		try {
+			StartupHelperUtil.verifyProcess(release.isVerified());
+		}
+		catch (Exception e) {
+			_updateReleaseState(ReleaseConstants.STATE_VERIFY_FAILURE);
+
+			throw e;
+		}
+		finally {
+			if (PropsValues.VERIFY_DATABASE_TRANSACTIONS_DISABLED) {
+				_enableTransactions();
+			}
+		}
+
+		// Update indexes
+
+		if (PropsValues.DATABASE_INDEXES_UPDATE_ON_STARTUP ||
+			StartupHelperUtil.isUpgraded()) {
+
+			StartupHelperUtil.updateIndexes(false);
 		}
 
 		// Update release
@@ -282,6 +319,54 @@ public class DBUpgrader {
 		db.runSQL(_DELETE_TEMP_IMAGES_2);
 	}
 
+	private static void _disableTransactions() throws Exception {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Disable transactions");
+		}
+
+		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = false;
+
+		Field field = ReflectionUtil.getDeclaredField(
+			ServiceBeanAopCacheManager.class, "_annotations");
+
+		field.set(
+			null,
+			new HashMap<MethodInvocation, Annotation[]>() {
+
+				@Override
+				public Annotation[] get(Object key) {
+					return _annotations;
+				}
+
+				private Annotation[] _annotations = new Annotation[] {
+					new Skip() {
+
+						public Class<? extends Annotation> annotationType() {
+							return Skip.class;
+						}
+
+					}
+				};
+
+			}
+		);
+	}
+
+	private static void _enableTransactions() throws Exception {
+		if (_log.isDebugEnabled()) {
+			_log.debug("Enable transactions");
+		}
+
+		PropsValues.SPRING_HIBERNATE_SESSION_DELEGATED = GetterUtil.getBoolean(
+			PropsUtil.get(PropsKeys.SPRING_HIBERNATE_SESSION_DELEGATED));
+
+		Field field = ReflectionUtil.getDeclaredField(
+			ServiceBeanAopCacheManager.class, "_annotations");
+
+		field.set(
+			null, new ConcurrentHashMap<MethodInvocation, Annotation[]>());
+	}
+
 	private static int _getReleaseState() throws Exception {
 		Connection con = null;
 		PreparedStatement ps = null;
@@ -323,7 +408,7 @@ public class DBUpgrader {
 			rs = ps.executeQuery();
 
 			if (rs.next()) {
-				long count = rs.getLong(1);
+				int count = rs.getInt(1);
 
 				return count;
 			}

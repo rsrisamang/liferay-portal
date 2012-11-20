@@ -22,148 +22,105 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class MoveCategory1ItemToCategory2Test extends BaseTestCase {
 	public void testMoveCategory1ItemToCategory2() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Shopping Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Shopping Test Page",
 			RuntimeVariables.replace("Shopping Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Categories",
 			RuntimeVariables.replace("Categories"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Shopping Category1 Name\nShopping Category1 Description"),
-			selenium.getText("//td[1]/a"));
-		selenium.clickAt("//td[1]/a",
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row']/td[1]/a",
+				"Shopping Category1 Name"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row']/td[1]/a",
+				"Shopping Category1 Description"));
+		selenium.clickAt("//tr[@class='portlet-section-body results-row']/td[1]/a",
 			RuntimeVariables.replace(
-				"Shopping Category1 Name\nShopping Category1 Description"));
+				"Shopping Category1 Name Shopping Category1 Description"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Shopping Category1 Item Name\nShopping Category1 Item Description\nShopping: Category1 Item Properties"),
-			selenium.getText("//td[2]/a"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping Category1 Item"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping Category1 Item Description"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping: Category1 Item Properties"));
 		assertEquals(RuntimeVariables.replace("Actions"),
-			selenium.getText("//td[5]/span/ul/li/strong/a"));
-		selenium.clickAt("//td[5]/span/ul/li/strong/a",
+			selenium.getText("//span[@title='Actions']/ul/li/strong/a"));
+		selenium.clickAt("//span[@title='Actions']/ul/li/strong/a",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Edit')]");
 		assertEquals(RuntimeVariables.replace("Edit"),
 			selenium.getText(
-				"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a"));
-		selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a",
+				"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Edit')]"));
+		selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Edit')]",
 			RuntimeVariables.replace("Edit"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Shopping Category1 Name"),
 			selenium.getText("//a[@id='_34_categoryName']"));
 		selenium.clickAt("//input[@value='Select']",
 			RuntimeVariables.replace("Select"));
-		selenium.waitForPopUp("category", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("category");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//span[1]/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForPopUp("Shopping", RuntimeVariables.replace("30000"));
+		selenium.selectWindow("Shopping");
+		selenium.waitForText("//h1[@class='header-title']", "Categories");
 		assertEquals(RuntimeVariables.replace("Categories"),
-			selenium.getText("//span[1]/a"));
-		selenium.clickAt("//span[1]/a", RuntimeVariables.replace("Categories"));
+			selenium.getText("//h1[@class='header-title']"));
+		selenium.waitForText("//div[@class='breadcrumbs']/span[1]/a",
+			"Categories");
+		assertEquals(RuntimeVariables.replace("Categories"),
+			selenium.getText("//div[@class='breadcrumbs']/span[1]/a"));
+		assertEquals(RuntimeVariables.replace("Shopping Category1 Name"),
+			selenium.getText("//div[@class='breadcrumbs']/span[2]/a"));
+		selenium.clickAt("//div[@class='breadcrumbs']/span[1]/a",
+			RuntimeVariables.replace("Categories"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.click("xPath=(//input[@type='button'])[2]");
 		selenium.selectWindow("null");
+		selenium.waitForText("//a[@id='_34_categoryName']",
+			"Shopping Category2 Name");
 		assertEquals(RuntimeVariables.replace("Shopping Category2 Name"),
 			selenium.getText("//a[@id='_34_categoryName']"));
 		selenium.clickAt("//input[@value='Save']", RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
+		assertFalse(selenium.isTextPresent("Shopping Category1 Item Name"));
 		assertFalse(selenium.isTextPresent(
-				"Shopping Category1 Item Name\nShopping Category1 Item Description\nShopping: Category1 Item Properties"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Shopping Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+				"Shopping Category1 Item Description"));
+		assertFalse(selenium.isTextPresent(
+				"Shopping: Category1 Item Properties"));
+		selenium.open("/web/guest/home/");
 		selenium.clickAt("link=Shopping Test Page",
 			RuntimeVariables.replace("Shopping Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Categories",
 			RuntimeVariables.replace("Categories"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Shopping Category2 Name\nShopping Category2 Description"),
-			selenium.getText("//tr[4]/td[1]/a"));
-		selenium.clickAt("//tr[4]/td[1]/a",
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-alternate results-row alt last']/td[1]/a",
+				"Shopping Category2 Name"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-alternate results-row alt last']/td[1]/a",
+				"Shopping Category2 Description"));
+		selenium.clickAt("//tr[@class='portlet-section-alternate results-row alt last']/td[1]/a",
 			RuntimeVariables.replace(
-				"Shopping Category2 Name\nShopping Category2 Description"));
+				"Shopping Category2 Name Shopping Category2 Description"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Shopping Category1 Item Name\nShopping Category1 Item Description\nShopping: Category1 Item Properties"),
-			selenium.getText("//td[2]/a"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping Category1 Item"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping Category1 Item Description"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]/a",
+				"Shopping: Category1 Item Properties"));
 	}
 }

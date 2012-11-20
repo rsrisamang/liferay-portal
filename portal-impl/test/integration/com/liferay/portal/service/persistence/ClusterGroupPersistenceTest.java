@@ -22,11 +22,11 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.model.ClusterGroup;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -111,7 +111,7 @@ public class ClusterGroupPersistenceTest {
 
 		newClusterGroup.setWholeCluster(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(newClusterGroup, false);
+		_persistence.update(newClusterGroup);
 
 		ClusterGroup existingClusterGroup = _persistence.findByPrimaryKey(newClusterGroup.getPrimaryKey());
 
@@ -251,7 +251,7 @@ public class ClusterGroupPersistenceTest {
 
 		clusterGroup.setWholeCluster(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(clusterGroup, false);
+		_persistence.update(clusterGroup);
 
 		return clusterGroup;
 	}

@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -128,7 +128,7 @@ public class SocialActivityPersistenceTest {
 
 		newSocialActivity.setReceiverUserId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newSocialActivity, false);
+		_persistence.update(newSocialActivity);
 
 		SocialActivity existingSocialActivity = _persistence.findByPrimaryKey(newSocialActivity.getPrimaryKey());
 
@@ -324,7 +324,7 @@ public class SocialActivityPersistenceTest {
 
 		socialActivity.setReceiverUserId(ServiceTestUtil.nextLong());
 
-		_persistence.update(socialActivity, false);
+		_persistence.update(socialActivity);
 
 		return socialActivity;
 	}

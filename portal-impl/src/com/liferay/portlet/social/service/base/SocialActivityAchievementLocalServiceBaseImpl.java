@@ -51,6 +51,7 @@ import com.liferay.portlet.social.service.SocialActivitySettingService;
 import com.liferay.portlet.social.service.SocialRelationLocalService;
 import com.liferay.portlet.social.service.SocialRequestInterpreterLocalService;
 import com.liferay.portlet.social.service.SocialRequestLocalService;
+import com.liferay.portlet.social.service.SocialRequestService;
 import com.liferay.portlet.social.service.persistence.SocialActivityAchievementPersistence;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterFinder;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterPersistence;
@@ -101,8 +102,7 @@ public abstract class SocialActivityAchievementLocalServiceBaseImpl
 		throws SystemException {
 		socialActivityAchievement.setNew(true);
 
-		return socialActivityAchievementPersistence.update(socialActivityAchievement,
-			false);
+		return socialActivityAchievementPersistence.update(socialActivityAchievement);
 	}
 
 	/**
@@ -278,25 +278,7 @@ public abstract class SocialActivityAchievementLocalServiceBaseImpl
 	public SocialActivityAchievement updateSocialActivityAchievement(
 		SocialActivityAchievement socialActivityAchievement)
 		throws SystemException {
-		return updateSocialActivityAchievement(socialActivityAchievement, true);
-	}
-
-	/**
-	 * Updates the social activity achievement in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param socialActivityAchievement the social activity achievement
-	 * @param merge whether to merge the social activity achievement with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the social activity achievement that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Indexable(type = IndexableType.REINDEX)
-	public SocialActivityAchievement updateSocialActivityAchievement(
-		SocialActivityAchievement socialActivityAchievement, boolean merge)
-		throws SystemException {
-		socialActivityAchievement.setNew(false);
-
-		return socialActivityAchievementPersistence.update(socialActivityAchievement,
-			merge);
+		return socialActivityAchievementPersistence.update(socialActivityAchievement);
 	}
 
 	/**
@@ -623,6 +605,25 @@ public abstract class SocialActivityAchievementLocalServiceBaseImpl
 	}
 
 	/**
+	 * Returns the social request remote service.
+	 *
+	 * @return the social request remote service
+	 */
+	public SocialRequestService getSocialRequestService() {
+		return socialRequestService;
+	}
+
+	/**
+	 * Sets the social request remote service.
+	 *
+	 * @param socialRequestService the social request remote service
+	 */
+	public void setSocialRequestService(
+		SocialRequestService socialRequestService) {
+		this.socialRequestService = socialRequestService;
+	}
+
+	/**
 	 * Returns the social request persistence.
 	 *
 	 * @return the social request persistence
@@ -930,6 +931,8 @@ public abstract class SocialActivityAchievementLocalServiceBaseImpl
 	protected SocialRelationPersistence socialRelationPersistence;
 	@BeanReference(type = SocialRequestLocalService.class)
 	protected SocialRequestLocalService socialRequestLocalService;
+	@BeanReference(type = SocialRequestService.class)
+	protected SocialRequestService socialRequestService;
 	@BeanReference(type = SocialRequestPersistence.class)
 	protected SocialRequestPersistence socialRequestPersistence;
 	@BeanReference(type = SocialRequestInterpreterLocalService.class)

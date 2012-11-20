@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -128,7 +128,7 @@ public class MDRRuleGroupPersistenceTest {
 
 		newMDRRuleGroup.setDescription(ServiceTestUtil.randomString());
 
-		_persistence.update(newMDRRuleGroup, false);
+		_persistence.update(newMDRRuleGroup);
 
 		MDRRuleGroup existingMDRRuleGroup = _persistence.findByPrimaryKey(newMDRRuleGroup.getPrimaryKey());
 
@@ -310,7 +310,7 @@ public class MDRRuleGroupPersistenceTest {
 
 		mdrRuleGroup.setDescription(ServiceTestUtil.randomString());
 
-		_persistence.update(mdrRuleGroup, false);
+		_persistence.update(mdrRuleGroup);
 
 		return mdrRuleGroup;
 	}

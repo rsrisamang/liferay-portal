@@ -29,13 +29,13 @@ import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.lang.PortalSecurityManagerThreadLocal;
 import com.liferay.portal.security.pacl.PACLClassUtil;
 import com.liferay.portal.servlet.DirectServletRegistryImpl;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.util.UniqueList;
 
 import java.io.File;
 import java.io.FilePermission;
@@ -60,7 +60,14 @@ import sun.reflect.Reflection;
 public class FileChecker extends BaseChecker {
 
 	public void afterPropertiesSet() {
-		_rootDir = WebDirDetector.getRootDir(getClassLoader());
+		try {
+			_rootDir = WebDirDetector.getRootDir(getClassLoader());
+		}
+		catch (Exception e) {
+
+			// This means the WAR is probably not exploded
+
+		}
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Root directory " + _rootDir);
@@ -85,16 +92,24 @@ public class FileChecker extends BaseChecker {
 			"${catalina.base}",
 			"${com.sun.aas.instanceRoot}",
 			"${com.sun.aas.installRoot}",
+			"${file.separator}",
+			"${java.io.tmpdir}",
 			"${jboss.home.dir}",
 			"${jetty.home}",
 			"${jonas.base}",
 			"${liferay.web.portal.dir}",
+			"${line.separator}",
 			"${org.apache.geronimo.home.dir}",
-			"${org.apache.geronimo.home.dir}",
+			"${path.separator}",
 			"${plugin.servlet.context.name}",
 			"${release.info.version}",
+			"${resin.home}",
+			"${user.dir}",
+			"${user.home}",
+			"${user.name}",
 			"${weblogic.domain.dir}",
-			"${websphere.profile.dir}"
+			"${websphere.profile.dir}",
+			StringPool.DOUBLE_SLASH
 		};
 
 		String installedDir = StringPool.BLANK;
@@ -112,12 +127,17 @@ public class FileChecker extends BaseChecker {
 			installedDir, System.getProperty("catalina.base"),
 			System.getProperty("com.sun.aas.instanceRoot"),
 			System.getProperty("com.sun.aas.installRoot"),
+			System.getProperty("file.separator"),
+			System.getProperty("java.io.tmpdir"),
 			System.getProperty("jboss.home.dir"),
 			System.getProperty("jetty.home"), System.getProperty("jonas.base"),
-			_portalDir, System.getProperty("org.apache.geronimo.home.dir"),
-			System.getProperty("resin.home"), getServletContextName(),
-			ReleaseInfo.getVersion(), System.getenv("DOMAIN_HOME"),
-			System.getenv("USER_INSTALL_ROOT")
+			_portalDir, System.getProperty("line.separator"),
+			System.getProperty("org.apache.geronimo.home.dir"),
+			System.getProperty("path.separator"), getServletContextName(),
+			ReleaseInfo.getVersion(), System.getProperty("resin.home"),
+			System.getProperty("user.dir"), System.getProperty("user.home"),
+			System.getProperty("user.name"), System.getenv("DOMAIN_HOME"),
+			System.getenv("USER_INSTALL_ROOT"), StringPool.SLASH
 		};
 
 		if (_log.isDebugEnabled()) {
@@ -321,7 +341,9 @@ public class FileChecker extends BaseChecker {
 
 		// Plugin
 
-		paths.add(_rootDir + "-");
+		if (_rootDir != null) {
+			paths.add(_rootDir + "-");
+		}
 
 		// Portal
 

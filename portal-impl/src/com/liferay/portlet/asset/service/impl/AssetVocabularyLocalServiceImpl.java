@@ -104,7 +104,7 @@ public class AssetVocabularyLocalServiceImpl
 		vocabulary.setDescriptionMap(descriptionMap);
 		vocabulary.setSettings(settings);
 
-		assetVocabularyPersistence.update(vocabulary, false);
+		assetVocabularyPersistence.update(vocabulary);
 
 		// Resources
 
@@ -203,6 +203,8 @@ public class AssetVocabularyLocalServiceImpl
 		throws PortalException, SystemException {
 
 		List<AssetVocabulary> vocabularies = new ArrayList<AssetVocabulary>();
+
+		groupIds = ArrayUtil.unique(groupIds);
 
 		for (long groupId : groupIds) {
 			List<AssetVocabulary> groupVocabularies = getGroupVocabularies(
@@ -351,7 +353,7 @@ public class AssetVocabularyLocalServiceImpl
 		vocabulary.setDescriptionMap(descriptionMap);
 		vocabulary.setSettings(settings);
 
-		assetVocabularyPersistence.update(vocabulary, false);
+		assetVocabularyPersistence.update(vocabulary);
 
 		return vocabulary;
 	}

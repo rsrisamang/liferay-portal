@@ -27,9 +27,10 @@ public class LoginTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.setTimeout("180000");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
 				selenium.type("//input[@id='_58_login']",
 					RuntimeVariables.replace("test@liferay.com"));
 				selenium.type("//input[@id='_58_password']",
@@ -53,7 +54,6 @@ public class LoginTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Sign In']",
 					RuntimeVariables.replace("Sign In"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean agreementAvailable = selenium.isElementPresent(
 						"//h1/span[contains(.,'Terms of Use')]");
@@ -67,7 +67,6 @@ public class LoginTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='I Agree']",
 					RuntimeVariables.replace("I Agree"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 3:
 
@@ -88,7 +87,6 @@ public class LoginTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Save']",
 					RuntimeVariables.replace("Save"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 4:
 				assertTrue(selenium.isPartialText(

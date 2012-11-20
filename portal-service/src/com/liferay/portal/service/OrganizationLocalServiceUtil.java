@@ -237,20 +237,6 @@ public class OrganizationLocalServiceUtil {
 	}
 
 	/**
-	* Updates the organization in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param organization the organization
-	* @param merge whether to merge the organization with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the organization that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.Organization updateOrganization(
-		com.liferay.portal.model.Organization organization, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateOrganization(organization, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -768,7 +754,7 @@ public class OrganizationLocalServiceUtil {
 	* @param companyId the primary key of the company
 	* @param params the finder parameters (optionally <code>null</code>). For
 	more information see {@link
-	com.liferay.portlet.enterpriseadmin.util.OrganizationIndexer}
+	com.liferay.portlet.usersadmin.util.OrganizationIndexer}
 	* @param start the lower bound of the range of organizations to return
 	* @param end the upper bound of the range of organizations to return (not
 	inclusive)
@@ -806,7 +792,7 @@ public class OrganizationLocalServiceUtil {
 	country (optionally <code>null</code>)
 	* @param params the finder parameters (optionally <code>null</code>). For
 	more information see {@link
-	com.liferay.portlet.enterpriseadmin.util.OrganizationIndexer}
+	com.liferay.portlet.usersadmin.util.OrganizationIndexer}
 	* @param start the lower bound of the range of organizations to return
 	* @param end the upper bound of the range of organizations to return (not
 	inclusive)
@@ -814,7 +800,7 @@ public class OrganizationLocalServiceUtil {
 	<code>null</code>)
 	* @return the matching organizations ordered by name
 	* @throws SystemException if a system exception occurred
-	* @see com.liferay.portlet.enterpriseadmin.util.OrganizationIndexer
+	* @see com.liferay.portlet.usersadmin.util.OrganizationIndexer
 	*/
 	public static com.liferay.portal.kernel.search.Hits search(long companyId,
 		long parentOrganizationId, java.lang.String keywords,
@@ -1074,7 +1060,7 @@ public class OrganizationLocalServiceUtil {
 	* @param country the country keywords (optionally <code>null</code>)
 	* @param params the finder parameters (optionally <code>null</code>). For
 	more information see {@link
-	com.liferay.portlet.enterpriseadmin.util.OrganizationIndexer}.
+	com.liferay.portlet.usersadmin.util.OrganizationIndexer}.
 	* @param andSearch whether every field must match its keywords or just one
 	field
 	* @param start the lower bound of the range of organizations to return
@@ -1084,7 +1070,7 @@ public class OrganizationLocalServiceUtil {
 	<code>null</code>)
 	* @return the matching organizations ordered by <code>sort</code>
 	* @throws SystemException if a system exception occurred
-	* @see com.liferay.portlet.enterpriseadmin.util.OrganizationIndexer
+	* @see com.liferay.portlet.usersadmin.util.OrganizationIndexer
 	*/
 	public static com.liferay.portal.kernel.search.Hits search(long companyId,
 		long parentOrganizationId, java.lang.String name,

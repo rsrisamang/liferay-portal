@@ -224,20 +224,6 @@ public class LayoutSetLocalServiceWrapper implements LayoutSetLocalService,
 	}
 
 	/**
-	* Updates the layout set in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param layoutSet the layout set
-	* @param merge whether to merge the layout set with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the layout set that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.model.LayoutSet updateLayoutSet(
-		com.liferay.portal.model.LayoutSet layoutSet, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _layoutSetLocalService.updateLayoutSet(layoutSet, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -346,6 +332,14 @@ public class LayoutSetLocalServiceWrapper implements LayoutSetLocalService,
 			com.liferay.portal.kernel.exception.SystemException {
 		_layoutSetLocalService.updateLayoutSetPrototypeLinkEnabled(groupId,
 			privateLayout, layoutSetPrototypeLinkEnabled, layoutSetPrototypeUuid);
+	}
+
+	public com.liferay.portal.model.LayoutSet updateLogo(long groupId,
+		boolean privateLayout, boolean logo, byte[] bytes)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _layoutSetLocalService.updateLogo(groupId, privateLayout, logo,
+			bytes);
 	}
 
 	public com.liferay.portal.model.LayoutSet updateLogo(long groupId,

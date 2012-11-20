@@ -247,20 +247,6 @@ public class LayoutLocalServiceUtil {
 	}
 
 	/**
-	* Updates the layout in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param layout the layout
-	* @param merge whether to merge the layout with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the layout that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.Layout updateLayout(
-		com.liferay.portal.model.Layout layout, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateLayout(layout, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -637,6 +623,12 @@ public class LayoutLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService()
 				   .fetchFirstLayout(groupId, privateLayout, parentLayoutId);
+	}
+
+	public static com.liferay.portal.model.Layout fetchLayout(long groupId,
+		boolean privateLayout, long layoutId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().fetchLayout(groupId, privateLayout, layoutId);
 	}
 
 	/**

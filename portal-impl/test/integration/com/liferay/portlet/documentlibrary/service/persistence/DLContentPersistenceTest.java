@@ -23,12 +23,12 @@ import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -136,7 +136,7 @@ public class DLContentPersistenceTest {
 
 		newDLContent.setSize(ServiceTestUtil.nextLong());
 
-		_persistence.update(newDLContent, false);
+		_persistence.update(newDLContent);
 
 		DLContent existingDLContent = _persistence.findByPrimaryKey(newDLContent.getPrimaryKey());
 
@@ -321,7 +321,7 @@ public class DLContentPersistenceTest {
 
 		dlContent.setSize(ServiceTestUtil.nextLong());
 
-		_persistence.update(dlContent, false);
+		_persistence.update(dlContent);
 
 		return dlContent;
 	}

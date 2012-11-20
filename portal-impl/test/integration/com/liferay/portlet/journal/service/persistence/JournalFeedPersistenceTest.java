@@ -21,13 +21,13 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
 import com.liferay.portal.test.AssertUtils;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -151,11 +151,11 @@ public class JournalFeedPersistenceTest {
 
 		newJournalFeed.setContentField(ServiceTestUtil.randomString());
 
-		newJournalFeed.setFeedType(ServiceTestUtil.randomString());
+		newJournalFeed.setFeedFormat(ServiceTestUtil.randomString());
 
 		newJournalFeed.setFeedVersion(ServiceTestUtil.nextDouble());
 
-		_persistence.update(newJournalFeed, false);
+		_persistence.update(newJournalFeed);
 
 		JournalFeed existingJournalFeed = _persistence.findByPrimaryKey(newJournalFeed.getPrimaryKey());
 
@@ -202,8 +202,8 @@ public class JournalFeedPersistenceTest {
 			newJournalFeed.getTargetPortletId());
 		Assert.assertEquals(existingJournalFeed.getContentField(),
 			newJournalFeed.getContentField());
-		Assert.assertEquals(existingJournalFeed.getFeedType(),
-			newJournalFeed.getFeedType());
+		Assert.assertEquals(existingJournalFeed.getFeedFormat(),
+			newJournalFeed.getFeedFormat());
 		AssertUtils.assertEquals(existingJournalFeed.getFeedVersion(),
 			newJournalFeed.getFeedVersion());
 	}
@@ -388,11 +388,11 @@ public class JournalFeedPersistenceTest {
 
 		journalFeed.setContentField(ServiceTestUtil.randomString());
 
-		journalFeed.setFeedType(ServiceTestUtil.randomString());
+		journalFeed.setFeedFormat(ServiceTestUtil.randomString());
 
 		journalFeed.setFeedVersion(ServiceTestUtil.nextDouble());
 
-		_persistence.update(journalFeed, false);
+		_persistence.update(journalFeed);
 
 		return journalFeed;
 	}

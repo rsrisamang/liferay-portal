@@ -22,169 +22,100 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class DeleteDMDocumentsDMDActionsTest extends BaseTestCase {
 	public void testDeleteDMDocumentsDMDActions() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Document1 Title"),
 			selenium.getText("//span[@class='entry-title']"));
+		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("Actions"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]");
 		assertEquals(RuntimeVariables.replace("Move to the Recycle Bin"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]",
 			RuntimeVariables.replace("Move to the Recycle Bin"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertTrue(selenium.getConfirmation()
-						   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 		assertEquals(RuntimeVariables.replace(
-				"Your request completed successfully."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
+				"The selected item was moved to the Recycle Bin. Undo"),
+			selenium.getText(
+				"//div[@class='portlet-msg-success taglib-trash-undo']"));
 		assertEquals(RuntimeVariables.replace("DM Document2 Title"),
 			selenium.getText("//span[@class='entry-title']"));
+		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("Actions"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]");
 		assertEquals(RuntimeVariables.replace("Move to the Recycle Bin"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]",
 			RuntimeVariables.replace("Move to the Recycle Bin"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertTrue(selenium.getConfirmation()
-						   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 		assertEquals(RuntimeVariables.replace(
-				"Your request completed successfully."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
+				"The selected item was moved to the Recycle Bin. Undo"),
+			selenium.getText(
+				"//div[@class='portlet-msg-success taglib-trash-undo']"));
 		assertEquals(RuntimeVariables.replace("DM Document3 Title"),
 			selenium.getText("//span[@class='entry-title']"));
+		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace("Actions"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menuButton')]/span",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]");
 		assertEquals(RuntimeVariables.replace("Move to the Recycle Bin"),
 			selenium.getText(
 				"//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]"));
 		selenium.clickAt("//a[contains(@id,'objectsSearchContainer_1_menu_move-to-the-recycle-bin')]",
 			RuntimeVariables.replace("Move to the Recycle Bin"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertTrue(selenium.getConfirmation()
-						   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 		assertEquals(RuntimeVariables.replace(
-				"Your request completed successfully."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
+				"The selected item was moved to the Recycle Bin. Undo"),
+			selenium.getText(
+				"//div[@class='portlet-msg-success taglib-trash-undo']"));
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Recycle Bin",
 			RuntimeVariables.replace("Recycle Bin"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Document1 Title"),
-			selenium.getText("//tr[3]/td[2]/a/span/span"));
+			selenium.getText("//tr[3]/td/span/a/span"));
 		assertEquals(RuntimeVariables.replace("DM Document2 Title"),
-			selenium.getText("//tr[4]/td[2]/a/span/span"));
+			selenium.getText("//tr[4]/td/span/a/span"));
 		assertEquals(RuntimeVariables.replace("DM Document3 Title"),
-			selenium.getText("//tr[5]/td[2]/a/span/span"));
-		assertFalse(selenium.isChecked("//input[@name='_182_allRowIds']"));
-		selenium.clickAt("//input[@name='_182_allRowIds']",
-			RuntimeVariables.replace("All Entries Check Box"));
-		assertTrue(selenium.isChecked("//input[@name='_182_allRowIds']"));
-		selenium.clickAt("//input[@value='Delete']",
-			RuntimeVariables.replace("Delete"));
+			selenium.getText("//tr[5]/td/span/a/span"));
+		assertEquals(RuntimeVariables.replace("Empty the Recycle Bin"),
+			selenium.getText("//form[@id='_182_emptyForm']/a"));
+		selenium.clickAt("//form[@id='_182_emptyForm']/a",
+			RuntimeVariables.replace("Empty the Recycle Bin"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.getConfirmation()
-						   .matches("^Are you sure you want to delete the selected entries[\\s\\S] They will be deleted immediately.$"));
+						   .matches("^Are you sure you want to empty the Recycle Bin[\\s\\S]$"));
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

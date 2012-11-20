@@ -44,7 +44,6 @@ import com.liferay.portlet.journal.model.JournalTemplate;
 import com.liferay.portlet.journal.model.JournalTemplateConstants;
 import com.liferay.portlet.journal.service.JournalTemplateServiceUtil;
 import com.liferay.portlet.journal.util.JournalUtil;
-import com.liferay.util.JS;
 
 import java.io.File;
 import java.io.IOException;
@@ -196,8 +195,8 @@ public class EditTemplateAction extends PortletAction {
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
-		String originalRedirect = ParamUtil.getString(
-			actionRequest, "originalRedirect");
+		String referringPortletResource = ParamUtil.getString(
+			actionRequest, "referringPortletResource");
 
 		PortletURLImpl portletURL = new PortletURLImpl(
 			actionRequest, portletConfig.getPortletName(),
@@ -208,7 +207,8 @@ public class EditTemplateAction extends PortletAction {
 		portletURL.setParameter("struts_action", "/journal/edit_template");
 		portletURL.setParameter(Constants.CMD, Constants.UPDATE, false);
 		portletURL.setParameter("redirect", redirect, false);
-		portletURL.setParameter("originalRedirect", originalRedirect, false);
+		portletURL.setParameter(
+			"referringPortletResource", referringPortletResource, false);
 		portletURL.setParameter(
 			"groupId", String.valueOf(template.getGroupId()), false);
 		portletURL.setParameter("templateId", template.getTemplateId(), false);
@@ -260,8 +260,8 @@ public class EditTemplateAction extends PortletAction {
 			LocalizationUtil.getLocalizationMap(actionRequest, "description");
 
 		String xsl = getXsl(uploadPortletRequest);
-		String xslContent = JS.decodeURIComponent(
-			ParamUtil.getString(uploadPortletRequest, "xslContent"));
+		String xslContent = ParamUtil.getString(
+			uploadPortletRequest, "xslContent");
 		boolean formatXsl = ParamUtil.getBoolean(
 			uploadPortletRequest, "formatXsl");
 

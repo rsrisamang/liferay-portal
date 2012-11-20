@@ -26,6 +26,7 @@ import ${packagePath}.model.${entity.name}Soap;
 
 import ${packagePath}.service.${entity.name}LocalServiceUtil;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
@@ -214,6 +215,10 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 		 * @return the normal model instance
 		 */
 		public static ${entity.name} toModel(${entity.name}Soap soapModel) {
+			if (soapModel == null) {
+				return null;
+			}
+
 			${entity.name} model = new ${entity.name}Impl();
 
 			<#list entity.regularColList as column>
@@ -230,6 +235,10 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 		 * @return the normal model instances
 		 */
 		public static List<${entity.name}> toModels(${entity.name}Soap[] soapModels) {
+			if (soapModels == null) {
+				return null;
+			}
+
 			List<${entity.name}> models = new ArrayList<${entity.name}>(soapModels.length);
 
 			for (${entity.name}Soap soapModel : soapModels) {
@@ -617,6 +626,51 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 		}
 	</#list>
 
+	<#if entity.isContainerModel()>
+		<#assign hasParentContainerModelId = entity.hasColumn("parentContainerModelId")>
+
+		<#list entity.columnList as column>
+			<#if column.isContainerModel() && (column.name != "containerModelId")>
+				public long getContainerModelId() {
+					return get${column.methodName}();
+				}
+
+				public void setContainerModelId(long containerModelId) {
+					_${column.name} = containerModelId;
+				}
+			</#if>
+
+			<#if column.isParentContainerModel() && (column.name != "parentContainerModelId")>
+				<#assign hasParentContainerModelId = true>
+
+				public long getParentContainerModelId() {
+					return get${column.methodName}();
+				}
+
+				public void setParentContainerModelId(long parentContainerModelId) {
+					_${column.name} = parentContainerModelId;
+				}
+			</#if>
+		</#list>
+
+		public String getContainerModelName() {
+			<#if entity.hasColumn("name")>
+				return String.valueOf(getName());
+			<#else>
+				return String.valueOf(getContainerModelId());
+			</#if>
+		}
+
+		<#if !hasParentContainerModelId>
+			public long getParentContainerModelId() {
+				return 0;
+			}
+
+			public void setParentContainerModelId(long parentContainerModelId) {
+			}
+		</#if>
+	</#if>
+
 	<#if entity.isWorkflowEnabled()>
 		/**
 		 * @deprecated {@link #isApproved}
@@ -634,10 +688,17 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 			}
 		}
 
-		public boolean isDraft() {
-			if ((getStatus() == WorkflowConstants.STATUS_DRAFT) ||
-				(getStatus() == WorkflowConstants.STATUS_DRAFT_FROM_APPROVED)) {
+		public boolean isDenied() {
+			if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 
+		public boolean isDraft() {
+			if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
 				return true;
 			}
 			else {
@@ -647,6 +708,24 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 
 		public boolean isExpired() {
 			if (getStatus() == WorkflowConstants.STATUS_EXPIRED) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		public boolean isInactive() {
+			if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		public boolean isIncomplete() {
+			if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
 				return true;
 			}
 			else {
@@ -671,6 +750,15 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 				return false;
 			}
 		}
+
+		public boolean isScheduled() {
+			if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
 	</#if>
 
 	<#if columnBitmaskEnabled>
@@ -678,15 +766,6 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 			return _columnBitmask;
 		}
 	</#if>
-
-	@Override
-	public ${entity.name} toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (${entity.name})ProxyUtil.newProxyInstance(_classLoader, _escapedModelProxyInterfaces, new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
 
 	<#if (entity.PKClassName == "long") && !stringUtil.startsWith(entity.name, "Expando")>
 		@Override
@@ -709,6 +788,27 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 			expandoBridge.setAttributes(serviceContext);
 		}
 	</#if>
+
+	<#if entity.hasLocalizedColumn()>
+		@SuppressWarnings("unused")
+		public void prepareLocalizedFieldsForImport(Locale defaultImportLocale) throws LocaleException {
+
+			<#list entity.regularColList as column>
+				<#if column.localized>
+					set${column.methodName}(get${column.methodName}(defaultImportLocale), defaultImportLocale, defaultImportLocale);
+				</#if>
+			</#list>
+		}
+	</#if>
+
+	@Override
+	public ${entity.name} toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (${entity.name})ProxyUtil.newProxyInstance(_classLoader, _escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
+	}
 
 	@Override
 	public Object clone() {
@@ -950,7 +1050,7 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 
 	private static ClassLoader _classLoader = ${entity.name}.class.getClassLoader();
 
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {${entity.name}.class};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {${entity.name}.class};
 
 	<#list entity.regularColList as column>
 		<#if (column.type == "Blob") && column.lazy>
@@ -980,6 +1080,6 @@ public class ${entity.name}ModelImpl extends BaseModelImpl<${entity.name}> imple
 		private long _columnBitmask;
 	</#if>
 
-	private ${entity.name} _escapedModelProxy;
+	private ${entity.name} _escapedModel;
 
 }

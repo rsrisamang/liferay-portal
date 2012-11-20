@@ -23,39 +23,22 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class User_ResubmitDMFolderDocumentDocMSTest extends BaseTestCase {
 	public void testUser_ResubmitDMFolderDocumentDocMS()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//div[@id='dockbar']",
 			RuntimeVariables.replace("Dockbar"));
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.clickAt("//li[@id='_145_mySites']/a/span",
 			RuntimeVariables.replace("Go to"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=My Submissions",
 			RuntimeVariables.replace("My Submissions"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Single Approver"),
 			selenium.getText("//td[1]/a"));
 		assertEquals(RuntimeVariables.replace("DM Document Title Edit"),
@@ -71,7 +54,6 @@ public class User_ResubmitDMFolderDocumentDocMSTest extends BaseTestCase {
 			selenium.getText("//td[7]/span/a/span"));
 		selenium.clickAt("//td[4]/a", RuntimeVariables.replace("Update"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Single Approver: DM Document Title Edit"),
 			selenium.getText("//h1[@class='header-title']/span"));
@@ -95,28 +77,11 @@ public class User_ResubmitDMFolderDocumentDocMSTest extends BaseTestCase {
 			selenium.getText("//tr[3]/td[4]/span/a/span"));
 		selenium.clickAt("//tr[3]/td[4]/span/a/span",
 			RuntimeVariables.replace("Resubmit"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//button[.='OK']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//button[.='OK']");
 		assertEquals(RuntimeVariables.replace("OK"),
 			selenium.getText("//button[.='OK']"));
 		selenium.clickAt("//button[.='OK']", RuntimeVariables.replace("OK"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

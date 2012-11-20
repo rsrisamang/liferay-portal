@@ -86,6 +86,10 @@ public class ListTypeModelImpl extends BaseModelImpl<ListType>
 	 * @return the normal model instance
 	 */
 	public static ListType toModel(ListTypeSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		ListType model = new ListTypeImpl();
 
 		model.setListTypeId(soapModel.getListTypeId());
@@ -102,6 +106,10 @@ public class ListTypeModelImpl extends BaseModelImpl<ListType>
 	 * @return the normal model instances
 	 */
 	public static List<ListType> toModels(ListTypeSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<ListType> models = new ArrayList<ListType>(soapModels.length);
 
 		for (ListTypeSoap soapModel : soapModels) {
@@ -228,13 +236,12 @@ public class ListTypeModelImpl extends BaseModelImpl<ListType>
 
 	@Override
 	public ListType toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (ListType)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
+		if (_escapedModel == null) {
+			_escapedModel = (ListType)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
 		}
 
-		return _escapedModelProxy;
+		return _escapedModel;
 	}
 
 	@Override
@@ -368,7 +375,7 @@ public class ListTypeModelImpl extends BaseModelImpl<ListType>
 	}
 
 	private static ClassLoader _classLoader = ListType.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			ListType.class
 		};
 	private int _listTypeId;
@@ -376,5 +383,5 @@ public class ListTypeModelImpl extends BaseModelImpl<ListType>
 	private String _type;
 	private String _originalType;
 	private long _columnBitmask;
-	private ListType _escapedModelProxy;
+	private ListType _escapedModel;
 }

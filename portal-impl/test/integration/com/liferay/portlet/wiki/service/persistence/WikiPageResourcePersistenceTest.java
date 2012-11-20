@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -115,7 +115,7 @@ public class WikiPageResourcePersistenceTest {
 
 		newWikiPageResource.setTitle(ServiceTestUtil.randomString());
 
-		_persistence.update(newWikiPageResource, false);
+		_persistence.update(newWikiPageResource);
 
 		WikiPageResource existingWikiPageResource = _persistence.findByPrimaryKey(newWikiPageResource.getPrimaryKey());
 
@@ -274,7 +274,7 @@ public class WikiPageResourcePersistenceTest {
 
 		wikiPageResource.setTitle(ServiceTestUtil.randomString());
 
-		_persistence.update(wikiPageResource, false);
+		_persistence.update(wikiPageResource);
 
 		return wikiPageResource;
 	}

@@ -22,36 +22,18 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class Guest_ViewCheckoutDMDocumentTxtTest extends BaseTestCase {
 	public void testGuest_ViewCheckoutDMDocumentTxt() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Document Title"),
 			selenium.getText("//div[@data-title='DM Document Title']/a/span[2]"));
 		assertTrue(selenium.isVisible("//img[@alt='Locked']"));
 		selenium.clickAt("//div[@data-title='DM Document Title']/a/span[2]",
 			RuntimeVariables.replace("DM Document Title"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Download"),
 			selenium.getText("//button[.='Download']"));
 		assertEquals(RuntimeVariables.replace("Version 1.0"),
@@ -59,8 +41,10 @@ public class Guest_ViewCheckoutDMDocumentTxtTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("Status: Approved"),
 			selenium.getText("//span[@class='workflow-status']"));
 		assertEquals(RuntimeVariables.replace("1.0"),
-			selenium.getText("//tr[3]/td[2]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]"));
 		assertEquals(RuntimeVariables.replace("0.3k"),
-			selenium.getText("//tr[3]/td[4]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row last']/td[4]"));
 	}
 }

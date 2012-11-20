@@ -22,12 +22,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.EmailAddress;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -126,7 +126,7 @@ public class EmailAddressPersistenceTest {
 
 		newEmailAddress.setPrimary(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(newEmailAddress, false);
+		_persistence.update(newEmailAddress);
 
 		EmailAddress existingEmailAddress = _persistence.findByPrimaryKey(newEmailAddress.getPrimaryKey());
 
@@ -296,7 +296,7 @@ public class EmailAddressPersistenceTest {
 
 		emailAddress.setPrimary(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(emailAddress, false);
+		_persistence.update(emailAddress);
 
 		return emailAddress;
 	}

@@ -40,9 +40,14 @@ import java.awt.image.WritableRaster;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.util.Enumeration;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.imageio.ImageIO;
 
@@ -62,9 +67,7 @@ public class ImageToolImpl implements ImageTool {
 		return _instance;
 	}
 
-	public RenderedImage convertCMYKtoRGB(
-		byte[] bytes, String type, boolean fork) {
-
+	public Future<RenderedImage> convertCMYKtoRGB(byte[] bytes, String type) {
 		ImageMagick imageMagick = getImageMagick();
 
 		if (!imageMagick.isEnabled()) {
@@ -82,8 +85,7 @@ public class ImageToolImpl implements ImageTool {
 			imOperation.addRawArgs("-format", "%[colorspace]");
 			imOperation.addImage(inputFile.getPath());
 
-			String[] output = imageMagick.identify(
-				imOperation.getCmdArgs(), fork);
+			String[] output = imageMagick.identify(imOperation.getCmdArgs());
 
 			if ((output.length == 1) && output[0].equalsIgnoreCase("CMYK")) {
 				if (_log.isInfoEnabled()) {
@@ -96,11 +98,10 @@ public class ImageToolImpl implements ImageTool {
 				imOperation.addImage(inputFile.getPath());
 				imOperation.addImage(outputFile.getPath());
 
-				imageMagick.convert(imOperation.getCmdArgs(), fork);
+				Future<?> future = imageMagick.convert(
+					imOperation.getCmdArgs());
 
-				bytes = _fileUtil.getBytes(outputFile);
-
-				return read(bytes, type);
+				return new RenderedImageFuture(future, outputFile, type);
 			}
 		}
 		catch (Exception e) {
@@ -242,6 +243,10 @@ public class ImageToolImpl implements ImageTool {
 
 	public ImageBag read(File file) throws IOException {
 		return read(_fileUtil.getBytes(file));
+	}
+
+	public ImageBag read(InputStream inputStream) throws IOException {
+		return read(_fileUtil.getBytes(inputStream));
 	}
 
 	public RenderedImage scale(RenderedImage renderedImage, int width) {
@@ -455,5 +460,73 @@ public class ImageToolImpl implements ImageTool {
 
 	private static FileImpl _fileUtil = FileImpl.getInstance();
 	private static ImageMagick _imageMagick;
+
+	private class RenderedImageFuture implements Future<RenderedImage> {
+
+		public RenderedImageFuture(
+			Future<?> future, File outputFile, String type) {
+
+			_future = future;
+			_outputFile = outputFile;
+			_type = type;
+		}
+
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			if (_future.isCancelled() || _future.isDone()) {
+				return false;
+			}
+
+			_future.cancel(true);
+
+			return true;
+		}
+
+		public RenderedImage get()
+			throws ExecutionException, InterruptedException {
+
+			_future.get();
+
+			byte[] bytes = new byte[0];
+
+			try {
+				bytes = _fileUtil.getBytes(_outputFile);
+			}
+			catch (IOException e) {
+				throw new ExecutionException(e);
+			}
+
+			return read(bytes, _type);
+		}
+
+		public RenderedImage get(long timeout, TimeUnit timeUnit)
+			throws ExecutionException, InterruptedException, TimeoutException {
+
+			_future.get(timeout, timeUnit);
+
+			byte[] bytes = new byte[0];
+
+			try {
+				bytes = _fileUtil.getBytes(_outputFile);
+			}
+			catch (IOException ioe) {
+				throw new ExecutionException(ioe);
+			}
+
+			return read(bytes, _type);
+		}
+
+		public boolean isCancelled() {
+			return _future.isCancelled();
+		}
+
+		public boolean isDone() {
+			return _future.isDone();
+		}
+
+		private final Future<?> _future;
+		private final File _outputFile;
+		private final String _type;
+
+	}
 
 }

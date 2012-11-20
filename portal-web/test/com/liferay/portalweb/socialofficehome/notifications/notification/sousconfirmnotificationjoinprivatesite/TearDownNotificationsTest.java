@@ -27,70 +27,21 @@ public class TearDownNotificationsTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/joebloggs/so/dashboard/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//span[@class='notification-count']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//span[@class='notification-count']");
 				selenium.mouseOver("//span[@class='notification-count']");
 				assertEquals(RuntimeVariables.replace("View All\u00bb"),
 					selenium.getText("link=View All\u00bb"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//div[contains(@class, 'user-notification-events-container')]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent(
+					"//div[contains(@class, 'user-notification-events-container')]");
 				assertTrue(selenium.isVisible(
 						"//div[contains(@class, 'user-notification-events-container')]"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=View All\u00bb")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=View All\u00bb");
 				selenium.clickAt("link=View All\u00bb",
 					RuntimeVariables.replace("View All\u00bb"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Notifications"),
 					selenium.getText("//span[contains(.,'Notifications')]"));
 
@@ -110,7 +61,6 @@ public class TearDownNotificationsTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"//input[@value='Delete']"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				assertEquals(RuntimeVariables.replace(

@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -134,7 +134,7 @@ public class JournalStructurePersistenceTest {
 
 		newJournalStructure.setXsd(ServiceTestUtil.randomString());
 
-		_persistence.update(newJournalStructure, false);
+		_persistence.update(newJournalStructure);
 
 		JournalStructure existingJournalStructure = _persistence.findByPrimaryKey(newJournalStructure.getPrimaryKey());
 
@@ -333,7 +333,7 @@ public class JournalStructurePersistenceTest {
 
 		journalStructure.setXsd(ServiceTestUtil.randomString());
 
-		_persistence.update(journalStructure, false);
+		_persistence.update(journalStructure);
 
 		return journalStructure;
 	}

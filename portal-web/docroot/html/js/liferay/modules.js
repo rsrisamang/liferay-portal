@@ -43,6 +43,10 @@
 		var modules = {};
 
 		var moduleList = {
+			'app-view-folders': ['aui-base', 'aui-parse-content', 'liferay-app-view-move', 'liferay-history-manager', 'liferay-list-view', 'liferay-portlet-base'],
+			'app-view-move': ['aui-base', 'dd-constrain', 'dd-delegate', 'dd-drag', 'dd-drop', 'dd-proxy', 'liferay-history-manager', 'liferay-portlet-base', 'liferay-util-list-fields'],
+			'app-view-paginator': ['aui-paginator', 'aui-parse-content', 'liferay-history-manager', 'liferay-portlet-base'],
+			'app-view-select': ['liferay-app-view-move', 'liferay-history-manager', 'liferay-portlet-base', 'liferay-util-list-fields'],
 			'asset-categories-selector': ['aui-tree', 'liferay-asset-tags-selector'],
 			'asset-tags-selector': ['array-extras', 'async-queue', 'aui-autocomplete', 'aui-dialog', 'aui-form-textfield', 'aui-io-request', 'aui-live-search', 'aui-template', 'aui-textboxlist', 'datasource-cache', 'liferay-service-datasource'],
 			'auto-fields': ['aui-base', 'aui-data-set', 'aui-io-request', 'aui-parse-content', 'sortable', 'base', 'liferay-undo-manager'],
@@ -50,7 +54,7 @@
 			'dockbar-underlay': ['aui-button-item', 'aui-io-plugin', 'aui-overlay-manager'],
 			'dynamic-select': ['aui-base'],
 			'form': ['aui-base', 'aui-form-validator'],
-			'form-navigator': ['aui-base'],
+			'form-navigator': ['aui-base',  'aui-task-manager'],
 			'form-placeholders': ['liferay-form', 'plugin'],
 			'history': getHistoryRequirements(),
 			'history-html5': ['liferay-history', 'history-html5', 'querystring-stringify-simple'],
@@ -63,6 +67,7 @@
 			'layout-configuration': ['aui-live-search', 'dd', 'liferay-layout'],
 			'layout-freeform': ['aui-resize', 'liferay-layout-column'],
 			'list-view': ['aui-base', 'transition'],
+			'logo-editor': ['aui-image-cropper', 'aui-io-request', 'liferay-portlet-base'],
 			'logo-selector': ['aui-base'],
 			'look-and-feel': ['aui-color-picker', 'aui-dialog', 'aui-io-request', 'aui-tabs-base'],
 			'menu': ['aui-debounce', 'aui-node'],
@@ -78,6 +83,7 @@
 			'portlet-url': ['aui-base', 'aui-io-request', 'querystring-stringify-simple'],
 			'progress': ['aui-progressbar'],
 			'ratings': ['aui-io-request', 'aui-rating'],
+			'restore-entry': ['aui-dialog', 'aui-io-request', 'liferay-portlet-base'],
 			'search-container': ['aui-base', 'event-mouseenter'],
 			'service-datasource': ['aui-base', 'datasource-local'],
 			'session': ['aui-io-request', 'aui-task-manager', 'cookie', 'liferay-notice'],
@@ -88,7 +94,7 @@
 			'token-list': ['aui-base', 'aui-template'],
 			'translation-manager': ['aui-base'],
 			'undo-manager': ['aui-data-set', 'base'],
-			'upload': ['aui-io-request', 'aui-swf', 'collection', 'swfupload'],
+			'upload': ['aui-io-request', 'aui-template', 'collection', 'liferay-portlet-base', 'uploader'],
 			'util-list-fields': ['aui-base'],
 			'util-window': ['aui-dialog', 'aui-dialog-iframe']
 		};

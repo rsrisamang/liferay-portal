@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -123,7 +123,7 @@ public class MBBanPersistenceTest {
 
 		newMBBan.setBanUserId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newMBBan, false);
+		_persistence.update(newMBBan);
 
 		MBBan existingMBBan = _persistence.findByPrimaryKey(newMBBan.getPrimaryKey());
 
@@ -291,7 +291,7 @@ public class MBBanPersistenceTest {
 
 		mbBan.setBanUserId(ServiceTestUtil.nextLong());
 
-		_persistence.update(mbBan, false);
+		_persistence.update(mbBan);
 
 		return mbBan;
 	}

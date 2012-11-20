@@ -23,59 +23,26 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class User1_AssertNotViewableFolder2Image3Test extends BaseTestCase {
 	public void testUser1_AssertNotViewableFolder2Image3()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Documents and Media Test Page");
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DL Folder 2 Name"),
 			selenium.getText(
 				"xpath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[2]"));
 		selenium.clickAt("xpath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[2]",
 			RuntimeVariables.replace("DL Folder 2 Name"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("DL Folder 2 Image 2 Title")
-										.equals(selenium.getText(
-								"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[1]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[1]",
+			"DL Folder 2 Image 2 Title");
 		assertEquals(RuntimeVariables.replace("DL Folder 2 Image 2 Title"),
 			selenium.getText(
 				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[1]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"xpath=(//a[contains(@class,'document-link')])[2]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[2]"));
 		assertFalse(selenium.isTextPresent("DL Folder 2 Image 3 Title"));
 	}

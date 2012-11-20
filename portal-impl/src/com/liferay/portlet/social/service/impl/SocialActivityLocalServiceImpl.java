@@ -230,7 +230,7 @@ public class SocialActivityLocalServiceImpl
 
 			activity.setActivityId(activityId);
 
-			socialActivityPersistence.update(activity, false);
+			socialActivityPersistence.update(activity);
 
 			if (mirrorActivity != null) {
 				long mirrorActivityId = counterLocalService.increment(
@@ -239,7 +239,7 @@ public class SocialActivityLocalServiceImpl
 				mirrorActivity.setActivityId(mirrorActivityId);
 				mirrorActivity.setMirrorActivityId(activity.getPrimaryKey());
 
-				socialActivityPersistence.update(mirrorActivity, false);
+				socialActivityPersistence.update(mirrorActivity);
 			}
 		}
 
@@ -399,6 +399,8 @@ public class SocialActivityLocalServiceImpl
 	 * </p>
 	 *
 	 * @param  userId the primary key of the user
+	 * @throws PortalException if the user's activity counters could not be
+	 *         deleted
 	 * @throws SystemException if a system exception occurred
 	 */
 	public void deleteUserActivities(long userId)

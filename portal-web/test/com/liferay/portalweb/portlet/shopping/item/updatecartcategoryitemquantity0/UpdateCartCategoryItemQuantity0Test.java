@@ -22,48 +22,42 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class UpdateCartCategoryItemQuantity0Test extends BaseTestCase {
 	public void testUpdateCartCategoryItemQuantity0() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Shopping Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Shopping Test Page",
 			RuntimeVariables.replace("Shopping Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Cart", RuntimeVariables.replace("Cart"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Shopping Category Item Name\nShopping Category Item Description\n\nAvailability: In Stock\n\n\nPrice for 1 to 1 Items:$9.99"),
-			selenium.getText("//td[2]/a"));
-		selenium.select("//select", RuntimeVariables.replace("0"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]",
+				"Shopping Category Item Name"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]",
+				"Shopping Category Item Description"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]",
+				"Availability:"));
+		assertEquals(RuntimeVariables.replace("In Stock"),
+			selenium.getText("//div[@class='portlet-msg-success']"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]",
+				"Price for 1 to 1 Items"));
+		assertTrue(selenium.isPartialText(
+				"//tr[@class='portlet-section-body results-row last']/td[2]",
+				"9.99"));
+		selenium.select("//tr[@class='portlet-section-body results-row last']/td[3]/select",
+			RuntimeVariables.replace("0"));
 		selenium.clickAt("//input[@value='Update Cart']",
 			RuntimeVariables.replace("Update Cart"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
 		assertEquals(RuntimeVariables.replace("Your cart is empty."),
 			selenium.getText("//div[@class='portlet-msg-info']"));
 		assertEquals(RuntimeVariables.replace("Subtotal $0.00"),
-			selenium.getText("//fieldset/div/div[1]/div"));
-		assertFalse(selenium.isTextPresent(
-				"Shopping Category Item Name\nShopping Category Item Description\n\nAvailability: In Stock\n\n\nPrice for 1 to 1 Items:$9.99"));
+			selenium.getText("//div[@class='aui-fieldset-content ']/div[1]/div"));
 	}
 }

@@ -17,11 +17,14 @@ package com.liferay.portlet.blogs.trash;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.trash.BaseTrashHandler;
+import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portlet.blogs.model.BlogsEntry;
+import com.liferay.portlet.blogs.service.BlogsEntryLocalServiceUtil;
 import com.liferay.portlet.blogs.service.BlogsEntryServiceUtil;
+import com.liferay.portlet.blogs.service.permission.BlogsEntryPermission;
 
 /**
- * Represents the trash handler for blogs entries entity.
+ * Implements trash handling for the blogs entry entity.
  *
  * @author Zsolt Berentey
  */
@@ -29,45 +32,46 @@ public class BlogsEntryTrashHandler extends BaseTrashHandler {
 
 	public static final String CLASS_NAME = BlogsEntry.class.getName();
 
-	/**
-	 * Deletes all blogs entries with the matching primary keys.
-	 *
-	 * @param  classPKs the primary keys of the blogs entries to be deleted
-	 * @throws PortalException if any one of the blogs entries could not be
-	 *         found
-	 * @throws SystemException if a system exception occurred
-	 */
-	public void deleteTrashEntries(long[] classPKs)
+	public void deleteTrashEntries(long[] classPKs, boolean checkPermission)
 		throws PortalException, SystemException {
 
 		for (long classPK : classPKs) {
-			BlogsEntryServiceUtil.deleteEntry(classPK);
+			if (checkPermission) {
+				BlogsEntryServiceUtil.deleteEntry(classPK);
+			}
+			else {
+				BlogsEntryLocalServiceUtil.deleteEntry(classPK);
+			}
 		}
 	}
 
-	/**
-	 * Returns the blogs entry entity's class name
-	 *
-	 * @return the blogs entry entity's class name
-	 */
 	public String getClassName() {
 		return CLASS_NAME;
 	}
 
-	/**
-	 * Restores all blogs entries with the matching primary keys.
-	 *
-	 * @param  classPKs the primary key of the blogs entry to be restored
-	 * @throws PortalException if any one of the blogs entries could not be
-	 *         found
-	 * @throws SystemException if a system exception occurred
-	 */
+	public boolean isInTrash(long classPK)
+		throws PortalException, SystemException {
+
+		BlogsEntry entry = BlogsEntryServiceUtil.getEntry(classPK);
+
+		return entry.isInTrash();
+	}
+
 	public void restoreTrashEntries(long[] classPKs)
 		throws PortalException, SystemException {
 
 		for (long classPK : classPKs) {
 			BlogsEntryServiceUtil.restoreEntryFromTrash(classPK);
 		}
+	}
+
+	@Override
+	protected boolean hasPermission(
+			PermissionChecker permissionChecker, long classPK, String actionId)
+		throws PortalException, SystemException {
+
+		return BlogsEntryPermission.contains(
+			permissionChecker, classPK, actionId);
 	}
 
 }

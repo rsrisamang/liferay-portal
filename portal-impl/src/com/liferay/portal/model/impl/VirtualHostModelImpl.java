@@ -223,17 +223,6 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 	}
 
 	@Override
-	public VirtualHost toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (VirtualHost)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			VirtualHost.class.getName(), getPrimaryKey());
@@ -244,6 +233,16 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public VirtualHost toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (VirtualHost)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -389,7 +388,7 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 	}
 
 	private static ClassLoader _classLoader = VirtualHost.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			VirtualHost.class
 		};
 	private long _virtualHostId;
@@ -402,5 +401,5 @@ public class VirtualHostModelImpl extends BaseModelImpl<VirtualHost>
 	private String _hostname;
 	private String _originalHostname;
 	private long _columnBitmask;
-	private VirtualHost _escapedModelProxy;
+	private VirtualHost _escapedModel;
 }

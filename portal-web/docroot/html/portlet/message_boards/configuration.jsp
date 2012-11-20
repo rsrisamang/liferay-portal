@@ -63,8 +63,16 @@ else if (tabs2.equals("message-updated-email")) {
 	<aui:input name="tabs2" type="hidden" value="<%= tabs2 %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
 
+	<%
+	String tabs2Names = "general,email-from,message-added-email,message-updated-email,thread-priorities,user-ranks";
+
+	if (PortalUtil.isRSSFeedsEnabled()) {
+		tabs2Names += ",rss";
+	}
+	%>
+
 	<liferay-ui:tabs
-		names="general,email-from,message-added-email,message-updated-email,thread-priorities,user-ranks,rss"
+		names="<%= tabs2Names %>"
 		param="tabs2"
 		url="<%= portletURL %>"
 	/>
@@ -77,6 +85,7 @@ else if (tabs2.equals("message-updated-email")) {
 	<liferay-ui:error key="emailMessageUpdatedBody" message="please-enter-a-valid-body" />
 	<liferay-ui:error key="emailMessageUpdatedSignature" message="please-enter-a-valid-signature" />
 	<liferay-ui:error key="emailMessageUpdatedSubjectPrefix" message="please-enter-a-valid-subject" />
+	<liferay-ui:error key="userRank" message="please-enter-valid-user-ranks" />
 
 	<c:choose>
 		<c:when test='<%= tabs2.equals("general") %>'>
@@ -539,7 +548,7 @@ else if (tabs2.equals("message-updated-email")) {
 
 						var localizedPriorityTable = A.one('#<portlet:namespace />localized-priorities-table');
 
-						if (selLanguageId != 'null') {
+						if ((selLanguageId != '') && (selLanguageId != 'null')) {
 							<portlet:namespace />updateLanguageTemps(selLanguageId);
 
 							localizedPriorityTable.show();

@@ -164,6 +164,13 @@ public class UserImpl extends UserBaseImpl {
 	public String getDisplayURL(String portalURL, String mainPath)
 		throws PortalException, SystemException {
 
+		return getDisplayURL(portalURL, mainPath, false);
+	}
+
+	public String getDisplayURL(
+			String portalURL, String mainPath, boolean privateLayout)
+		throws PortalException, SystemException {
+
 		if (isDefaultUser()) {
 			return StringPool.BLANK;
 		}
@@ -179,7 +186,13 @@ public class UserImpl extends UserBaseImpl {
 			sb.append(mainPath);
 			sb.append("/my_sites/view?groupId=");
 			sb.append(group.getGroupId());
-			sb.append("&privateLayout=0");
+
+			if (privateLayout) {
+				sb.append("&privateLayout=1");
+			}
+			else {
+				sb.append("&privateLayout=0");
+			}
 
 			return sb.toString();
 		}
@@ -191,7 +204,16 @@ public class UserImpl extends UserBaseImpl {
 		throws PortalException, SystemException {
 
 		return getDisplayURL(
-			themeDisplay.getPortalURL(), themeDisplay.getPathMain());
+			themeDisplay.getPortalURL(), themeDisplay.getPathMain(), false);
+	}
+
+	public String getDisplayURL(
+			ThemeDisplay themeDisplay, boolean privateLayout)
+		throws PortalException, SystemException {
+
+		return getDisplayURL(
+			themeDisplay.getPortalURL(), themeDisplay.getPathMain(),
+			privateLayout);
 	}
 
 	public List<EmailAddress> getEmailAddresses() throws SystemException {
@@ -325,10 +347,11 @@ public class UserImpl extends UserBaseImpl {
 		return getOrganizationIds(false);
 	}
 
-	public long[] getOrganizationIds(boolean includeNonUser)
+	public long[] getOrganizationIds(boolean includeAdministrative)
 		throws PortalException, SystemException {
 
-		List<Organization> organizations = getOrganizations(includeNonUser);
+		List<Organization> organizations = getOrganizations(
+			includeAdministrative);
 
 		long[] organizationIds = new long[organizations.size()];
 
@@ -347,12 +370,11 @@ public class UserImpl extends UserBaseImpl {
 		return getOrganizations(false);
 	}
 
-	public List<Organization> getOrganizations(
-			boolean includeIndirectlyAssociated)
+	public List<Organization> getOrganizations(boolean includeAdministrative)
 		throws PortalException, SystemException {
 
 		return OrganizationLocalServiceUtil.getUserOrganizations(
-			getUserId(), includeIndirectlyAssociated);
+			getUserId(), includeAdministrative);
 	}
 
 	public boolean getPasswordModified() {
@@ -537,31 +559,13 @@ public class UserImpl extends UserBaseImpl {
 
 		List<Group> groups = getMySites(true, max);
 
-		if (groups.size() == 1) {
-			Group group = groups.get(0);
-
-			if (group.isControlPanel()) {
-				return false;
-			}
-			else {
-				return true;
-			}
-		}
-		else if (groups.size() > 1) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return !groups.isEmpty();
 	}
 
 	public boolean hasOrganization() throws PortalException, SystemException {
-		if (getOrganizations().size() > 0) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		List<Organization> organizations = getOrganizations();
+
+		return !organizations.isEmpty();
 	}
 
 	public boolean hasPrivateLayouts() throws PortalException, SystemException {

@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -114,7 +114,7 @@ public class AssetTagStatsPersistenceTest {
 
 		newAssetTagStats.setAssetCount(ServiceTestUtil.nextInt());
 
-		_persistence.update(newAssetTagStats, false);
+		_persistence.update(newAssetTagStats);
 
 		AssetTagStats existingAssetTagStats = _persistence.findByPrimaryKey(newAssetTagStats.getPrimaryKey());
 
@@ -269,7 +269,7 @@ public class AssetTagStatsPersistenceTest {
 
 		assetTagStats.setAssetCount(ServiceTestUtil.nextInt());
 
-		_persistence.update(assetTagStats, false);
+		_persistence.update(assetTagStats);
 
 		return assetTagStats;
 	}

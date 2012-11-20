@@ -102,7 +102,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		record.setVersion(DDLRecordConstants.VERSION_DEFAULT);
 		record.setDisplayIndex(displayIndex);
 
-		ddlRecordPersistence.update(record, false);
+		ddlRecordPersistence.update(record);
 
 		// Record version
 
@@ -148,6 +148,8 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		// Record
 
+		String dirName = DDMUtil.getFileUploadPath(record);
+
 		ddlRecordPersistence.remove(record);
 
 		// Record Versions
@@ -180,8 +182,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		try {
 			DLStoreUtil.deleteDirectory(
-				record.getCompanyId(), CompanyConstants.SYSTEM,
-				DDMUtil.getFileUploadPath(record));
+				record.getCompanyId(), CompanyConstants.SYSTEM, dirName);
 		}
 		catch (NoSuchDirectoryException nsde) {
 			if (_log.isDebugEnabled()) {
@@ -409,17 +410,19 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		if (addDraftAssetEntry) {
 			assetEntryLocalService.updateEntry(
-				userId, record.getGroupId(), DDLRecordConstants.getClassName(),
+				userId, record.getGroupId(), record.getCreateDate(),
+				record.getModifiedDate(), DDLRecordConstants.getClassName(),
 				recordVersion.getRecordVersionId(), record.getUuid(), 0,
-				assetCategoryIds, assetTagNames, false, null, null, null, null,
+				assetCategoryIds, assetTagNames, false, null, null, null,
 				ContentTypes.TEXT_HTML, title, null, StringPool.BLANK, null,
 				null, 0, 0, null, false);
 		}
 		else {
 			assetEntryLocalService.updateEntry(
-				userId, record.getGroupId(), DDLRecordConstants.getClassName(),
+				userId, record.getGroupId(), record.getCreateDate(),
+				record.getModifiedDate(), DDLRecordConstants.getClassName(),
 				record.getRecordId(), record.getUuid(), 0, assetCategoryIds,
-				assetTagNames, visible, null, null, null, null,
+				assetTagNames, visible, null, null, null,
 				ContentTypes.TEXT_HTML, title, null, StringPool.BLANK, null,
 				null, 0, 0, null, false);
 		}
@@ -438,7 +441,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 		record.setModifiedDate(serviceContext.getModifiedDate(null));
 
-		ddlRecordPersistence.update(record, false);
+		ddlRecordPersistence.update(record);
 
 		// Record version
 
@@ -516,7 +519,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		recordVersion.setStatusByUserName(user.getFullName());
 		recordVersion.setStatusDate(new Date());
 
-		ddlRecordVersionPersistence.update(recordVersion, false);
+		ddlRecordVersionPersistence.update(recordVersion);
 
 		// Record
 
@@ -536,7 +539,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 				record.setVersionUserName(recordVersion.getUserName());
 				record.setModifiedDate(recordVersion.getCreateDate());
 
-				ddlRecordPersistence.update(record, false);
+				ddlRecordPersistence.update(record);
 			}
 		}
 		else {
@@ -556,7 +559,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 
 				record.setVersion(newVersion);
 
-				ddlRecordPersistence.update(record, false);
+				ddlRecordPersistence.update(record);
 			}
 
 			// Indexer
@@ -621,7 +624,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		recordVersion.setStatusByUserName(user.getFullName());
 		recordVersion.setStatusDate(record.getModifiedDate());
 
-		ddlRecordVersionPersistence.update(recordVersion, false);
+		ddlRecordVersionPersistence.update(recordVersion);
 
 		return recordVersion;
 	}
@@ -674,7 +677,7 @@ public class DDLRecordLocalServiceImpl extends DDLRecordLocalServiceBaseImpl {
 		recordVersion.setStatusByUserName(user.getFullName());
 		recordVersion.setStatusDate(serviceContext.getModifiedDate(null));
 
-		ddlRecordVersionPersistence.update(recordVersion, false);
+		ddlRecordVersionPersistence.update(recordVersion);
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(

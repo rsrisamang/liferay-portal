@@ -22,12 +22,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.Address;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -140,7 +140,7 @@ public class AddressPersistenceTest {
 
 		newAddress.setPrimary(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(newAddress, false);
+		_persistence.update(newAddress);
 
 		Address existingAddress = _persistence.findByPrimaryKey(newAddress.getPrimaryKey());
 
@@ -331,7 +331,7 @@ public class AddressPersistenceTest {
 
 		address.setPrimary(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(address, false);
+		_persistence.update(address);
 
 		return address;
 	}

@@ -30,6 +30,8 @@ public class Gmail_ViewWCWebContentAddedEmailTest extends BaseTestCase {
 			case 1:
 				selenium.selectWindow("null");
 				selenium.selectFrame("relative=top");
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.openWindow("http://www.gmail.com/",
 					RuntimeVariables.replace("gmail"));
 				selenium.waitForPopUp("gmail", RuntimeVariables.replace(""));
@@ -74,7 +76,6 @@ public class Gmail_ViewWCWebContentAddedEmailTest extends BaseTestCase {
 				selenium.clickAt("//a[@id='button']",
 					RuntimeVariables.replace("Sign in to Gmail"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 3:
 			case 4:
@@ -95,26 +96,9 @@ public class Gmail_ViewWCWebContentAddedEmailTest extends BaseTestCase {
 					RuntimeVariables.replace(
 						"Sign out and sign in as a different user"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 5:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@id='Email']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@id='Email']");
 				selenium.type("//input[@id='Email']",
 					RuntimeVariables.replace("liferay.qa.testing.trunk"));
 				selenium.type("//input[@id='Passwd']",
@@ -139,26 +123,9 @@ public class Gmail_ViewWCWebContentAddedEmailTest extends BaseTestCase {
 				selenium.clickAt("//input[@id='signIn']",
 					RuntimeVariables.replace("Sign In"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//span[@email='liferay.qa.server.trunk@gmail.com']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//span[@email='liferay.qa.server.trunk@gmail.com']");
 				assertEquals(RuntimeVariables.replace("Administrator"),
 					selenium.getText(
 						"//span[@email='liferay.qa.server.trunk@gmail.com']"));

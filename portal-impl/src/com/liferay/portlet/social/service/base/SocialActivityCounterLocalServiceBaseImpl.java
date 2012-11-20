@@ -58,6 +58,7 @@ import com.liferay.portlet.social.service.SocialActivitySettingService;
 import com.liferay.portlet.social.service.SocialRelationLocalService;
 import com.liferay.portlet.social.service.SocialRequestInterpreterLocalService;
 import com.liferay.portlet.social.service.SocialRequestLocalService;
+import com.liferay.portlet.social.service.SocialRequestService;
 import com.liferay.portlet.social.service.persistence.SocialActivityAchievementPersistence;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterFinder;
 import com.liferay.portlet.social.service.persistence.SocialActivityCounterPersistence;
@@ -107,8 +108,7 @@ public abstract class SocialActivityCounterLocalServiceBaseImpl
 		SocialActivityCounter socialActivityCounter) throws SystemException {
 		socialActivityCounter.setNew(true);
 
-		return socialActivityCounterPersistence.update(socialActivityCounter,
-			false);
+		return socialActivityCounterPersistence.update(socialActivityCounter);
 	}
 
 	/**
@@ -282,25 +282,7 @@ public abstract class SocialActivityCounterLocalServiceBaseImpl
 	@Indexable(type = IndexableType.REINDEX)
 	public SocialActivityCounter updateSocialActivityCounter(
 		SocialActivityCounter socialActivityCounter) throws SystemException {
-		return updateSocialActivityCounter(socialActivityCounter, true);
-	}
-
-	/**
-	 * Updates the social activity counter in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	 *
-	 * @param socialActivityCounter the social activity counter
-	 * @param merge whether to merge the social activity counter with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	 * @return the social activity counter that was updated
-	 * @throws SystemException if a system exception occurred
-	 */
-	@Indexable(type = IndexableType.REINDEX)
-	public SocialActivityCounter updateSocialActivityCounter(
-		SocialActivityCounter socialActivityCounter, boolean merge)
-		throws SystemException {
-		socialActivityCounter.setNew(false);
-
-		return socialActivityCounterPersistence.update(socialActivityCounter,
-			merge);
+		return socialActivityCounterPersistence.update(socialActivityCounter);
 	}
 
 	/**
@@ -624,6 +606,25 @@ public abstract class SocialActivityCounterLocalServiceBaseImpl
 	public void setSocialRequestLocalService(
 		SocialRequestLocalService socialRequestLocalService) {
 		this.socialRequestLocalService = socialRequestLocalService;
+	}
+
+	/**
+	 * Returns the social request remote service.
+	 *
+	 * @return the social request remote service
+	 */
+	public SocialRequestService getSocialRequestService() {
+		return socialRequestService;
+	}
+
+	/**
+	 * Sets the social request remote service.
+	 *
+	 * @param socialRequestService the social request remote service
+	 */
+	public void setSocialRequestService(
+		SocialRequestService socialRequestService) {
+		this.socialRequestService = socialRequestService;
 	}
 
 	/**
@@ -1062,6 +1063,8 @@ public abstract class SocialActivityCounterLocalServiceBaseImpl
 	protected SocialRelationPersistence socialRelationPersistence;
 	@BeanReference(type = SocialRequestLocalService.class)
 	protected SocialRequestLocalService socialRequestLocalService;
+	@BeanReference(type = SocialRequestService.class)
+	protected SocialRequestService socialRequestService;
 	@BeanReference(type = SocialRequestPersistence.class)
 	protected SocialRequestPersistence socialRequestPersistence;
 	@BeanReference(type = SocialRequestInterpreterLocalService.class)

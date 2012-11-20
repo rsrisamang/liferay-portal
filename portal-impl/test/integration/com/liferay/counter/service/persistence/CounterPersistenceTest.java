@@ -24,10 +24,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -108,7 +108,7 @@ public class CounterPersistenceTest {
 
 		newCounter.setCurrentId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newCounter, false);
+		_persistence.update(newCounter);
 
 		Counter existingCounter = _persistence.findByPrimaryKey(newCounter.getPrimaryKey());
 
@@ -235,7 +235,7 @@ public class CounterPersistenceTest {
 
 		counter.setCurrentId(ServiceTestUtil.nextLong());
 
-		_persistence.update(counter, false);
+		_persistence.update(counter);
 
 		return counter;
 	}

@@ -27,58 +27,26 @@ public class AssertNoTagsInSelectTagsTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Blogs Tags Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Blogs Tags Test Page",
 					RuntimeVariables.replace("Blogs Tags Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Tags Blog Entry1 Title"),
 					selenium.getText(
 						"xPath=(//div[@class='entry-title']/h2/a)[3]"));
 				selenium.clickAt("xPath=(//div[@class='entry-title']/h2/a)[3]",
 					RuntimeVariables.replace("Tags Blog Entry1 Title"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Edit"),
-					selenium.getText("//span/a/span"));
-				selenium.click(RuntimeVariables.replace("//span/a/span"));
+					selenium.getText("link=Edit"));
+				selenium.click(RuntimeVariables.replace("link=Edit"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//td[@id='cke_contents__33_editor']/iframe")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForElementPresent(
+					"//textarea[@id='_33_editor' and @style='display: none;']");
+				selenium.waitForVisible(
+					"//td[@id='cke_contents__33_editor']/iframe");
 
 				boolean tagsVisible = selenium.isVisible(
 						"//input[@class='lfr-tag-selector-input aui-field-input-text']");
@@ -94,24 +62,8 @@ public class AssertNoTagsInSelectTagsTest extends BaseTestCase {
 						"xPath=(//div[@class='lfr-panel-title'])[2]/span"));
 				selenium.clickAt("xPath=(//div[@class='lfr-panel-title'])[2]/span",
 					RuntimeVariables.replace("Categorization"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//input[@class='lfr-tag-selector-input aui-field-input-text']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//input[@class='lfr-tag-selector-input aui-field-input-text']");
 				assertTrue(selenium.isVisible(
 						"//input[@class='lfr-tag-selector-input aui-field-input-text']"));
 
@@ -119,16 +71,19 @@ public class AssertNoTagsInSelectTagsTest extends BaseTestCase {
 				selenium.clickAt("//button[@id='select']",
 					RuntimeVariables.replace("Select"));
 				Thread.sleep(5000);
-				assertFalse(selenium.isElementPresent("//label[1]/input"));
-				assertFalse(selenium.isElementPresent("//label[2]/input"));
-				assertFalse(selenium.isElementPresent("//label[3]/input"));
-				assertFalse(selenium.isElementPresent("//label[4]/input"));
-				selenium.clickAt("//button[@id='closethick']",
+				assertTrue(selenium.isElementNotPresent(
+						"xpath=(//div[@class='lfr-tags-selector-list']/fieldset//label)[1]"));
+				assertTrue(selenium.isElementNotPresent(
+						"xpath=(//div[@class='lfr-tags-selector-list']/fieldset//label)[2]"));
+				assertTrue(selenium.isElementNotPresent(
+						"xpath=(//div[@class='lfr-tags-selector-list']/fieldset//label)[3]"));
+				assertTrue(selenium.isElementNotPresent(
+						"xpath=(//div[@class='lfr-tags-selector-list']/fieldset//label)[4]"));
+				selenium.clickAt("//button[@title='Close dialog']",
 					RuntimeVariables.replace("Close"));
 				selenium.clickAt("//input[@value='Cancel']",
 					RuntimeVariables.replace("Cancel"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 100:
 				label = -1;

@@ -37,7 +37,7 @@
 					WHERE
 						(companyId = ?) AND
 						(groupId = ?) AND
-						(folderId = ?) AND
+						([$FOLDER_ID$]) AND
 						(classNameId = ?) AND
 						(
 							(articleId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
@@ -62,7 +62,8 @@
 			WHERE
 				(type_ = ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
 				(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-				(templateId LIKE ? [$AND_OR_NULL_CHECK$])
+				(templateId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				(companyId = ?)
 		]]>
 	</sql>
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalArticleFinder.findByExpirationDate">
@@ -117,7 +118,7 @@
 					WHERE
 						(companyId = ?) AND
 						(groupId = ?) AND
-						(folderId = ?) AND
+						([$FOLDER_ID$]) AND
 						(classNameId = ?) AND
 						(
 							(articleId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
@@ -142,7 +143,8 @@
 			WHERE
 				(type_ = ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
 				(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-				(templateId LIKE ? [$AND_OR_NULL_CHECK$])
+				(templateId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+				(companyId = ?)
 			ORDER BY
 				id_ ASC
 		]]>
@@ -184,11 +186,12 @@
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalFolderFinder.countA_ByG_F">
 		<![CDATA[
 			SELECT
-				COUNT(*) AS COUNT_VALUE
+				COUNT(DISTINCT JournalArticle.articleId) AS COUNT_VALUE
 			FROM
 				JournalArticle
 			WHERE
-				(JournalArticle.groupId = ?)
+				(JournalArticle.groupId = ?) AND
+				(JournalArticle.classNameId = 0)
 				[$ARTICLE_FOLDER_ID$]
 		]]>
 	</sql>
@@ -206,20 +209,21 @@
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalFolderFinder.findA_ByG_F">
 		<![CDATA[
 			SELECT
-				DISTINCT JournalArticle.folderId AS modelFolderId, JournalArticle.createDate as createDate, JournalArticle.modifiedDate as modifiedDate, JournalArticle.articleId as articleId, MAX(JournalArticle.version) AS version, JournalArticle.title AS title, 0 AS modelFolder
+				DISTINCT JournalArticle.folderId AS modelFolderId, JournalArticle.articleId as articleId, MAX(JournalArticle.version) AS version, JournalArticle.displayDate as displayDate, 0 AS modelFolder
 			FROM
 				JournalArticle
 			WHERE
-				(JournalArticle.groupId = ?)
+				(JournalArticle.groupId = ?) AND
+				(JournalArticle.classNameId = 0)
 				[$ARTICLE_FOLDER_ID$]
 			GROUP BY
-				articleId
+				JournalArticle.folderId, JournalArticle.articleId, JournalArticle.displayDate
 		]]>
 	</sql>
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalFolderFinder.findF_ByG_F">
 		<![CDATA[
 			SELECT
-				DISTINCT folderId AS modelFolderId, JournalFolder.createDate as createDate, JournalFolder.modifiedDate as modifiedDate, 0 AS articleId, 0 AS version, JournalFolder.name AS title, 1 AS modelFolder
+				DISTINCT folderId AS modelFolderId, '' AS articleId, 0 AS version, JournalFolder.createDate as displayDate, 1 AS modelFolder
 			FROM
 				JournalFolder
 			WHERE
@@ -230,7 +234,7 @@
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalStructureFinder.countByC_G_S_N_D">
 		<![CDATA[
 			SELECT
-				COUNT(*) AS COUNT_VALUE
+				COUNT(DISTINCT JournalStructure.structureId) AS COUNT_VALUE
 			FROM
 				JournalStructure
 			WHERE
@@ -248,15 +252,23 @@
 			SELECT
 				{JournalStructure.*}
 			FROM
-				JournalStructure
-			WHERE
-				(companyId = ?) AND
-				[$GROUP_ID$]
 				(
-					(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-					(lower(name) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-					(lower(description) LIKE ? [$AND_OR_NULL_CHECK$])
-				)
+					SELECT DISTINCT
+						id_
+					FROM
+						JournalStructure
+					WHERE
+						(companyId = ?) AND
+						[$GROUP_ID$]
+						(
+							(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(lower(name) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(lower(description) LIKE ? [$AND_OR_NULL_CHECK$])
+						)
+				) TEMP_TABLE
+				INNER JOIN
+					JournalStructure ON
+						(TEMP_TABLE.id_ = JournalStructure.id_)
 			ORDER BY
 				structureId ASC
 		]]>
@@ -264,7 +276,7 @@
 	<sql id="com.liferay.portlet.journal.service.persistence.JournalTemplateFinder.countByC_G_T_S_N_D">
 		<![CDATA[
 			SELECT
-				COUNT(*) AS COUNT_VALUE
+				COUNT(DISTINCT JournalTemplate.templateId) AS COUNT_VALUE
 			FROM
 				JournalTemplate
 			WHERE
@@ -283,16 +295,24 @@
 			SELECT
 				{JournalTemplate.*}
 			FROM
-				JournalTemplate
-			WHERE
-				(companyId = ?) AND
-				[$GROUP_ID$]
 				(
-					(templateId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-					(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-					(lower(name) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
-					(lower(description) LIKE ? [$AND_OR_NULL_CHECK$])
-				)
+					SELECT DISTINCT
+						id_
+					FROM
+						JournalTemplate
+					WHERE
+						(companyId = ?) AND
+						[$GROUP_ID$]
+						(
+							(templateId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(structureId LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(lower(name) LIKE ? [$AND_OR_NULL_CHECK$]) [$AND_OR_CONNECTOR$]
+							(lower(description) LIKE ? [$AND_OR_NULL_CHECK$])
+						)
+				) TEMP_TABLE
+				INNER JOIN
+					JournalTemplate ON
+						(TEMP_TABLE.id_ = JournalTemplate.id_)
 			ORDER BY
 				templateId ASC
 		]]>

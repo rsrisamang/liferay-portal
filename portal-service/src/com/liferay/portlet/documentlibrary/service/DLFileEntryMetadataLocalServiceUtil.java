@@ -235,21 +235,6 @@ public class DLFileEntryMetadataLocalServiceUtil {
 	}
 
 	/**
-	* Updates the document library file entry metadata in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param dlFileEntryMetadata the document library file entry metadata
-	* @param merge whether to merge the document library file entry metadata with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the document library file entry metadata that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata updateDLFileEntryMetadata(
-		com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata dlFileEntryMetadata,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateDLFileEntryMetadata(dlFileEntryMetadata, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -273,6 +258,12 @@ public class DLFileEntryMetadataLocalServiceUtil {
 		getService().deleteFileEntryMetadata(fileEntryId);
 	}
 
+	public static void deleteFileVersionFileEntryMetadata(long fileVersionId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService().deleteFileVersionFileEntryMetadata(fileVersionId);
+	}
+
 	public static com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata getFileEntryMetadata(
 		long fileEntryMetadataId)
 		throws com.liferay.portal.kernel.exception.PortalException,
@@ -287,10 +278,24 @@ public class DLFileEntryMetadataLocalServiceUtil {
 		return getService().getFileEntryMetadata(ddmStructureId, fileVersionId);
 	}
 
+	/**
+	* @deprecated {@link #getFileVersionFileEntryMetadatasCount(long)}
+	*/
 	public static long getFileEntryMetadataCount(long fileEntryId,
 		long fileVersionId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getFileEntryMetadataCount(fileEntryId, fileVersionId);
+	}
+
+	public static java.util.List<com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata> getFileVersionFileEntryMetadatas(
+		long fileVersionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getFileVersionFileEntryMetadatas(fileVersionId);
+	}
+
+	public static long getFileVersionFileEntryMetadatasCount(long fileVersionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getFileVersionFileEntryMetadatasCount(fileVersionId);
 	}
 
 	public static void updateFileEntryMetadata(long companyId,

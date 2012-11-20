@@ -270,7 +270,14 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, portalPreferences);
+			if (!session.contains(portalPreferences)) {
+				portalPreferences = (PortalPreferences)session.get(PortalPreferencesImpl.class,
+						portalPreferences.getPrimaryKeyObj());
+			}
+
+			if (portalPreferences != null) {
+				session.delete(portalPreferences);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -279,15 +286,17 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 			closeSession(session);
 		}
 
-		clearCache(portalPreferences);
+		if (portalPreferences != null) {
+			clearCache(portalPreferences);
+		}
 
 		return portalPreferences;
 	}
 
 	@Override
 	public PortalPreferences updateImpl(
-		com.liferay.portal.model.PortalPreferences portalPreferences,
-		boolean merge) throws SystemException {
+		com.liferay.portal.model.PortalPreferences portalPreferences)
+		throws SystemException {
 		portalPreferences = toUnwrappedModel(portalPreferences);
 
 		boolean isNew = portalPreferences.isNew();
@@ -299,9 +308,14 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, portalPreferences, merge);
+			if (portalPreferences.isNew()) {
+				session.save(portalPreferences);
 
-			portalPreferences.setNew(false);
+				portalPreferences.setNew(false);
+			}
+			else {
+				session.merge(portalPreferences);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -336,6 +350,7 @@ public class PortalPreferencesPersistenceImpl extends BasePersistenceImpl<Portal
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_O_O, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_O_O, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_O_O,

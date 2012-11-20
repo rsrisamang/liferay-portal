@@ -23,52 +23,18 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class MarkAsReadAnnouncementsEntryGeneralTest extends BaseTestCase {
 	public void testMarkAsReadAnnouncementsEntryGeneral()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Announcements Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Announcements Test Page");
 		selenium.clickAt("link=Announcements Test Page",
 			RuntimeVariables.replace("Announcements Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Mark as Read"),
 			selenium.getText("//td[@class='control-entry']/a"));
 		selenium.clickAt("//td[@class='control-entry']/a",
 			RuntimeVariables.replace("Mark as Read"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Show")
-										.equals(selenium.getText(
-								"//td[@class='control-entry']/a"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//td[@class='control-entry']/a", "Show");
 		assertEquals(RuntimeVariables.replace("Show"),
 			selenium.getText("//td[@class='control-entry']/a"));
 	}

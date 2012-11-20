@@ -230,21 +230,6 @@ public class MBStatsUserLocalServiceWrapper implements MBStatsUserLocalService,
 	}
 
 	/**
-	* Updates the message boards stats user in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param mbStatsUser the message boards stats user
-	* @param merge whether to merge the message boards stats user with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the message boards stats user that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portlet.messageboards.model.MBStatsUser updateMBStatsUser(
-		com.liferay.portlet.messageboards.model.MBStatsUser mbStatsUser,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _mbStatsUserLocalService.updateMBStatsUser(mbStatsUser, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -290,6 +275,16 @@ public class MBStatsUserLocalServiceWrapper implements MBStatsUserLocalService,
 		_mbStatsUserLocalService.deleteStatsUsersByUserId(userId);
 	}
 
+	public java.util.Date getLasPostDateByUserId(long groupId, long userId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mbStatsUserLocalService.getLasPostDateByUserId(groupId, userId);
+	}
+
+	public long getMessageCountByGroupId(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mbStatsUserLocalService.getMessageCountByGroupId(groupId);
+	}
+
 	public long getMessageCountByUserId(long userId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _mbStatsUserLocalService.getMessageCountByUserId(userId);
@@ -331,6 +326,13 @@ public class MBStatsUserLocalServiceWrapper implements MBStatsUserLocalService,
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _mbStatsUserLocalService.updateStatsUser(groupId, userId,
 			lastPostDate);
+	}
+
+	public com.liferay.portlet.messageboards.model.MBStatsUser updateStatsUser(
+		long groupId, long userId, int messageCount, java.util.Date lastPostDate)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return _mbStatsUserLocalService.updateStatsUser(groupId, userId,
+			messageCount, lastPostDate);
 	}
 
 	/**

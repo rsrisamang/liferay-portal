@@ -257,7 +257,14 @@ public class TicketPersistenceImpl extends BasePersistenceImpl<Ticket>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, ticket);
+			if (!session.contains(ticket)) {
+				ticket = (Ticket)session.get(TicketImpl.class,
+						ticket.getPrimaryKeyObj());
+			}
+
+			if (ticket != null) {
+				session.delete(ticket);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -266,14 +273,16 @@ public class TicketPersistenceImpl extends BasePersistenceImpl<Ticket>
 			closeSession(session);
 		}
 
-		clearCache(ticket);
+		if (ticket != null) {
+			clearCache(ticket);
+		}
 
 		return ticket;
 	}
 
 	@Override
-	public Ticket updateImpl(com.liferay.portal.model.Ticket ticket,
-		boolean merge) throws SystemException {
+	public Ticket updateImpl(com.liferay.portal.model.Ticket ticket)
+		throws SystemException {
 		ticket = toUnwrappedModel(ticket);
 
 		boolean isNew = ticket.isNew();
@@ -285,9 +294,14 @@ public class TicketPersistenceImpl extends BasePersistenceImpl<Ticket>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, ticket, merge);
+			if (ticket.isNew()) {
+				session.save(ticket);
 
-			ticket.setNew(false);
+				ticket.setNew(false);
+			}
+			else {
+				session.merge(ticket);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -315,6 +329,7 @@ public class TicketPersistenceImpl extends BasePersistenceImpl<Ticket>
 				Object[] args = new Object[] { ticketModelImpl.getOriginalKey() };
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_KEY, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_KEY, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_KEY,

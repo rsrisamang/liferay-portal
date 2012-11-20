@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -138,7 +138,7 @@ public class MBCategoryPersistenceTest {
 
 		newMBCategory.setLastPostDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(newMBCategory, false);
+		_persistence.update(newMBCategory);
 
 		MBCategory existingMBCategory = _persistence.findByPrimaryKey(newMBCategory.getPrimaryKey());
 
@@ -341,7 +341,7 @@ public class MBCategoryPersistenceTest {
 
 		mbCategory.setLastPostDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(mbCategory, false);
+		_persistence.update(mbCategory);
 
 		return mbCategory;
 	}

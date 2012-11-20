@@ -418,7 +418,11 @@ public class ServiceContext implements Cloneable, Serializable {
 	 * @return the language ID
 	 */
 	public String getLanguageId() {
-		return _languageId;
+		if (_languageId != null) {
+			return _languageId;
+		}
+
+		return LocaleUtil.toLanguageId(LocaleUtil.getMostRelevantLocale());
 	}
 
 	/**
@@ -1179,7 +1183,7 @@ public class ServiceContext implements Cloneable, Serializable {
 	 * as parameter to a method that processes a workflow action.
 	 *
 	 * @param workflowAction workflow action to take (default is {@link
-	 *        com.liferay.portal.kernel.workflow.WorkflowConstants.ACTION_PUBLISH})
+	 *        com.liferay.portal.kernel.workflow.WorkflowConstants#ACTION_PUBLISH})
 	 */
 	public void setWorkflowAction(int workflowAction) {
 		_workflowAction = workflowAction;

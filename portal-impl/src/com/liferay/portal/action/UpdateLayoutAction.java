@@ -16,9 +16,9 @@ package com.liferay.portal.action;
 
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.DynamicServletRequest;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
-import com.liferay.portal.kernel.servlet.StringServletResponse;
 import com.liferay.portal.kernel.staging.StagingUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ContentTypes;
@@ -35,18 +35,14 @@ import com.liferay.portal.model.LayoutRevision;
 import com.liferay.portal.model.LayoutTypePortlet;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.LayoutRevisionLocalServiceUtil;
 import com.liferay.portal.service.LayoutServiceUtil;
 import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.service.ResourceLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.permission.LayoutPermissionUtil;
-import com.liferay.portal.service.permission.PortletPermissionUtil;
 import com.liferay.portal.servlet.NamespaceServletRequest;
 import com.liferay.portal.struts.JSONAction;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -96,7 +92,6 @@ public class UpdateLayoutAction extends JSONAction {
 		String portletId = ParamUtil.getString(request, "p_p_id");
 
 		boolean updateLayout = true;
-		boolean deletePortlet = false;
 
 		if (cmd.equals(Constants.ADD)) {
 			String columnId = ParamUtil.getString(request, "p_p_col_id", null);
@@ -120,10 +115,6 @@ public class UpdateLayoutAction extends JSONAction {
 					layoutTypePortlet.isCustomizedView()) {
 
 					updateLayout = false;
-					deletePortlet = false;
-				}
-				else {
-					deletePortlet = true;
 				}
 			}
 		}
@@ -259,20 +250,6 @@ public class UpdateLayoutAction extends JSONAction {
 			layout = LayoutServiceUtil.updateLayout(
 				layout.getGroupId(), layout.isPrivateLayout(),
 				layout.getLayoutId(), layout.getTypeSettings());
-
-			// See LEP-1411. Delay the delete of extraneous portlet resources
-			// only after the user has proven that he has the valid permissions.
-
-			if (deletePortlet) {
-				String rootPortletId = PortletConstants.getRootPortletId(
-					portletId);
-
-				ResourceLocalServiceUtil.deleteResource(
-					layout.getCompanyId(), rootPortletId,
-					ResourceConstants.SCOPE_INDIVIDUAL,
-					PortletPermissionUtil.getPrimaryKey(
-						layout.getPlid(), portletId));
-			}
 		}
 		else {
 			LayoutClone layoutClone = LayoutCloneFactory.getInstance();
@@ -328,14 +305,18 @@ public class UpdateLayoutAction extends JSONAction {
 		if (dataType.equals("json")) {
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
-			StringServletResponse stringResponse = new StringServletResponse(
-				response);
+			BufferCacheServletResponse bufferCacheServletResponse =
+				new BufferCacheServletResponse(response);
 
 			renderPortletAction.execute(
-				mapping, form, dynamicRequest, stringResponse);
+				mapping, form, dynamicRequest, bufferCacheServletResponse);
+
+			String portletHTML = bufferCacheServletResponse.getString();
+
+			portletHTML = portletHTML.trim();
 
 			populatePortletJSONObject(
-				request, stringResponse, portlet, jsonObject);
+				request, portletHTML, portlet, jsonObject);
 
 			response.setContentType(ContentTypes.TEXT_JAVASCRIPT);
 
@@ -358,8 +339,8 @@ public class UpdateLayoutAction extends JSONAction {
 	}
 
 	protected void populatePortletJSONObject(
-			HttpServletRequest request, StringServletResponse stringResponse,
-			Portlet portlet, JSONObject jsonObject)
+			HttpServletRequest request, String portletHTML, Portlet portlet,
+			JSONObject jsonObject)
 		throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
@@ -368,8 +349,8 @@ public class UpdateLayoutAction extends JSONAction {
 		LayoutTypePortlet layoutTypePortlet =
 			themeDisplay.getLayoutTypePortlet();
 
+		jsonObject.put("portletHTML", portletHTML);
 		jsonObject.put("refresh", !portlet.isAjaxable());
-		jsonObject.put("portletHTML", stringResponse.getString().trim());
 
 		Set<String> footerCssSet = new LinkedHashSet<String>();
 		Set<String> footerJavaScriptSet = new LinkedHashSet<String>();

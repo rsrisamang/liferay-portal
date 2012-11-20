@@ -29,6 +29,21 @@ public interface Group extends GroupModel, PersistedModel {
 	 *
 	 * Never modify this interface directly. Add methods to {@link com.liferay.portal.model.impl.GroupImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public java.util.List<com.liferay.portal.model.Group> getAncestors()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	public java.util.List<com.liferay.portal.model.Group> getChildren(
+		boolean site)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public java.util.List<com.liferay.portal.model.Group> getChildrenWithLayouts(
+		boolean site, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	public int getChildrenWithLayoutsCount(boolean site)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
 	public long getDefaultPrivatePlid();
 
 	public long getDefaultPublicPlid();
@@ -87,6 +102,8 @@ public interface Group extends GroupModel, PersistedModel {
 
 	public boolean isGuest();
 
+	public boolean isInStagingPortlet(java.lang.String portletId);
+
 	public boolean isLayout();
 
 	public boolean isLayoutPrototype();
@@ -98,6 +115,12 @@ public interface Group extends GroupModel, PersistedModel {
 	public boolean isRegularSite();
 
 	public boolean isRoot();
+
+	public boolean isShowSite(
+		com.liferay.portal.security.permission.PermissionChecker permissionChecker,
+		boolean privateSite)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException;
 
 	public boolean isStaged();
 

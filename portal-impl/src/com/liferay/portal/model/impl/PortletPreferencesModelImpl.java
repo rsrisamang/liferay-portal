@@ -94,6 +94,10 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 	 * @return the normal model instance
 	 */
 	public static PortletPreferences toModel(PortletPreferencesSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		PortletPreferences model = new PortletPreferencesImpl();
 
 		model.setPortletPreferencesId(soapModel.getPortletPreferencesId());
@@ -114,6 +118,10 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 	 */
 	public static List<PortletPreferences> toModels(
 		PortletPreferencesSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<PortletPreferences> models = new ArrayList<PortletPreferences>(soapModels.length);
 
 		for (PortletPreferencesSoap soapModel : soapModels) {
@@ -321,17 +329,6 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 	}
 
 	@Override
-	public PortletPreferences toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (PortletPreferences)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
 			PortletPreferences.class.getName(), getPrimaryKey());
@@ -342,6 +339,16 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public PortletPreferences toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (PortletPreferences)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -515,7 +522,7 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 	}
 
 	private static ClassLoader _classLoader = PortletPreferences.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			PortletPreferences.class
 		};
 	private long _portletPreferencesId;
@@ -532,5 +539,5 @@ public class PortletPreferencesModelImpl extends BaseModelImpl<PortletPreference
 	private String _originalPortletId;
 	private String _preferences;
 	private long _columnBitmask;
-	private PortletPreferences _escapedModelProxy;
+	private PortletPreferences _escapedModel;
 }

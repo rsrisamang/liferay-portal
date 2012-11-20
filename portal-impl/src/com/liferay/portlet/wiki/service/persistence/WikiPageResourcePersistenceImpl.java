@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
@@ -300,7 +299,14 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, wikiPageResource);
+			if (!session.contains(wikiPageResource)) {
+				wikiPageResource = (WikiPageResource)session.get(WikiPageResourceImpl.class,
+						wikiPageResource.getPrimaryKeyObj());
+			}
+
+			if (wikiPageResource != null) {
+				session.delete(wikiPageResource);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -309,15 +315,17 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 			closeSession(session);
 		}
 
-		clearCache(wikiPageResource);
+		if (wikiPageResource != null) {
+			clearCache(wikiPageResource);
+		}
 
 		return wikiPageResource;
 	}
 
 	@Override
 	public WikiPageResource updateImpl(
-		com.liferay.portlet.wiki.model.WikiPageResource wikiPageResource,
-		boolean merge) throws SystemException {
+		com.liferay.portlet.wiki.model.WikiPageResource wikiPageResource)
+		throws SystemException {
 		wikiPageResource = toUnwrappedModel(wikiPageResource);
 
 		boolean isNew = wikiPageResource.isNew();
@@ -335,9 +343,14 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, wikiPageResource, merge);
+			if (wikiPageResource.isNew()) {
+				session.save(wikiPageResource);
 
-			wikiPageResource.setNew(false);
+				wikiPageResource.setNew(false);
+			}
+			else {
+				session.merge(wikiPageResource);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -351,6 +364,7 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 		if (isNew || !WikiPageResourceModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((wikiPageResourceModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID.getColumnBitmask()) != 0) {
@@ -392,6 +406,7 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_N_T, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_N_T, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_N_T,
@@ -668,10 +683,6 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 	/**
 	 * Returns the first wiki page resource in the ordered set where uuid = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching wiki page resource
@@ -681,31 +692,46 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 	public WikiPageResource findByUuid_First(String uuid,
 		OrderByComparator orderByComparator)
 		throws NoSuchPageResourceException, SystemException {
+		WikiPageResource wikiPageResource = fetchByUuid_First(uuid,
+				orderByComparator);
+
+		if (wikiPageResource != null) {
+			return wikiPageResource;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchPageResourceException(msg.toString());
+	}
+
+	/**
+	 * Returns the first wiki page resource in the ordered set where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching wiki page resource, or <code>null</code> if a matching wiki page resource could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public WikiPageResource fetchByUuid_First(String uuid,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<WikiPageResource> list = findByUuid(uuid, 0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchPageResourceException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last wiki page resource in the ordered set where uuid = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -716,34 +742,49 @@ public class WikiPageResourcePersistenceImpl extends BasePersistenceImpl<WikiPag
 	public WikiPageResource findByUuid_Last(String uuid,
 		OrderByComparator orderByComparator)
 		throws NoSuchPageResourceException, SystemException {
+		WikiPageResource wikiPageResource = fetchByUuid_Last(uuid,
+				orderByComparator);
+
+		if (wikiPageResource != null) {
+			return wikiPageResource;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchPageResourceException(msg.toString());
+	}
+
+	/**
+	 * Returns the last wiki page resource in the ordered set where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching wiki page resource, or <code>null</code> if a matching wiki page resource could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public WikiPageResource fetchByUuid_Last(String uuid,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUuid(uuid);
 
 		List<WikiPageResource> list = findByUuid(uuid, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchPageResourceException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the wiki page resources before and after the current wiki page resource in the ordered set where uuid = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param resourcePrimKey the primary key of the current wiki page resource
 	 * @param uuid the uuid

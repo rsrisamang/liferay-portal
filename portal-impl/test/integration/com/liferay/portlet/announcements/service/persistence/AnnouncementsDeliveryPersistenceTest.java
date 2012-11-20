@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -121,7 +121,7 @@ public class AnnouncementsDeliveryPersistenceTest {
 
 		newAnnouncementsDelivery.setWebsite(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(newAnnouncementsDelivery, false);
+		_persistence.update(newAnnouncementsDelivery);
 
 		AnnouncementsDelivery existingAnnouncementsDelivery = _persistence.findByPrimaryKey(newAnnouncementsDelivery.getPrimaryKey());
 
@@ -293,7 +293,7 @@ public class AnnouncementsDeliveryPersistenceTest {
 
 		announcementsDelivery.setWebsite(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(announcementsDelivery, false);
+		_persistence.update(announcementsDelivery);
 
 		return announcementsDelivery;
 	}

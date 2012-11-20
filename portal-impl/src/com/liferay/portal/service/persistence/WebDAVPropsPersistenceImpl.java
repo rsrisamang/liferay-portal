@@ -265,7 +265,14 @@ public class WebDAVPropsPersistenceImpl extends BasePersistenceImpl<WebDAVProps>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, webDAVProps);
+			if (!session.contains(webDAVProps)) {
+				webDAVProps = (WebDAVProps)session.get(WebDAVPropsImpl.class,
+						webDAVProps.getPrimaryKeyObj());
+			}
+
+			if (webDAVProps != null) {
+				session.delete(webDAVProps);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -274,14 +281,16 @@ public class WebDAVPropsPersistenceImpl extends BasePersistenceImpl<WebDAVProps>
 			closeSession(session);
 		}
 
-		clearCache(webDAVProps);
+		if (webDAVProps != null) {
+			clearCache(webDAVProps);
+		}
 
 		return webDAVProps;
 	}
 
 	@Override
 	public WebDAVProps updateImpl(
-		com.liferay.portal.model.WebDAVProps webDAVProps, boolean merge)
+		com.liferay.portal.model.WebDAVProps webDAVProps)
 		throws SystemException {
 		webDAVProps = toUnwrappedModel(webDAVProps);
 
@@ -294,9 +303,14 @@ public class WebDAVPropsPersistenceImpl extends BasePersistenceImpl<WebDAVProps>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, webDAVProps, merge);
+			if (webDAVProps.isNew()) {
+				session.save(webDAVProps);
 
-			webDAVProps.setNew(false);
+				webDAVProps.setNew(false);
+			}
+			else {
+				session.merge(webDAVProps);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -330,6 +344,7 @@ public class WebDAVPropsPersistenceImpl extends BasePersistenceImpl<WebDAVProps>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_C, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_C,

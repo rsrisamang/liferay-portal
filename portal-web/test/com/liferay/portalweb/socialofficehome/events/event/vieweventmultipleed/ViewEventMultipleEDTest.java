@@ -22,27 +22,11 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewEventMultipleEDTest extends BaseTestCase {
 	public void testViewEventMultipleED() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Events")
-										.equals(selenium.getText(
-								"xPath=(//span[@class='portlet-title-text'])[4]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("xPath=(//span[@class='portlet-title-text'])[4]",
+			"Events");
 		assertEquals(RuntimeVariables.replace("Events"),
 			selenium.getText("xPath=(//span[@class='portlet-title-text'])[4]"));
 		assertTrue(selenium.isPartialText("//h2[contains(.,'Events')]", "Events"));
@@ -51,80 +35,39 @@ public class ViewEventMultipleEDTest extends BaseTestCase {
 		selenium.clickAt("xPath=(//span[@class='event-name']/a)[1]",
 			RuntimeVariables.replace("Calendar Event1 Title"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals("Add Event",
-			selenium.getValue("//input[@value='Add Event']"));
 		assertEquals(RuntimeVariables.replace("Calendar Event1 Title"),
-			selenium.getText("xPath=(//div[@class='event-title'])[1]"));
+			selenium.getText("//h1[@class='header-title']"));
+		assertEquals(RuntimeVariables.replace("Calendar Event1 Description"),
+			selenium.getText("//p[2]"));
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Events")
-										.equals(selenium.getText(
-								"xPath=(//span[@class='portlet-title-text'])[4]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("xPath=(//span[@class='portlet-title-text'])[4]",
+			"Events");
 		assertEquals(RuntimeVariables.replace("Events"),
 			selenium.getText("xPath=(//span[@class='portlet-title-text'])[4]"));
-		assertEquals(RuntimeVariables.replace("Today's Events"),
-			selenium.getText("//h2[contains(.,'Events')]"));
+		assertTrue(selenium.isPartialText("//h2[contains(.,'Events')]", "Events"));
 		assertEquals(RuntimeVariables.replace("Calendar Event2 Title"),
 			selenium.getText("xPath=(//span[@class='event-name']/a)[2]"));
 		selenium.clickAt("xPath=(//span[@class='event-name']/a)[2]",
 			RuntimeVariables.replace("Calendar Event2 Title"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals("Add Event",
-			selenium.getValue("//input[@value='Add Event']"));
 		assertEquals(RuntimeVariables.replace("Calendar Event2 Title"),
-			selenium.getText("xPath=(//div[@class='event-title'])[2]"));
+			selenium.getText("//h1[@class='header-title']"));
+		assertEquals(RuntimeVariables.replace("Calendar Event2 Description"),
+			selenium.getText("//p[2]"));
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Events")
-										.equals(selenium.getText(
-								"xPath=(//span[@class='portlet-title-text'])[4]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("xPath=(//span[@class='portlet-title-text'])[4]",
+			"Events");
 		assertEquals(RuntimeVariables.replace("Events"),
 			selenium.getText("xPath=(//span[@class='portlet-title-text'])[4]"));
-		assertEquals(RuntimeVariables.replace("Today's Events"),
-			selenium.getText("//h2[contains(.,'Events')]"));
+		assertTrue(selenium.isPartialText("//h2[contains(.,'Events')]", "Events"));
 		assertEquals(RuntimeVariables.replace("Calendar Event3 Title"),
 			selenium.getText("xPath=(//span[@class='event-name']/a)[3]"));
 		selenium.clickAt("xPath=(//span[@class='event-name']/a)[3]",
 			RuntimeVariables.replace("Calendar Event3 Title"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals("Add Event",
-			selenium.getValue("//input[@value='Add Event']"));
 		assertEquals(RuntimeVariables.replace("Calendar Event3 Title"),
-			selenium.getText("xPath=(//div[@class='event-title'])[3]"));
+			selenium.getText("//h1[@class='header-title']"));
+		assertEquals(RuntimeVariables.replace("Calendar Event3 Description"),
+			selenium.getText("//p[2]"));
 	}
 }

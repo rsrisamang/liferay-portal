@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -130,7 +130,7 @@ public class DDMContentPersistenceTest {
 
 		newDDMContent.setXml(ServiceTestUtil.randomString());
 
-		_persistence.update(newDDMContent, false);
+		_persistence.update(newDDMContent);
 
 		DDMContent existingDDMContent = _persistence.findByPrimaryKey(newDDMContent.getPrimaryKey());
 
@@ -315,7 +315,7 @@ public class DDMContentPersistenceTest {
 
 		ddmContent.setXml(ServiceTestUtil.randomString());
 
-		_persistence.update(ddmContent, false);
+		_persistence.update(ddmContent);
 
 		return ddmContent;
 	}

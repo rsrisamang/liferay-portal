@@ -26,6 +26,8 @@ import com.liferay.portal.service.LayoutSetLocalServiceUtil;
 import com.liferay.portal.service.LayoutSetPrototypeLocalServiceUtil;
 import com.liferay.portal.service.persistence.LayoutSetPrototypeUtil;
 
+import java.util.Date;
+
 /**
  * @author Raymond Augé
  */
@@ -34,20 +36,20 @@ public class LayoutSetPrototypeLayoutListener
 
 	@Override
 	public void onAfterCreate(Layout layout) {
-		updateLayoutSetPrototype(layout);
+		updateLayoutSetPrototype(layout, layout.getModifiedDate());
 	}
 
 	@Override
 	public void onAfterRemove(Layout layout) {
-		updateLayoutSetPrototype(layout);
+		updateLayoutSetPrototype(layout, new Date());
 	}
 
 	@Override
 	public void onAfterUpdate(Layout layout) {
-		updateLayoutSetPrototype(layout);
+		updateLayoutSetPrototype(layout, layout.getModifiedDate());
 	}
 
-	protected void updateLayoutSetPrototype(Layout layout) {
+	protected void updateLayoutSetPrototype(Layout layout, Date modifiedDate) {
 		try {
 			Group group = layout.getGroup();
 
@@ -59,9 +61,9 @@ public class LayoutSetPrototypeLayoutListener
 				LayoutSetPrototypeLocalServiceUtil.getLayoutSetPrototype(
 					group.getClassPK());
 
-			layoutSetPrototype.setModifiedDate(layout.getModifiedDate());
+			layoutSetPrototype.setModifiedDate(modifiedDate);
 
-			LayoutSetPrototypeUtil.update(layoutSetPrototype, false);
+			LayoutSetPrototypeUtil.update(layoutSetPrototype);
 
 			LayoutSet layoutSet = layoutSetPrototype.getLayoutSet();
 
@@ -72,7 +74,7 @@ public class LayoutSetPrototypeLayoutListener
 
 			settingsProperties.remove("merge-fail-count");
 
-			LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet, false);
+			LayoutSetLocalServiceUtil.updateLayoutSet(layoutSet);
 		}
 		catch (Exception e) {
 			_log.error(e, e);

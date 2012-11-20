@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.mobiledevicerules.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.AttachedModel;
@@ -493,6 +494,9 @@ public interface MDRActionModel extends AttachedModel, BaseModel<MDRAction>,
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(MDRAction mdrAction);
@@ -502,6 +506,8 @@ public interface MDRActionModel extends AttachedModel, BaseModel<MDRAction>,
 	public CacheModel<MDRAction> toCacheModel();
 
 	public MDRAction toEscapedModel();
+
+	public MDRAction toUnescapedModel();
 
 	public String toString();
 

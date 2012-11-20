@@ -15,33 +15,35 @@ AUI.add(
 
 		var CSS_TAGS_LIST = 'lfr-tags-selector-list';
 
-		var MAP_INVALID_CHARACTERS = {
-			'&': 1,
-			'\'': 1,
-			'@': 1,
-			'\\': 1,
-			']': 1,
-			'}': 1,
-			':': 1,
-			',': 1,
-			'=': 1,
-			'>': 1,
-			'/': 1,
-			'<': 1,
-			'\n': 1,
-			'[': 1,
-			'{': 1,
-			'%': 1,
-			'|': 1,
-			'+': 1,
-			'#': 1,
-			'?': 1,
-			'"': 1,
-			'\r': 1,
-			';': 1,
-			'*': 1,
-			'~': 1
-		};
+		var MAP_INVALID_CHARACTERS = AArray.hash(
+			[
+				'&',
+				'\'',
+				'@',
+				'\\',
+				']',
+				'}',
+				':',
+				',',
+				'=',
+				'>',
+				'/',
+				'<',
+				'\n',
+				'[',
+				'{',
+				'%',
+				'|',
+				'+',
+				'#',
+				'?',
+				'"',
+				'\r',
+				';',
+				'*',
+				'~'
+			]
+		);
 
 		var TPL_CHECKED = ' checked="checked" ';
 
@@ -273,7 +275,8 @@ AUI.add(
 
 						groupIds.push(themeDisplay.getCompanyGroupId());
 
-						Liferay.Service.Asset.AssetTag.getGroupsTags(
+						Liferay.Service(
+							'/assettag/get-groups-tags',
 							{
 								groupIds: groupIds
 							},
@@ -284,7 +287,7 @@ AUI.add(
 					_getTagsDataSource: function() {
 						var instance = this;
 
-						var AssetTagSearch = Liferay.Service.Asset.AssetTag.search;
+						var AssetTagSearch = Liferay.Service.bind('/assettag/search');
 
 						AssetTagSearch._serviceQueryCache = {};
 
@@ -294,7 +297,8 @@ AUI.add(
 							{
 								on: {
 									request: function(event) {
-										var term = event.request;
+										var term = decodeURIComponent(event.request);
+
 										var key = term;
 
 										if (term == '*') {
@@ -307,8 +311,8 @@ AUI.add(
 											serviceQueryObj = {
 												groupId: themeDisplay.getParentGroupId(),
 												name: '%' + term + '%',
-												properties: STR_BLANK,
-												begin: 0,
+												tagProperties: STR_BLANK,
+												start: 0,
 												end: 20
 											};
 
@@ -376,7 +380,7 @@ AUI.add(
 					_onAddEntryClick: function(event) {
 						var instance = this;
 
-						var text = instance.inputNode.val();
+						var text = Liferay.Util.escapeHTML(instance.inputNode.val());
 
 						if (text) {
 							if (text.indexOf(',') > -1) {
@@ -618,7 +622,7 @@ AUI.add(
 
 									suggestionsIO.start();
 								},
-								until: function () {
+								until: function() {
 									return length <= start;
 								}
 							}

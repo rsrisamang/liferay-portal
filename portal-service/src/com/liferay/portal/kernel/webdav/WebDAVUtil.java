@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Namespace;
 import com.liferay.portal.kernel.xml.SAXReaderUtil;
@@ -36,6 +37,7 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.util.comparator.GroupFriendlyURLComparator;
+import com.liferay.portlet.documentlibrary.util.DLUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,6 +189,8 @@ public class WebDAVUtil {
 
 		// Communities
 
+		List<Group> groups = new UniqueList<Group>();
+
 		LinkedHashMap<String, Object> params =
 			new LinkedHashMap<String, Object>();
 
@@ -195,9 +199,10 @@ public class WebDAVUtil {
 		OrderByComparator orderByComparator = new GroupFriendlyURLComparator(
 			true);
 
-		List<Group> groups = GroupLocalServiceUtil.search(
-			user.getCompanyId(), null, null, params, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, orderByComparator);
+		groups.addAll(
+			GroupLocalServiceUtil.search(
+				user.getCompanyId(), null, null, params, QueryUtil.ALL_POS,
+				QueryUtil.ALL_POS, orderByComparator));
 
 		// Organizations
 
@@ -309,6 +314,20 @@ public class WebDAVUtil {
 
 	public static boolean isOverwrite(HttpServletRequest request) {
 		return getInstance()._isOverwrite(request);
+	}
+
+	public static String stripManualCheckInRequiredPath(String pathInfo) {
+		int index = pathInfo.indexOf(DLUtil.MANUAL_CHECK_IN_REQUIRED_PATH);
+
+		if (index >= 0) {
+			pathInfo =
+				pathInfo.substring(0, index) +
+					pathInfo.substring(
+						index + DLUtil.MANUAL_CHECK_IN_REQUIRED_PATH.length(),
+						pathInfo.length());
+		}
+
+		return pathInfo;
 	}
 
 	private WebDAVUtil() {

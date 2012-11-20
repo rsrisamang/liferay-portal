@@ -22,30 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewDMPortletHideFolderSearchTest extends BaseTestCase {
 	public void testViewDMPortletHideFolderSearch() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isElementPresent("//input[@id='_20_keywords']"));
-		assertFalse(selenium.isElementPresent("//input[@value='Search']"));
+		assertTrue(selenium.isElementNotPresent("//input[@id='_20_keywords']"));
+		assertTrue(selenium.isElementNotPresent("//input[@value='Search']"));
 	}
 }

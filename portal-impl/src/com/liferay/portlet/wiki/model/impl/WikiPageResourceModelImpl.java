@@ -225,17 +225,6 @@ public class WikiPageResourceModelImpl extends BaseModelImpl<WikiPageResource>
 	}
 
 	@Override
-	public WikiPageResource toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (WikiPageResource)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
 			WikiPageResource.class.getName(), getPrimaryKey());
@@ -246,6 +235,16 @@ public class WikiPageResourceModelImpl extends BaseModelImpl<WikiPageResource>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public WikiPageResource toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (WikiPageResource)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -395,7 +394,7 @@ public class WikiPageResourceModelImpl extends BaseModelImpl<WikiPageResource>
 	}
 
 	private static ClassLoader _classLoader = WikiPageResource.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			WikiPageResource.class
 		};
 	private String _uuid;
@@ -407,5 +406,5 @@ public class WikiPageResourceModelImpl extends BaseModelImpl<WikiPageResource>
 	private String _title;
 	private String _originalTitle;
 	private long _columnBitmask;
-	private WikiPageResource _escapedModelProxy;
+	private WikiPageResource _escapedModel;
 }

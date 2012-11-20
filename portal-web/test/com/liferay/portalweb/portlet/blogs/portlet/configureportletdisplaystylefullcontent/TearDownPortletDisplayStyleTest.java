@@ -27,115 +27,41 @@ public class TearDownPortletDisplayStyleTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Blogs Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Blogs Test Page",
 					RuntimeVariables.replace("Blogs Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//strong/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				selenium.clickAt("//strong/a",
+				assertEquals(RuntimeVariables.replace("Options"),
+					selenium.getText("//span[@title='Options']/ul/li/strong/a"));
+				selenium.clickAt("//span[@title='Options']/ul/li/strong/a",
 					RuntimeVariables.replace("Options"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]");
 				assertEquals(RuntimeVariables.replace("Configuration"),
 					selenium.getText(
-						"//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a"));
-				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a",
+						"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]"));
+				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]",
 					RuntimeVariables.replace("Configuration"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Display Settings")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//iframe[@id='_33_configurationIframeDialog']");
+				selenium.selectFrame(
+					"//iframe[@id='_33_configurationIframeDialog']");
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/liferay/navigation_interaction.js')]");
+				selenium.waitForVisible("link=Display Settings");
 				selenium.clickAt("link=Display Settings",
 					RuntimeVariables.replace("Display Settings"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//select[@id='_86_pageDelta']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForPageToLoad("30000");
 				selenium.select("//select[@id='_86_pageDelta']",
 					RuntimeVariables.replace("5"));
-				selenium.select("//select[@id='_86_pageDisplayStyle']",
+				selenium.select("//select[@id='_86_displayStyle']",
 					RuntimeVariables.replace("Full Content"));
 
 				boolean enableFlagsChecked = selenium.isChecked(
-						"_86_enableFlagsCheckbox");
+						"//input[@id='_86_enableFlagsCheckbox']");
 
 				if (enableFlagsChecked) {
 					label = 2;
@@ -147,9 +73,11 @@ public class TearDownPortletDisplayStyleTest extends BaseTestCase {
 					RuntimeVariables.replace("Enable Flags"));
 
 			case 2:
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableFlagsCheckbox']"));
 
 				boolean enableRatingsChecked = selenium.isChecked(
-						"_86_enableRatingsCheckbox");
+						"//input[@id='_86_enableRatingsCheckbox']");
 
 				if (enableRatingsChecked) {
 					label = 3;
@@ -161,9 +89,11 @@ public class TearDownPortletDisplayStyleTest extends BaseTestCase {
 					RuntimeVariables.replace("Enable Ratings"));
 
 			case 3:
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableRatingsCheckbox']"));
 
 				boolean enableCommentsChecked = selenium.isChecked(
-						"_86_enableCommentsCheckbox");
+						"//input[@id='_86_enableCommentsCheckbox']");
 
 				if (enableCommentsChecked) {
 					label = 4;
@@ -175,9 +105,11 @@ public class TearDownPortletDisplayStyleTest extends BaseTestCase {
 					RuntimeVariables.replace("Enable Comments"));
 
 			case 4:
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableCommentsCheckbox']"));
 
 				boolean enableCommentRatingsChecked = selenium.isChecked(
-						"_86_enableCommentRatingsCheckbox");
+						"//input[@id='_86_enableCommentRatingsCheckbox']");
 
 				if (enableCommentRatingsChecked) {
 					label = 5;
@@ -189,10 +121,25 @@ public class TearDownPortletDisplayStyleTest extends BaseTestCase {
 					RuntimeVariables.replace("Enable Comment Ratings"));
 
 			case 5:
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableCommentRatingsCheckbox']"));
 				selenium.clickAt("//input[@value='Save']",
-					RuntimeVariables.replace(""));
+					RuntimeVariables.replace("Save"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
+				assertEquals("5",
+					selenium.getSelectedLabel("//select[@id='_86_pageDelta']"));
+				assertEquals("Full Content",
+					selenium.getSelectedLabel(
+						"//select[@id='_86_displayStyle']"));
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableFlagsCheckbox']"));
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableRatingsCheckbox']"));
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableCommentsCheckbox']"));
+				assertTrue(selenium.isChecked(
+						"//input[@id='_86_enableCommentRatingsCheckbox']"));
+				selenium.selectFrame("relative=top");
 
 			case 100:
 				label = -1;

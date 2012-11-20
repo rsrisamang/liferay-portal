@@ -93,6 +93,10 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 	 * @return the normal model instance
 	 */
 	public static PluginSetting toModel(PluginSettingSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		PluginSetting model = new PluginSettingImpl();
 
 		model.setPluginSettingId(soapModel.getPluginSettingId());
@@ -112,6 +116,10 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 	 * @return the normal model instances
 	 */
 	public static List<PluginSetting> toModels(PluginSettingSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<PluginSetting> models = new ArrayList<PluginSetting>(soapModels.length);
 
 		for (PluginSettingSoap soapModel : soapModels) {
@@ -314,17 +322,6 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 	}
 
 	@Override
-	public PluginSetting toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (PluginSetting)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			PluginSetting.class.getName(), getPrimaryKey());
@@ -335,6 +332,16 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public PluginSetting toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (PluginSetting)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -508,7 +515,7 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 	}
 
 	private static ClassLoader _classLoader = PluginSetting.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			PluginSetting.class
 		};
 	private long _pluginSettingId;
@@ -522,5 +529,5 @@ public class PluginSettingModelImpl extends BaseModelImpl<PluginSetting>
 	private String _roles;
 	private boolean _active;
 	private long _columnBitmask;
-	private PluginSetting _escapedModelProxy;
+	private PluginSetting _escapedModel;
 }

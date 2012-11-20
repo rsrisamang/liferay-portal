@@ -22,12 +22,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewUSStatisticNoActivityTest extends BaseTestCase {
 	public void testViewUSStatisticNoActivity() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=User Statistics Test Page",
 			RuntimeVariables.replace("User Statistics Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"There are no active users for this period."),
 			selenium.getText("//div[@class='portlet-content']/div/div"));

@@ -49,23 +49,28 @@
 	<td>Web Content</td>
 </tr>
 <tr>
+	<td>assertText</td>
+	<td>//span[@title='Add']/ul/li/strong/a/span</td>
+	<td>Add</td>
+</tr>
+<tr>
 	<td>clickAt</td>
 	<td>//span[@title='Add']/ul/li/strong/a/span</td>
 	<td>Add</td>
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//a[contains(@id,'basic-web-content')]</td>
+	<td>//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Basic Web Content')]</td>
 	<td>Basic Web Content</td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//a[contains(@id,'basic-web-content')]</td>
+	<td>//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Basic Web Content')]</td>
 	<td>Basic Web Content</td>
 </tr>
 <tr>
-	<td>clickAtAndWait</td>
-	<td>//a[contains(@id,'basic-web-content')]</td>
+	<td>clickAndWait</td>
+	<td>//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Basic Web Content')]</td>
 	<td>Basic Web Content</td>
 </tr>
 <tr>
@@ -149,14 +154,14 @@
 	<td>Your request completed successfully.</td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>//td[3]/a</td>
-	<td>WC WebContent Title</td>
+	<td>assertVisible</td>
+	<td>//div[@class='entry-thumbnail']/img</td>
+	<td>Web Content Thumbnail</td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//td[4]/a</td>
-	<td>Approved</td>
+	<td>//a[@class='entry-link']/span</td>
+	<td>WC WebContent Title</td>
 </tr>
 </tbody></table>
 </body>

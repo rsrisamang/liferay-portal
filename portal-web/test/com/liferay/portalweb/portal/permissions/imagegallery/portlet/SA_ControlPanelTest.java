@@ -27,6 +27,8 @@ public class SA_ControlPanelTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 
 				boolean NotInControlPanel = selenium.isElementPresent(
 						"//li[4]/ul/li[1]/a[1]");
@@ -40,13 +42,11 @@ public class SA_ControlPanelTest extends BaseTestCase {
 				selenium.clickAt("//li[4]/ul/li[1]/a[1]",
 					RuntimeVariables.replace(""));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				selenium.clickAt("link=Control Panel",
 					RuntimeVariables.replace(""));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 100:
 				label = -1;

@@ -300,17 +300,6 @@ public class SocialActivityAchievementModelImpl extends BaseModelImpl<SocialActi
 	}
 
 	@Override
-	public SocialActivityAchievement toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (SocialActivityAchievement)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			SocialActivityAchievement.class.getName(), getPrimaryKey());
@@ -321,6 +310,16 @@ public class SocialActivityAchievementModelImpl extends BaseModelImpl<SocialActi
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public SocialActivityAchievement toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (SocialActivityAchievement)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -497,7 +496,7 @@ public class SocialActivityAchievementModelImpl extends BaseModelImpl<SocialActi
 	}
 
 	private static ClassLoader _classLoader = SocialActivityAchievement.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			SocialActivityAchievement.class
 		};
 	private long _activityAchievementId;
@@ -516,5 +515,5 @@ public class SocialActivityAchievementModelImpl extends BaseModelImpl<SocialActi
 	private boolean _originalFirstInGroup;
 	private boolean _setOriginalFirstInGroup;
 	private long _columnBitmask;
-	private SocialActivityAchievement _escapedModelProxy;
+	private SocialActivityAchievement _escapedModel;
 }

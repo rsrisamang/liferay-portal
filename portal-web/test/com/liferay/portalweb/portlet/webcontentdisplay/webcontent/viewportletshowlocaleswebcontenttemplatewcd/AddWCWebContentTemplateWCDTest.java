@@ -22,94 +22,28 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddWCWebContentTemplateWCDTest extends BaseTestCase {
 	public void testAddWCWebContentTemplateWCD() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Web Content Display Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Web Content Display Test Page");
 		selenium.clickAt("link=Web Content Display Test Page",
 			RuntimeVariables.replace("Web Content Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//img[@alt='Add Web Content']",
 			RuntimeVariables.replace("Add Web Content"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//a[@id='_15_selectTemplateLink']",
 			RuntimeVariables.replace("Select Template"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//td[2]/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//td[2]/a");
 		assertEquals(RuntimeVariables.replace(
 				"Web Content Localized Template Name"),
 			selenium.getText("//td[2]/a"));
 		selenium.clickAt("//td[2]/a",
 			RuntimeVariables.replace("Web Content Localized Template Name"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if ("Selecting a template will change the structure, available input fields, and available templates? Do you want to proceed?".equals(
-							selenium.getConfirmation())) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace(
-							"Web Content Localized Structure Name")
-										.equals(selenium.getText(
-								"//span[@class='structure-name-label']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForConfirmation(
+			"Selecting a template will change the structure, available input fields, and available templates? Do you want to proceed?");
+		selenium.waitForText("//span[@class='structure-name-label']",
+			"Web Content Localized Structure Name");
 		assertEquals(RuntimeVariables.replace(
 				"Web Content Localized Structure Name"),
 			selenium.getText("//span[@class='structure-name-label']"));
@@ -125,7 +59,6 @@ public class AddWCWebContentTemplateWCDTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Publish']",
 			RuntimeVariables.replace("Publish"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Hello World Page Name"),
 			selenium.getText("//td[@class='page-name']"));
 		assertEquals(RuntimeVariables.replace("Hello World Page Description"),

@@ -17,8 +17,7 @@ package com.liferay.portalweb.portal.evaluatelog;
 import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.util.FileUtil;
-
-import com.liferay.portal.util.BaseTestCase;
+import com.liferay.portalweb.portal.BaseTestCase;
 
 /**
  * @author Brian Wing Shun Chan
@@ -110,6 +109,12 @@ public class EvaluateLogTest extends BaseTestCase {
 			// LPS-23498
 
 			if (line.contains("JBREM00200: ")) {
+				continue;
+			}
+
+			// LPS-28734
+
+			if (line.contains("java.nio.channels.ClosedChannelException")) {
 				continue;
 			}
 

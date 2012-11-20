@@ -16,6 +16,7 @@ package com.liferay.portal.jsonwebservice;
 
 import com.liferay.portal.service.ServiceContext;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +31,32 @@ public class FooService {
 
 		fooData.setId(id);
 
+		if (id == 7) {
+			FooDataImpl fooDataImpl = (FooDataImpl)fooData;
+
+			fooDataImpl.setName("James Bond");
+			fooDataImpl.setHeight(173);
+			fooDataImpl.setValue("licensed");
+		}
+		else if (id == -13) {
+			FooDataImpl fooDataImpl = (FooDataImpl)fooData;
+
+			fooDataImpl.setName("Dr. Evil");
+			fooDataImpl.setHeight(59);
+			fooDataImpl.setValue("fun");
+		}
+
 		return fooData;
+	}
+
+	public static List<FooData> getFooDatas() {
+		List<FooData> fooDataList = new ArrayList<FooData>();
+
+		fooDataList.add(getFooData(1));
+		fooDataList.add(getFooData(2));
+		fooDataList.add(getFooData(3));
+
+		return fooDataList;
 	}
 
 	public static String hello() {
@@ -66,6 +92,10 @@ public class FooService {
 		}
 
 		return '[' + name + '|' + number + ']';
+	}
+
+	public static String nullReturn() {
+		return null;
 	}
 
 	public static String srvcctx(ServiceContext serviceContext) {

@@ -69,7 +69,7 @@
 							<aui:select inlineField="<%= true %>" label="default-language" name="companyLocale">
 
 								<%
-								String languageId = GetterUtil.getString((String)session.getAttribute(WebKeys.SETUP_WIZARD_DEFAULT_LOCALE), PropsValues.COMPANY_DEFAULT_LOCALE);
+								String languageId = GetterUtil.getString((String)session.getAttribute(WebKeys.SETUP_WIZARD_DEFAULT_LOCALE), SetupWizardUtil.getDefaultLanguageId());
 
 								Locale[] locales = LanguageUtil.getAvailableLocales();
 
@@ -369,7 +369,7 @@
 
 							<aui:form action="<%= loginURL %>" method="post" name="fm">
 								<aui:input name="login" type="hidden" value="<%= emailAddress %>" />
-								<aui:input name="password" type="hidden" value='<%= PropsValues.DEFAULT_ADMIN_PASSWORD %>' />
+								<aui:input name="password" type="hidden" value="<%= PropsValues.DEFAULT_ADMIN_PASSWORD %>" />
 
 								<p>
 									<span class="portlet-msg-success">

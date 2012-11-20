@@ -22,29 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AA_AssertViewTest extends BaseTestCase {
 	public void testAA_AssertView() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/site-name/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Announcements Permissions Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Announcements Permissions Page");
 		selenium.clickAt("link=Announcements Permissions Page",
 			RuntimeVariables.replace("Announcements Permissions Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Test AA Announcement"),
 			selenium.getText("xPath=(//h3[@class='entry-title'])[1]/a"));
 		assertEquals(RuntimeVariables.replace("Test General Announcement"),
@@ -62,23 +46,19 @@ public class AA_AssertViewTest extends BaseTestCase {
 		selenium.clickAt("link=Manage Entries",
 			RuntimeVariables.replace("Manage Entries"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.select("//select[@id='_84_distributionScope']",
 			RuntimeVariables.replace("label=Announcements Administrator"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Test AA Announcement"),
 			selenium.getText("//tr[3]/td/a"));
 		selenium.select("//select[@id='_84_distributionScope']",
 			RuntimeVariables.replace("label=Guest"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Test Guest Announcement"),
 			selenium.getText("//tr[3]/td/a"));
 		selenium.select("//select[@id='_84_distributionScope']",
 			RuntimeVariables.replace("label=Site Member"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Test Member Announcement"),
 			selenium.getText("//tr[3]/td/a"));
 	}

@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -116,7 +116,7 @@ public class DDMStorageLinkPersistenceTest {
 
 		newDDMStorageLink.setStructureId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newDDMStorageLink, false);
+		_persistence.update(newDDMStorageLink);
 
 		DDMStorageLink existingDDMStorageLink = _persistence.findByPrimaryKey(newDDMStorageLink.getPrimaryKey());
 
@@ -276,7 +276,7 @@ public class DDMStorageLinkPersistenceTest {
 
 		ddmStorageLink.setStructureId(ServiceTestUtil.nextLong());
 
-		_persistence.update(ddmStorageLink, false);
+		_persistence.update(ddmStorageLink);
 
 		return ddmStorageLink;
 	}

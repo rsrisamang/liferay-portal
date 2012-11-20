@@ -259,7 +259,14 @@ public class ClassNamePersistenceImpl extends BasePersistenceImpl<ClassName>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, className);
+			if (!session.contains(className)) {
+				className = (ClassName)session.get(ClassNameImpl.class,
+						className.getPrimaryKeyObj());
+			}
+
+			if (className != null) {
+				session.delete(className);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -268,14 +275,16 @@ public class ClassNamePersistenceImpl extends BasePersistenceImpl<ClassName>
 			closeSession(session);
 		}
 
-		clearCache(className);
+		if (className != null) {
+			clearCache(className);
+		}
 
 		return className;
 	}
 
 	@Override
-	public ClassName updateImpl(com.liferay.portal.model.ClassName className,
-		boolean merge) throws SystemException {
+	public ClassName updateImpl(com.liferay.portal.model.ClassName className)
+		throws SystemException {
 		className = toUnwrappedModel(className);
 
 		boolean isNew = className.isNew();
@@ -287,9 +296,14 @@ public class ClassNamePersistenceImpl extends BasePersistenceImpl<ClassName>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, className, merge);
+			if (className.isNew()) {
+				session.save(className);
 
-			className.setNew(false);
+				className.setNew(false);
+			}
+			else {
+				session.merge(className);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -319,6 +333,7 @@ public class ClassNamePersistenceImpl extends BasePersistenceImpl<ClassName>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_VALUE, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_VALUE, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_VALUE,

@@ -109,6 +109,10 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 	 * @return the normal model instance
 	 */
 	public static MBCategory toModel(MBCategorySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		MBCategory model = new MBCategoryImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -137,6 +141,10 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 	 * @return the normal model instances
 	 */
 	public static List<MBCategory> toModels(MBCategorySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<MBCategory> models = new ArrayList<MBCategory>(soapModels.length);
 
 		for (MBCategorySoap soapModel : soapModels) {
@@ -511,17 +519,6 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 	}
 
 	@Override
-	public MBCategory toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (MBCategory)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			MBCategory.class.getName(), getPrimaryKey());
@@ -532,6 +529,16 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MBCategory toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MBCategory)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -838,7 +845,7 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 	}
 
 	private static ClassLoader _classLoader = MBCategory.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			MBCategory.class
 		};
 	private String _uuid;
@@ -865,5 +872,5 @@ public class MBCategoryModelImpl extends BaseModelImpl<MBCategory>
 	private int _messageCount;
 	private Date _lastPostDate;
 	private long _columnBitmask;
-	private MBCategory _escapedModelProxy;
+	private MBCategory _escapedModel;
 }

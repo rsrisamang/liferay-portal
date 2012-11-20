@@ -19,6 +19,10 @@ import com.liferay.portal.kernel.audit.AuditRouterUtil;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.language.UnicodeLanguageUtil;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.portlet.PortletModeFactory_IW;
+import com.liferay.portal.kernel.portlet.WindowStateFactory_IW;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.templateparser.TemplateContext;
 import com.liferay.portal.kernel.util.ArrayUtil_IW;
@@ -68,7 +72,10 @@ import com.liferay.portlet.expando.service.ExpandoRowLocalService;
 import com.liferay.portlet.expando.service.ExpandoTableLocalService;
 import com.liferay.portlet.expando.service.ExpandoValueLocalService;
 import com.liferay.portlet.journalcontent.util.JournalContentUtil;
+import com.liferay.taglib.util.VelocityTaglib;
 import com.liferay.util.portlet.PortletRequestUtil;
+
+import java.lang.reflect.Method;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,23 +107,44 @@ public class TemplateContextHelper {
 
 		// Audit message factory
 
-		variables.put(
-			"auditMessageFactoryUtil",
-			AuditMessageFactoryUtil.getAuditMessageFactory());
+		try {
+			variables.put(
+				"auditMessageFactoryUtil",
+				AuditMessageFactoryUtil.getAuditMessageFactory());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Audit router util
 
-		variables.put("auditRouterUtil", AuditRouterUtil.getAuditRouter());
+		try {
+			variables.put("auditRouterUtil", AuditRouterUtil.getAuditRouter());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Browser sniffer
 
-		variables.put("browserSniffer", BrowserSnifferUtil.getBrowserSniffer());
+		try {
+			variables.put(
+				"browserSniffer", BrowserSnifferUtil.getBrowserSniffer());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Date format
 
-		variables.put(
-			"dateFormatFactory",
-			FastDateFormatFactoryUtil.getFastDateFormatFactory());
+		try {
+			variables.put(
+				"dateFormatFactory",
+				FastDateFormatFactoryUtil.getFastDateFormatFactory());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Date util
 
@@ -124,32 +152,62 @@ public class TemplateContextHelper {
 
 		// Expando column service
 
-		ServiceLocator serviceLocator = ServiceLocator.getInstance();
+		try {
+			ServiceLocator serviceLocator = ServiceLocator.getInstance();
 
-		variables.put(
-			"expandoColumnLocalService",
-			serviceLocator.findService(
-				ExpandoColumnLocalService.class.getName()));
+			// Service locator
 
-		// Expando row service
+			variables.put("serviceLocator", serviceLocator);
 
-		variables.put(
-			"expandoRowLocalService",
-			serviceLocator.findService(ExpandoRowLocalService.class.getName()));
+			try {
+				variables.put(
+					"expandoColumnLocalService",
+					serviceLocator.findService(
+						ExpandoColumnLocalService.class.getName()));
+			}
+			catch (SecurityException se) {
+				_log.error(se, se);
+			}
 
-		// Expando table service
+			// Expando row service
 
-		variables.put(
-			"expandoTableLocalService",
-			serviceLocator.findService(
-				ExpandoTableLocalService.class.getName()));
+			try {
+				variables.put(
+					"expandoRowLocalService",
+					serviceLocator.findService(
+						ExpandoRowLocalService.class.getName()));
+			}
+			catch (SecurityException se) {
+				_log.error(se, se);
+			}
 
-		// Expando value service
+			// Expando table service
 
-		variables.put(
-			"expandoValueLocalService",
-			serviceLocator.findService(
-				ExpandoValueLocalService.class.getName()));
+			try {
+				variables.put(
+					"expandoTableLocalService",
+					serviceLocator.findService(
+						ExpandoTableLocalService.class.getName()));
+			}
+			catch (SecurityException se) {
+				_log.error(se, se);
+			}
+
+			// Expando value service
+
+			try {
+				variables.put(
+					"expandoValueLocalService",
+					serviceLocator.findService(
+						ExpandoValueLocalService.class.getName()));
+			}
+			catch (SecurityException se) {
+				_log.error(se, se);
+			}
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Getter util
 
@@ -157,31 +215,67 @@ public class TemplateContextHelper {
 
 		// Html util
 
-		variables.put("htmlUtil", HtmlUtil.getHtml());
+		try {
+			variables.put("htmlUtil", HtmlUtil.getHtml());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Http util
 
-		variables.put("httpUtil", HttpUtil.getHttp());
+		try {
+			variables.put("httpUtil", HttpUtil.getHttp());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Journal content util
 
-		variables.put(
-			"journalContentUtil", JournalContentUtil.getJournalContent());
+		try {
+			variables.put(
+				"journalContentUtil", JournalContentUtil.getJournalContent());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// JSON factory util
 
-		variables.put("jsonFactoryUtil", JSONFactoryUtil.getJSONFactory());
+		try {
+			variables.put("jsonFactoryUtil", JSONFactoryUtil.getJSONFactory());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Language util
 
-		variables.put("languageUtil", LanguageUtil.getLanguage());
+		try {
+			variables.put("languageUtil", LanguageUtil.getLanguage());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
-		variables.put(
-			"unicodeLanguageUtil", UnicodeLanguageUtil.getUnicodeLanguage());
+		try {
+			variables.put(
+				"unicodeLanguageUtil",
+				UnicodeLanguageUtil.getUnicodeLanguage());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Locale util
 
-		variables.put("localeUtil", LocaleUtil.getInstance());
+		try {
+			variables.put("localeUtil", LocaleUtil.getInstance());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Param util
 
@@ -189,38 +283,85 @@ public class TemplateContextHelper {
 
 		// Portal util
 
-		variables.put("portalUtil", PortalUtil.getPortal());
+		try {
+			variables.put("portalUtil", PortalUtil.getPortal());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
-		variables.put("portal", PortalUtil.getPortal());
+		try {
+			variables.put("portal", PortalUtil.getPortal());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Prefs props util
 
-		variables.put("prefsPropsUtil", PrefsPropsUtil.getPrefsProps());
+		try {
+			variables.put("prefsPropsUtil", PrefsPropsUtil.getPrefsProps());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Props util
 
-		variables.put("propsUtil", PropsUtil.getProps());
+		try {
+			variables.put("propsUtil", PropsUtil.getProps());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		// Portlet mode factory
+
+		variables.put(
+			"portletModeFactory", PortletModeFactory_IW.getInstance());
 
 		// Portlet URL factory
 
-		variables.put(
-			"portletURLFactory", PortletURLFactoryUtil.getPortletURLFactory());
+		try {
+			variables.put(
+				"portletURLFactory",
+				PortletURLFactoryUtil.getPortletURLFactory());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Randomizer
 
-		variables.put(
-			"randomizer", Randomizer_IW.getInstance().getWrappedInstance());
+		try {
+			variables.put(
+				"randomizer", Randomizer_IW.getInstance().getWrappedInstance());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
-		// SAX reader util
+		try {
+			UtilLocator utilLocator = UtilLocator.getInstance();
 
-		UtilLocator utilLocator = UtilLocator.getInstance();
+			// Util locator
 
-		variables.put(
-			"saxReaderUtil", utilLocator.findUtil(SAXReader.class.getName()));
+			variables.put("utilLocator", utilLocator);
 
-		// Service locator
+			// SAX reader util
 
-		variables.put("serviceLocator", serviceLocator);
+			try {
+				variables.put(
+					"saxReaderUtil",
+					utilLocator.findUtil(SAXReader.class.getName()));
+			}
+			catch (SecurityException se) {
+				_log.error(se, se);
+			}
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Session clicks
 
@@ -238,10 +379,6 @@ public class TemplateContextHelper {
 
 		variables.put("timeZoneUtil", TimeZoneUtil_IW.getInstance());
 
-		// Util locator
-
-		variables.put("utilLocator", utilLocator);
-
 		// Unicode formatter
 
 		variables.put("unicodeFormatter", UnicodeFormatter_IW.getInstance());
@@ -250,48 +387,159 @@ public class TemplateContextHelper {
 
 		variables.put("validator", Validator_IW.getInstance());
 
+		// VelocityTaglib methods
+
+		try {
+			Class<?> clazz = VelocityTaglib.class;
+
+			Method method = clazz.getMethod(
+				"layoutIcon", new Class[] {Layout.class});
+
+			variables.put("velocityTaglib#layoutIcon", method);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
+		}
+
 		// Web server servlet token
 
+		try {
+			variables.put(
+				"webServerToken",
+				WebServerServletTokenUtil.getWebServerServletToken());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		// Window state factory
+
 		variables.put(
-			"webServerToken",
-			WebServerServletTokenUtil.getWebServerServletToken());
+			"windowStateFactory", WindowStateFactory_IW.getInstance());
 
 		// Permissions
 
-		variables.put(
-			"accountPermission", AccountPermissionUtil.getAccountPermission());
-		variables.put(
-			"commonPermission", CommonPermissionUtil.getCommonPermission());
-		variables.put(
-			"groupPermission", GroupPermissionUtil.getGroupPermission());
-		variables.put(
-			"layoutPermission", LayoutPermissionUtil.getLayoutPermission());
-		variables.put(
-			"organizationPermission",
-			OrganizationPermissionUtil.getOrganizationPermission());
-		variables.put(
-			"passwordPolicyPermission",
-			PasswordPolicyPermissionUtil.getPasswordPolicyPermission());
-		variables.put(
-			"portalPermission", PortalPermissionUtil.getPortalPermission());
-		variables.put(
-			"portletPermission", PortletPermissionUtil.getPortletPermission());
-		variables.put("rolePermission", RolePermissionUtil.getRolePermission());
-		variables.put(
-			"userGroupPermission",
-			UserGroupPermissionUtil.getUserGroupPermission());
-		variables.put("userPermission", UserPermissionUtil.getUserPermission());
+		try {
+			variables.put(
+				"accountPermission",
+				AccountPermissionUtil.getAccountPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"commonPermission", CommonPermissionUtil.getCommonPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"groupPermission", GroupPermissionUtil.getGroupPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"layoutPermission", LayoutPermissionUtil.getLayoutPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"organizationPermission",
+				OrganizationPermissionUtil.getOrganizationPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"passwordPolicyPermission",
+				PasswordPolicyPermissionUtil.getPasswordPolicyPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"portalPermission", PortalPermissionUtil.getPortalPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"portletPermission",
+				PortletPermissionUtil.getPortletPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"rolePermission", RolePermissionUtil.getRolePermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"userGroupPermission",
+				UserGroupPermissionUtil.getUserGroupPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"userPermission", UserPermissionUtil.getUserPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		// Deprecated
 
-		variables.put(
-			"dateFormats",
-			FastDateFormatFactoryUtil.getFastDateFormatFactory());
-		variables.put(
-			"imageToken", WebServerServletTokenUtil.getWebServerServletToken());
-		variables.put(
-			"locationPermission",
-			OrganizationPermissionUtil.getOrganizationPermission());
+		try {
+			variables.put(
+				"dateFormats",
+				FastDateFormatFactoryUtil.getFastDateFormatFactory());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"imageToken",
+				WebServerServletTokenUtil.getWebServerServletToken());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
+
+		try {
+			variables.put(
+				"locationPermission",
+				OrganizationPermissionUtil.getOrganizationPermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		return variables;
 	}
@@ -485,5 +733,8 @@ public class TemplateContextHelper {
 
 		templateContext.put("tilesSelectable", tilesSelectable);
 	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		TemplateContextHelper.class);
 
 }

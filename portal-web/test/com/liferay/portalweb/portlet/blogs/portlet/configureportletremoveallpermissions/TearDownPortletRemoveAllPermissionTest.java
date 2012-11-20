@@ -23,139 +23,146 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class TearDownPortletRemoveAllPermissionTest extends BaseTestCase {
 	public void testTearDownPortletRemoveAllPermission()
 		throws Exception {
-		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		int label = 1;
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+		while (label >= 1) {
+			switch (label) {
+			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
+				selenium.open("/web/guest/home/");
+				selenium.clickAt("link=Blogs Test Page",
+					RuntimeVariables.replace("Blogs Test Page"));
+				selenium.waitForPageToLoad("30000");
+				Thread.sleep(5000);
+				assertEquals(RuntimeVariables.replace("Options"),
+					selenium.getText("//span[@title='Options']/ul/li/strong/a"));
+				selenium.clickAt("//span[@title='Options']/ul/li/strong/a",
+					RuntimeVariables.replace("Options"));
+				selenium.waitForVisible(
+					"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]");
+				assertEquals(RuntimeVariables.replace("Configuration"),
+					selenium.getText(
+						"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]"));
+				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Configuration')]",
+					RuntimeVariables.replace("Configuration"));
+				selenium.waitForVisible(
+					"//iframe[@id='_33_configurationIframeDialog']");
+				selenium.selectFrame(
+					"//iframe[@id='_33_configurationIframeDialog']");
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/liferay/navigation_interaction.js')]");
+				selenium.waitForVisible("link=Permissions");
+				selenium.clickAt("link=Permissions",
+					RuntimeVariables.replace("Permissions"));
+				selenium.waitForPageToLoad("30000");
 
-			try {
-				if (selenium.isVisible("link=Blogs Test Page")) {
-					break;
+				boolean guestViewNotChecked = selenium.isChecked(
+						"//td[4]/input");
+
+				if (guestViewNotChecked) {
+					label = 2;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
-		}
+				selenium.clickAt("//td[4]/input",
+					RuntimeVariables.replace("Guest View"));
 
-		selenium.clickAt("link=Blogs Test Page",
-			RuntimeVariables.replace("Blogs Test Page"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		Thread.sleep(5000);
-		assertEquals(RuntimeVariables.replace("Options"),
-			selenium.getText("//span[@title='Options']/ul/li/strong/a"));
-		selenium.clickAt("//span[@title='Options']/ul/li/strong/a",
-			RuntimeVariables.replace("Options"));
+			case 2:
+				assertTrue(selenium.isChecked("//td[4]/input"));
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+				boolean ownerAddToPageNotChecked = selenium.isChecked(
+						"//tr[4]/td[2]/input");
 
-			try {
-				if (selenium.isVisible(
-							"//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a")) {
-					break;
+				if (ownerAddToPageNotChecked) {
+					label = 3;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
-		}
+				selenium.clickAt("//tr[4]/td[2]/input",
+					RuntimeVariables.replace("Owner Add to Page"));
 
-		assertEquals(RuntimeVariables.replace("Configuration"),
-			selenium.getText(
-				"//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a"));
-		selenium.click("//div[@class='lfr-component lfr-menu-list']/ul/li[2]/a");
+			case 3:
+				assertTrue(selenium.isChecked("//tr[4]/td[2]/input"));
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+				boolean ownerConfigurationNotChecked = selenium.isChecked(
+						"//tr[4]/td[3]/input");
 
-			try {
-				if (selenium.isVisible("link=Permissions")) {
-					break;
+				if (ownerConfigurationNotChecked) {
+					label = 4;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
-		}
+				selenium.clickAt("//tr[4]/td[3]/input",
+					RuntimeVariables.replace("Owner Configuration"));
 
-		selenium.clickAt("link=Permissions",
-			RuntimeVariables.replace("Permissions"));
+			case 4:
+				assertTrue(selenium.isChecked("//tr[4]/td[3]/input"));
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+				boolean ownerViewNotChecked = selenium.isChecked(
+						"//tr[4]/td[4]/input");
 
-			try {
-				if (selenium.isVisible("//td[4]/input")) {
-					break;
+				if (ownerViewNotChecked) {
+					label = 5;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
-		}
+				selenium.clickAt("//tr[4]/td[4]/input",
+					RuntimeVariables.replace("Owner View"));
 
-		assertFalse(selenium.isChecked("//td[4]/input"));
-		selenium.clickAt("//td[4]/input", RuntimeVariables.replace("Guest View"));
-		assertTrue(selenium.isChecked("//td[4]/input"));
-		assertFalse(selenium.isChecked("//tr[4]/td[2]/input"));
-		selenium.clickAt("//tr[4]/td[2]/input",
-			RuntimeVariables.replace("Owner Add to Page"));
-		assertTrue(selenium.isChecked("//tr[4]/td[2]/input"));
-		assertFalse(selenium.isChecked("//tr[4]/td[3]/input"));
-		selenium.clickAt("//tr[4]/td[3]/input",
-			RuntimeVariables.replace("Owner Configuration"));
-		assertTrue(selenium.isChecked("//tr[4]/td[3]/input"));
-		assertFalse(selenium.isChecked("//tr[4]/td[4]/input"));
-		selenium.clickAt("//tr[4]/td[4]/input",
-			RuntimeVariables.replace("Owner View"));
-		assertTrue(selenium.isChecked("//tr[4]/td[4]/input"));
-		assertFalse(selenium.isChecked("//tr[4]/td[5]/input"));
-		selenium.clickAt("//tr[4]/td[5]/input",
-			RuntimeVariables.replace("Owner Permissions"));
-		assertTrue(selenium.isChecked("//tr[4]/td[5]/input"));
-		assertFalse(selenium.isChecked("//tr[7]/td[4]/input"));
-		selenium.clickAt("//tr[7]/td[4]/input",
-			RuntimeVariables.replace("Site Member Permissions"));
-		assertTrue(selenium.isChecked("//tr[7]/td[4]/input"));
-		selenium.clickAt("//input[@value='Save']",
-			RuntimeVariables.replace("Save"));
+			case 5:
+				assertTrue(selenium.isChecked("//tr[4]/td[4]/input"));
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+				boolean ownerPermissionsNotChecked = selenium.isChecked(
+						"//tr[4]/td[5]/input");
 
-			try {
-				if (RuntimeVariables.replace(
-							"Your request completed successfully.")
-										.equals(selenium.getText(
-								"//div[@class='portlet-msg-success']"))) {
-					break;
+				if (ownerPermissionsNotChecked) {
+					label = 6;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
+				selenium.clickAt("//tr[4]/td[5]/input",
+					RuntimeVariables.replace("Owner Permissions"));
+
+			case 6:
+				assertTrue(selenium.isChecked("//tr[4]/td[5]/input"));
+
+				boolean siteMemberPermissionsNotChecked = selenium.isChecked(
+						"//tr[7]/td[4]/input");
+
+				if (siteMemberPermissionsNotChecked) {
+					label = 7;
+
+					continue;
+				}
+
+				selenium.clickAt("//tr[7]/td[4]/input",
+					RuntimeVariables.replace("Site Member Permissions"));
+
+			case 7:
+				assertTrue(selenium.isChecked("//tr[7]/td[4]/input"));
+				selenium.clickAt("//input[@value='Save']",
+					RuntimeVariables.replace("Save"));
+				selenium.waitForPageToLoad("30000");
+				assertEquals(RuntimeVariables.replace(
+						"Your request completed successfully."),
+					selenium.getText("//div[@class='portlet-msg-success']"));
+				assertTrue(selenium.isChecked("//td[4]/input"));
+				assertTrue(selenium.isChecked("//tr[4]/td[2]/input"));
+				assertTrue(selenium.isChecked("//tr[4]/td[3]/input"));
+				assertTrue(selenium.isChecked("//tr[4]/td[4]/input"));
+				assertTrue(selenium.isChecked("//tr[4]/td[5]/input"));
+				assertTrue(selenium.isChecked("//tr[7]/td[4]/input"));
+				selenium.selectFrame("relative=top");
+
+			case 100:
+				label = -1;
+			}
 		}
-
-		assertEquals(RuntimeVariables.replace(
-				"Your request completed successfully."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
 	}
 }

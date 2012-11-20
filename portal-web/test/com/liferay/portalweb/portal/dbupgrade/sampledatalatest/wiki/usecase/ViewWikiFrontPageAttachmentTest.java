@@ -22,35 +22,18 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewWikiFrontPageAttachmentTest extends BaseTestCase {
 	public void testViewWikiFrontPageAttachment() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/wiki-use-case-community/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Wiki Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Wiki Test Page");
 		selenium.clickAt("link=Wiki Test Page",
 			RuntimeVariables.replace("Wiki Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("1 Attachment"),
 			selenium.getText("//div[7]/div[1]/span[2]/a/span"));
 		selenium.clickAt("//div[7]/div[1]/span[2]/a/span",
 			RuntimeVariables.replace("1 Attachment"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Wiki_Attachment.jpg"),
 			selenium.getText("//td[1]/a"));
 		assertEquals(RuntimeVariables.replace("3.1k"),

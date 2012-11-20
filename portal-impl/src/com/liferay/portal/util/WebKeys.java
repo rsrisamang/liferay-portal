@@ -144,17 +144,19 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 
 	public static final String IFRAME_SRC = "IFRAME_SRC";
 
-	public static final String JOURNAL_ARTICLE = "JOURNAL_ARTICLE";
-
 	public static final String JOURNAL_ARTICLE_CONTENT = "JOURNAL_ARTICLE_CONTENT";
 
 	public static final String JOURNAL_ARTICLE_CONTENT_EL = "JOURNAL_ARTICLE_CONTENT_EL";
 
 	public static final String JOURNAL_ARTICLE_GROUP_ID = "JOURNAL_ARTICLE_GROUP_ID";
 
+	public static final String JOURNAL_ARTICLES = "JOURNAL_ARTICLES";
+
 	public static final String JOURNAL_FEED = "JOURNAL_FEED";
 
 	public static final String JOURNAL_FOLDER = "JOURNAL_FOLDER";
+
+	public static final String JOURNAL_FOLDERS = "JOURNAL_FOLDERS";
 
 	public static final String JOURNAL_RECENT_ARTICLES = "JOURNAL_RECENT_ARTICLES";
 
@@ -262,6 +264,8 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 
 	public static final String MESSAGE_BOARDS_TREE_WALKER_THREAD_FLAG = "MESSAGE_BOARDS_TREE_WALKER_THREAD_FLAG";
 
+	public static final String MESSAGE_BOARDS_TREE_WALKER_VIEWABLE_THREAD = "MESSAGE_BOARDS_TREE_WALKER_VIEWABLE_THREAD";
+
 	public static final String MOBILE_DEVICE_RULES_RULE = "MOBILE_DEVICE_RULES_RULE";
 
 	public static final String MOBILE_DEVICE_RULES_RULE_EDITOR_JSP = "MOBILE_DEVICE_RULES_RULE_EDITOR_JSP";
@@ -320,7 +324,7 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 
 	public static final String PORTLET_AJAX_RENDER = "PORTLET_AJAX_RENDER";
 
-	public static final String PORTLET_BREADCRUMBS = "PORTLET_BREADCRUMBS";
+	public static final String PORTLET_BREADCRUMBS = "LIFERAY_SHARED_PORTLET_BREADCRUMBS";
 
 	public static final String PORTLET_CATEGORY = "PORTLET_CATEGORY";
 
@@ -357,8 +361,6 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String PUBLIC_RENDER_PARAMETERS_POOL = "PUBLIC_RENDER_PARAMETERS_POOL_";
 
 	public static final String REDIRECT_TO_DEFAULT_LAYOUT = "REDIRECT_TO_DEFAULT_LAYOUT";
-
-	public static final String REFERER = "referer";
 
 	public static final String REQUESTED_LAYOUT = "REQUESTED_LAYOUT";
 
@@ -427,6 +429,8 @@ public class WebKeys implements com.liferay.portal.kernel.util.WebKeys {
 	public static final String TITLE = "TITLE";
 
 	public static final String TRANSLATOR_TRANSLATION = "TRANSLATOR_TRANSLATION";
+
+	public static final String TRASH_ENTRY = "TRASH_ENTRY";
 
 	public static final String TREE_GROUP_ID = "TREE_GROUP_ID";
 

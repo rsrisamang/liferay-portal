@@ -27,58 +27,26 @@ public class AddColonTagTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Blogs Tags Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Blogs Tags Test Page",
 					RuntimeVariables.replace("Blogs Tags Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Tags Blog Entry1 Title"),
 					selenium.getText(
 						"xPath=(//div[@class='entry-title']/h2/a)[3]"));
 				selenium.clickAt("xPath=(//div[@class='entry-title']/h2/a)[3]",
 					RuntimeVariables.replace("Tags Blog Entry1 Title"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Edit"),
-					selenium.getText("//span/a/span"));
-				selenium.click(RuntimeVariables.replace("//span/a/span"));
+					selenium.getText("link=Edit"));
+				selenium.click(RuntimeVariables.replace("link=Edit"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//td[@id='cke_contents__33_editor']/iframe")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForElementPresent(
+					"//textarea[@id='_33_editor' and @style='display: none;']");
+				selenium.waitForVisible(
+					"//td[@id='cke_contents__33_editor']/iframe");
 
 				boolean tagsVisible = selenium.isVisible(
 						"//input[@class='lfr-tag-selector-input aui-field-input-text']");
@@ -94,42 +62,26 @@ public class AddColonTagTest extends BaseTestCase {
 						"xPath=(//div[@class='lfr-panel-title'])[2]/span"));
 				selenium.clickAt("xPath=(//div[@class='lfr-panel-title'])[2]/span",
 					RuntimeVariables.replace("Categorization"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//input[@class='lfr-tag-selector-input aui-field-input-text']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//input[@class='lfr-tag-selector-input aui-field-input-text']");
 				assertTrue(selenium.isVisible(
 						"//input[@class='lfr-tag-selector-input aui-field-input-text']"));
 
 			case 2:
-				selenium.type("//input[@class='lfr-tag-selector-input aui-field-input-text']",
+				selenium.sendKeys("//input[@class='lfr-tag-selector-input aui-field-input-text']",
 					RuntimeVariables.replace(":test"));
 				selenium.clickAt("//input[@value='Publish']",
 					RuntimeVariables.replace("Publish"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
-						"Your request failed to complete."),
+						"Your request completed successfully."),
+					selenium.getText("//div[@class='portlet-msg-success']"));
+				assertEquals(RuntimeVariables.replace("test"),
 					selenium.getText(
-						"xPath=(//div[@class='portlet-msg-error'])[1]"));
-				assertEquals(RuntimeVariables.replace(
-						"One or more tags contains invalid characters."),
-					selenium.getText(
-						"xPath=(//div[@class='portlet-msg-error'])[2]"));
+						"//span[@class='taglib-asset-tags-summary']/a[2]"));
+				assertTrue(selenium.isElementNotPresent(
+						"//span[@class='entry-tags']/span/a[contains(.,':test')]"));
+				assertFalse(selenium.isTextPresent(":test"));
 
 			case 100:
 				label = -1;

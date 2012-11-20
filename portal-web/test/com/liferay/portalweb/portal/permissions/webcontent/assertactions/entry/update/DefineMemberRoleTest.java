@@ -22,73 +22,80 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class DefineMemberRoleTest extends BaseTestCase {
 	public void testDefineMemberRole() throws Exception {
-		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		int label = 1;
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+		while (label >= 1) {
+			switch (label) {
+			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
+				selenium.open("/web/guest/home/");
+				selenium.clickAt("//div[@id='dockbar']",
+					RuntimeVariables.replace("Dockbar"));
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+				assertEquals(RuntimeVariables.replace("Go to"),
+					selenium.getText("//li[@id='_145_mySites']/a/span"));
+				selenium.mouseOver("//li[@id='_145_mySites']/a/span");
+				selenium.waitForVisible("link=Control Panel");
+				selenium.clickAt("link=Control Panel",
+					RuntimeVariables.replace("Control Panel"));
+				selenium.waitForPageToLoad("30000");
+				selenium.clickAt("link=Roles", RuntimeVariables.replace("Roles"));
+				selenium.waitForPageToLoad("30000");
+				selenium.type("//input[@id='_128_keywords']",
+					RuntimeVariables.replace("Member"));
+				selenium.clickAt("//input[@value='Search']",
+					RuntimeVariables.replace("Search"));
+				selenium.waitForPageToLoad("30000");
+				assertEquals(RuntimeVariables.replace("Member"),
+					selenium.getText("//tr[3]/td/a"));
+				selenium.clickAt("//tr[3]/td/a",
+					RuntimeVariables.replace("Member"));
+				selenium.waitForPageToLoad("30000");
+				selenium.clickAt("link=Define Permissions",
+					RuntimeVariables.replace("Define Permissions"));
+				selenium.waitForPageToLoad("30000");
+				selenium.select("//select[@id='_128_add-permissions']",
+					RuntimeVariables.replace("index=112"));
+				selenium.waitForPageToLoad("30000");
+				assertEquals(RuntimeVariables.replace("Web Content"),
+					selenium.getText("//h3"));
 
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
+				boolean webContentControlPanelAccess = selenium.isChecked(
+						"//input[@value='15ACCESS_IN_CONTROL_PANEL']");
+
+				if (webContentControlPanelAccess) {
+					label = 2;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
+				selenium.check("//input[@value='15ACCESS_IN_CONTROL_PANEL']");
+
+			case 2:
+				assertTrue(selenium.isChecked(
+						"//input[@value='15ACCESS_IN_CONTROL_PANEL']"));
+				selenium.clickAt("//input[@value='Save']",
+					RuntimeVariables.replace(""));
+				selenium.waitForPageToLoad("30000");
+				assertEquals(RuntimeVariables.replace(
+						"The role permissions were updated."),
+					selenium.getText("//div[@class='portlet-msg-success']"));
+				assertEquals(RuntimeVariables.replace("Web Content"),
+					selenium.getText("//tr[3]/td[1]/a"));
+				assertEquals(RuntimeVariables.replace(""),
+					selenium.getText("//tr[3]/td[2]"));
+				assertEquals(RuntimeVariables.replace("Access in Control Panel"),
+					selenium.getText("//tr[3]/td[3]"));
+				assertEquals(RuntimeVariables.replace("Portal"),
+					selenium.getText("//tr[3]/td[4]"));
+				assertEquals(RuntimeVariables.replace("Delete"),
+					selenium.getText("//tr[3]/td[5]/span/a"));
+
+			case 100:
+				label = -1;
+			}
 		}
-
-		selenium.clickAt("link=Control Panel",
-			RuntimeVariables.replace("Control Panel"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Roles", RuntimeVariables.replace("Roles"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.type("//input[@id='_128_keywords']",
-			RuntimeVariables.replace("Member"));
-		selenium.clickAt("//input[@value='Search']",
-			RuntimeVariables.replace("Search"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace("Member"),
-			selenium.getText("//tr[3]/td/a"));
-		selenium.clickAt("//tr[3]/td/a", RuntimeVariables.replace("Member"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Define Permissions",
-			RuntimeVariables.replace("Define Permissions"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.select("//select[@id='_128_add-permissions']",
-			RuntimeVariables.replace("label=Web Content"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.check(
-			"//input[@value='com.liferay.portlet.journal.model.JournalArticleVIEW']");
-		selenium.clickAt("//input[@value='Save']", RuntimeVariables.replace(""));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"The role permissions were updated."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
-		selenium.typeKeys("//select[@id='_128_add-permissions']",
-			RuntimeVariables.replace("wwwwwwwww"));
-		selenium.keyPress("//select[@id='_128_add-permissions']",
-			RuntimeVariables.replace("\\13"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace("Web Content"),
-			selenium.getText("//h3"));
-		selenium.check("//input[@value='15ACCESS_IN_CONTROL_PANEL']");
-		selenium.clickAt("//input[@value='Save']", RuntimeVariables.replace(""));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"The role permissions were updated."),
-			selenium.getText("//div[@class='portlet-msg-success']"));
 	}
 }

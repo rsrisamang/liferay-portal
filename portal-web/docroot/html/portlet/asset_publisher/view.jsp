@@ -113,9 +113,17 @@ if (!paginationType.equals("none")) {
 <c:if test="<%= showMetadataDescriptions %>">
 	<liferay-ui:categorization-filter
 		assetType="content"
-		portletURL="<%= portletURL%>"
+		portletURL="<%= portletURL %>"
 	/>
 </c:if>
+
+<%
+long portletDisplayDDMTemplateId = PortletDisplayTemplateUtil.getPortletDisplayTemplateDDMTemplateId(themeDisplay, displayStyle);
+
+Map<String, Object> contextObjects = new HashMap<String, Object>();
+
+contextObjects.put(PortletDisplayTemplateConstants.ASSET_PUBLISHER_HELPER, AssetPublisherHelperUtil.getAssetPublisherHelper());
+%>
 
 <c:choose>
 	<c:when test='<%= selectionStyle.equals("dynamic") %>'>

@@ -22,36 +22,18 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewCheckoutDMDocumentTxtTest extends BaseTestCase {
 	public void testViewCheckoutDMDocumentTxt() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Document Title (Draft)"),
 			selenium.getText("//div[@data-title='DM Document Title']/a/span[2]"));
 		assertTrue(selenium.isVisible("//img[@alt='Locked']"));
 		selenium.clickAt("//div[@data-title='DM Document Title']/a/span[2]",
 			RuntimeVariables.replace("DM Document Title (Draft)"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"You now have an indefinite lock on this document. No one else can edit this document until you unlock it. This lock will never expire."),
 			selenium.getText(
@@ -61,16 +43,22 @@ public class ViewCheckoutDMDocumentTxtTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("Status: Draft"),
 			selenium.getText("//span[@class='workflow-status']"));
 		assertEquals(RuntimeVariables.replace("PWC"),
-			selenium.getText("//tr[3]/td[2]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row']/td[2]"));
 		assertEquals(RuntimeVariables.replace("0.3k"),
-			selenium.getText("//tr[3]/td[4]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row']/td[4]"));
 		assertEquals(RuntimeVariables.replace("Draft"),
-			selenium.getText("//tr[3]/td[5]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row']/td[5]"));
 		assertEquals(RuntimeVariables.replace("1.0"),
-			selenium.getText("//tr[4]/td[2]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-alternate results-row alt last']/td[2]"));
 		assertEquals(RuntimeVariables.replace("0.3k"),
-			selenium.getText("//tr[4]/td[4]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-alternate results-row alt last']/td[4]"));
 		assertEquals(RuntimeVariables.replace("Approved"),
-			selenium.getText("//tr[4]/td[5]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-alternate results-row alt last']/td[5]"));
 	}
 }

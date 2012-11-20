@@ -28,32 +28,12 @@ public class ViewResolveTasksTaskAssignedToMeTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/joebloggs/so/dashboard/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Home')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				assertEquals(RuntimeVariables.replace("Home"),
-					selenium.getText("//nav/ul/li[contains(.,'Home')]/a/span"));
 				selenium.clickAt("//nav/ul/li[contains(.,'Tasks')]/a/span",
 					RuntimeVariables.replace("Tasks"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Tasks"),
 					selenium.getText("//span[@class='portlet-title-default']"));
 				assertEquals(RuntimeVariables.replace("Assigned to Me"),
@@ -61,23 +41,7 @@ public class ViewResolveTasksTaskAssignedToMeTest extends BaseTestCase {
 				selenium.clickAt("link=Assigned to Me",
 					RuntimeVariables.replace("Assigned to Me"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//td[1]/input")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForVisible("//td[1]/input");
 
 				boolean showCompleted1Checked = selenium.isChecked(
 						"//td[1]/input");
@@ -92,46 +56,13 @@ public class ViewResolveTasksTaskAssignedToMeTest extends BaseTestCase {
 					RuntimeVariables.replace("Check Show Completed Tasks"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Task Description")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Task Description");
 				assertEquals(RuntimeVariables.replace("Task Description"),
 					selenium.getText("link=Task Description"));
 				selenium.clickAt("link=Task Description",
 					RuntimeVariables.replace("Task Description"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Task Description")
-												.equals(selenium.getText(
-										"//h1[@class='header-title']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//h1[@class='header-title']",
+					"Task Description");
 				assertEquals(RuntimeVariables.replace("Task Description"),
 					selenium.getText("//h1[@class='header-title']"));
 				assertEquals(RuntimeVariables.replace("Assigned to Joe Bloggs"),

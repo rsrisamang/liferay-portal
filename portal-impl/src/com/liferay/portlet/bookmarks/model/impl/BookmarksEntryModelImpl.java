@@ -111,6 +111,10 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 	 * @return the normal model instance
 	 */
 	public static BookmarksEntry toModel(BookmarksEntrySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		BookmarksEntry model = new BookmarksEntryImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -139,6 +143,10 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 	 * @return the normal model instances
 	 */
 	public static List<BookmarksEntry> toModels(BookmarksEntrySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<BookmarksEntry> models = new ArrayList<BookmarksEntry>(soapModels.length);
 
 		for (BookmarksEntrySoap soapModel : soapModels) {
@@ -537,17 +545,6 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 	}
 
 	@Override
-	public BookmarksEntry toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (BookmarksEntry)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			BookmarksEntry.class.getName(), getPrimaryKey());
@@ -558,6 +555,16 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public BookmarksEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (BookmarksEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -865,7 +872,7 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 	}
 
 	private static ClassLoader _classLoader = BookmarksEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			BookmarksEntry.class
 		};
 	private String _uuid;
@@ -896,5 +903,5 @@ public class BookmarksEntryModelImpl extends BaseModelImpl<BookmarksEntry>
 	private int _visits;
 	private int _priority;
 	private long _columnBitmask;
-	private BookmarksEntry _escapedModelProxy;
+	private BookmarksEntry _escapedModel;
 }

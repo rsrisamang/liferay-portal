@@ -100,6 +100,10 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 	 * @return the normal model instance
 	 */
 	public static LayoutBranch toModel(LayoutBranchSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		LayoutBranch model = new LayoutBranchImpl();
 
 		model.setLayoutBranchId(soapModel.getLayoutBranchId());
@@ -123,6 +127,10 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 	 * @return the normal model instances
 	 */
 	public static List<LayoutBranch> toModels(LayoutBranchSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<LayoutBranch> models = new ArrayList<LayoutBranch>(soapModels.length);
 
 		for (LayoutBranchSoap soapModel : soapModels) {
@@ -411,17 +419,6 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 	}
 
 	@Override
-	public LayoutBranch toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (LayoutBranch)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			LayoutBranch.class.getName(), getPrimaryKey());
@@ -432,6 +429,16 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public LayoutBranch toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (LayoutBranch)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -647,7 +654,7 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 	}
 
 	private static ClassLoader _classLoader = LayoutBranch.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			LayoutBranch.class
 		};
 	private long _LayoutBranchId;
@@ -669,5 +676,5 @@ public class LayoutBranchModelImpl extends BaseModelImpl<LayoutBranch>
 	private boolean _originalMaster;
 	private boolean _setOriginalMaster;
 	private long _columnBitmask;
-	private LayoutBranch _escapedModelProxy;
+	private LayoutBranch _escapedModel;
 }

@@ -723,6 +723,15 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 	}
 
 	/**
+	* Returns <code>true</code> if this wiki page is denied.
+	*
+	* @return <code>true</code> if this wiki page is denied; <code>false</code> otherwise
+	*/
+	public boolean isDenied() {
+		return _wikiPage.isDenied();
+	}
+
+	/**
 	* Returns <code>true</code> if this wiki page is a draft.
 	*
 	* @return <code>true</code> if this wiki page is a draft; <code>false</code> otherwise
@@ -741,6 +750,24 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 	}
 
 	/**
+	* Returns <code>true</code> if this wiki page is inactive.
+	*
+	* @return <code>true</code> if this wiki page is inactive; <code>false</code> otherwise
+	*/
+	public boolean isInactive() {
+		return _wikiPage.isInactive();
+	}
+
+	/**
+	* Returns <code>true</code> if this wiki page is incomplete.
+	*
+	* @return <code>true</code> if this wiki page is incomplete; <code>false</code> otherwise
+	*/
+	public boolean isIncomplete() {
+		return _wikiPage.isIncomplete();
+	}
+
+	/**
 	* Returns <code>true</code> if this wiki page is in the Recycle Bin.
 	*
 	* @return <code>true</code> if this wiki page is in the Recycle Bin; <code>false</code> otherwise
@@ -756,6 +783,15 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 	*/
 	public boolean isPending() {
 		return _wikiPage.isPending();
+	}
+
+	/**
+	* Returns <code>true</code> if this wiki page is scheduled.
+	*
+	* @return <code>true</code> if this wiki page is scheduled; <code>false</code> otherwise
+	*/
+	public boolean isScheduled() {
+		return _wikiPage.isScheduled();
 	}
 
 	public boolean isNew() {
@@ -817,6 +853,10 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 		return new WikiPageWrapper(_wikiPage.toEscapedModel());
 	}
 
+	public com.liferay.portlet.wiki.model.WikiPage toUnescapedModel() {
+		return new WikiPageWrapper(_wikiPage.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _wikiPage.toString();
@@ -831,18 +871,52 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 		_wikiPage.persist();
 	}
 
-	public java.lang.String getAttachmentsDir() {
-		return _wikiPage.getAttachmentsDir();
-	}
-
-	public java.lang.String[] getAttachmentsFiles()
+	public java.util.List<com.liferay.portal.kernel.repository.model.FileEntry> getAttachmentsFileEntries()
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
-		return _wikiPage.getAttachmentsFiles();
+		return _wikiPage.getAttachmentsFileEntries();
+	}
+
+	public java.util.List<com.liferay.portal.kernel.repository.model.FileEntry> getAttachmentsFileEntries(
+		int start, int end)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getAttachmentsFileEntries(start, end);
+	}
+
+	public int getAttachmentsFilesCount()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getAttachmentsFilesCount();
+	}
+
+	public long getAttachmentsFolderId()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getAttachmentsFolderId();
 	}
 
 	public java.util.List<com.liferay.portlet.wiki.model.WikiPage> getChildPages() {
 		return _wikiPage.getChildPages();
+	}
+
+	public java.util.List<com.liferay.portal.kernel.repository.model.FileEntry> getDeletedAttachmentsFileEntries()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getDeletedAttachmentsFileEntries();
+	}
+
+	public java.util.List<com.liferay.portal.kernel.repository.model.FileEntry> getDeletedAttachmentsFileEntries(
+		int start, int end)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getDeletedAttachmentsFileEntries(start, end);
+	}
+
+	public int getDeletedAttachmentsFileEntriesCount()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _wikiPage.getDeletedAttachmentsFileEntriesCount();
 	}
 
 	public com.liferay.portlet.wiki.model.WikiNode getNode() {
@@ -861,8 +935,12 @@ public class WikiPageWrapper implements WikiPage, ModelWrapper<WikiPage> {
 		return _wikiPage.getRedirectPage();
 	}
 
-	public void setAttachmentsDir(java.lang.String attachmentsDir) {
-		_wikiPage.setAttachmentsDir(attachmentsDir);
+	public boolean isInTrashFolder() {
+		return _wikiPage.isInTrashFolder();
+	}
+
+	public void setAttachmentsFolderId(long attachmentsFolderId) {
+		_wikiPage.setAttachmentsFolderId(attachmentsFolderId);
 	}
 
 	/**

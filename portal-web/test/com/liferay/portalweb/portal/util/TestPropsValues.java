@@ -40,6 +40,9 @@ public class TestPropsValues extends com.liferay.portal.util.TestPropsValues {
 	public static final boolean SAVE_SOURCE = GetterUtil.getBoolean(
 		TestPropsUtil.get("save.source"));
 
+	public static final String SELENIUM_BROWSER_COMMANDS_DIR =
+		TestPropsUtil.get("selenium.browser.commands.dir");
+
 	public static final String SELENIUM_DOWNLOAD_FILE = TestPropsUtil.get(
 		"selenium.download.file.executable");
 
@@ -63,6 +66,12 @@ public class TestPropsValues extends com.liferay.portal.util.TestPropsValues {
 
 	public static final String[] THEME_IDS = StringUtil.split(
 		TestPropsUtil.get("theme.ids"));
+
+	public static final int TIMEOUT_EXPLICIT_WAIT = GetterUtil.getInteger(
+		TestPropsUtil.get("timeout.explicit.wait"));
+
+	public static final int TIMEOUT_IMPLICIT_WAIT = GetterUtil.getInteger(
+		TestPropsUtil.get("timeout.implicit.wait"));
 
 	public static final String VM_HOST = TestPropsUtil.get("vm.host");
 

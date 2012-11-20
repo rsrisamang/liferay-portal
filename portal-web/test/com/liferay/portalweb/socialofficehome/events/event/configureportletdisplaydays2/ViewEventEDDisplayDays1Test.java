@@ -22,33 +22,17 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewEventEDDisplayDays1Test extends BaseTestCase {
 	public void testViewEventEDDisplayDays1() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Events")
-										.equals(selenium.getText(
-								"xPath=(//span[@class='portlet-title-text'])[4]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("xPath=(//span[@class='portlet-title-text'])[4]",
+			"Events");
 		assertEquals(RuntimeVariables.replace("Events"),
 			selenium.getText("xPath=(//span[@class='portlet-title-text'])[4]"));
 		assertEquals(RuntimeVariables.replace("There are no more events today."),
 			selenium.getText("//div[2]/div/div[2]/div/section/div/div/div"));
-		assertFalse(selenium.isElementPresent("//h2[contains(.,'Events')]"));
-		assertFalse(selenium.isElementPresent("//span[@class='event-name']/a"));
+		assertTrue(selenium.isElementNotPresent("//h2[contains(.,'Events')]"));
+		assertTrue(selenium.isElementNotPresent("//span[@class='event-name']/a"));
 		assertFalse(selenium.isTextPresent("Calendar Event Title"));
 	}
 }

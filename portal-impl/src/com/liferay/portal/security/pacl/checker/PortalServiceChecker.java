@@ -17,6 +17,7 @@ package com.liferay.portal.security.pacl.checker;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalServicePermission;
+import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringPool;
@@ -26,10 +27,10 @@ import com.liferay.portal.security.pacl.PACLPolicy;
 import com.liferay.portal.security.pacl.PACLPolicyManager;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 import java.security.Permission;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -67,7 +68,7 @@ public class PortalServiceChecker extends BaseChecker {
 
 		Class<?> clazz = object.getClass();
 
-		if (Proxy.isProxyClass(clazz)) {
+		if (ProxyUtil.isProxyClass(clazz)) {
 			Class<?>[] interfaces = clazz.getInterfaces();
 
 			if (interfaces.length == 0) {
@@ -261,6 +262,6 @@ public class PortalServiceChecker extends BaseChecker {
 
 	private Map<String, Set<String>> _pluginServices =
 		new HashMap<String, Set<String>>();
-	private Set<String> _portalServices;
+	private Set<String> _portalServices = Collections.emptySet();
 
 }

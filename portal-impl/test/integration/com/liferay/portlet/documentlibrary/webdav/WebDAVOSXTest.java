@@ -14,10 +14,10 @@
 
 package com.liferay.portlet.documentlibrary.webdav;
 
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.Tuple;
 import com.liferay.portal.kernel.webdav.WebDAVUtil;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.webdav.methods.Method;
 
@@ -78,7 +78,7 @@ public class WebDAVOSXTest extends BaseWebDAVTestCase {
 
 		unlock(_TEST_FILE_NAME);
 
-		for (int i = 0 ; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			lock(HttpServletResponse.SC_OK, _TEST_FILE_NAME);
 
 			tuple = serviceGet(_TEST_FILE_NAME);
@@ -118,7 +118,7 @@ public class WebDAVOSXTest extends BaseWebDAVTestCase {
 				serviceDelete(_TEST_META_NAME));
 		}
 
-		for (int i = 0 ; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			if (i == 1) {
 				lock(HttpServletResponse.SC_OK, _TEST_META_NAME);
 

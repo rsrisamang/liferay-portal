@@ -16,10 +16,11 @@
 
 <%@ include file="/html/portlet/init.jsp" %>
 
-<%@ page import="com.liferay.portlet.asset.model.AssetEntry" %><%@
+<%@ page import="com.liferay.portal.LocaleException" %><%@
+page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandler" %><%@
+page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandlerRegistryUtil" %><%@
 page import="com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata" %><%@
 page import="com.liferay.portlet.documentlibrary.model.DLFolderConstants" %><%@
-page import="com.liferay.portlet.documentlibrary.util.DLUtil" %><%@
 page import="com.liferay.portlet.dynamicdatalists.model.DDLRecordSet" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.NoSuchStructureException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.RequiredStructureException" %><%@
@@ -29,6 +30,8 @@ page import="com.liferay.portlet.dynamicdatamapping.StructureNameException" %><%
 page import="com.liferay.portlet.dynamicdatamapping.StructureXsdException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.TemplateNameException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.TemplateScriptException" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.TemplateSmallImageNameException" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.TemplateSmallImageSizeException" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMStructure" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMStructureConstants" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.model.DDMTemplate" %><%@
@@ -39,6 +42,7 @@ page import="com.liferay.portlet.dynamicdatamapping.search.StructureSearchTerms"
 page import="com.liferay.portlet.dynamicdatamapping.search.TemplateDisplayTerms" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.search.TemplateSearch" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.search.TemplateSearchTerms" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.service.DDMStorageLinkLocalServiceUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.service.DDMStructureServiceUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.service.DDMTemplateServiceUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.service.permission.DDMPermission" %><%@
@@ -46,6 +50,7 @@ page import="com.liferay.portlet.dynamicdatamapping.service.permission.DDMStruct
 page import="com.liferay.portlet.dynamicdatamapping.service.permission.DDMTemplatePermission" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.storage.StorageType" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.util.DDMTemplateHelperUtil" %><%@
+page import="com.liferay.portlet.dynamicdatamapping.util.DDMUtil" %><%@
 page import="com.liferay.portlet.dynamicdatamapping.util.DDMXSDUtil" %>
 
 <%
@@ -80,11 +85,11 @@ String templateHeaderTitle = ParamUtil.getString(request, "templateHeaderTitle")
 
 String templateTypeValue = StringPool.BLANK;
 
-if (scopeTemplateType.equals(DDMTemplateConstants.TEMPLATE_TYPE_DETAIL)) {
-	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_DETAIL;
+if (scopeStorageType.equals(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY)) {
+	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY;
 }
-else if (scopeStorageType.equals(DDMTemplateConstants.TEMPLATE_TYPE_LIST)) {
-	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_LIST;
+else if (scopeTemplateType.equals(DDMTemplateConstants.TEMPLATE_TYPE_FORM)) {
+	templateTypeValue = DDMTemplateConstants.TEMPLATE_TYPE_FORM;
 }
 
 Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);

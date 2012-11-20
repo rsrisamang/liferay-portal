@@ -42,6 +42,10 @@ public class DLProcessorRegistryUtil {
 			portletDataContext, fileEntry, fileEntryElement);
 	}
 
+	public static DLProcessor getDLProcessor(String dlProcessorType) {
+		return getDLProcessorRegistry().getDLProcessor(dlProcessorType);
+	}
+
 	public static DLProcessorRegistry getDLProcessorRegistry() {
 		PortalRuntimePermission.checkGetBeanProperty(
 			DLProcessorRegistryUtil.class);
@@ -64,6 +68,12 @@ public class DLProcessorRegistryUtil {
 
 	public static void trigger(FileEntry fileEntry, FileVersion fileVersion) {
 		getDLProcessorRegistry().trigger(fileEntry, fileVersion);
+	}
+
+	public static void trigger(
+		FileEntry fileEntry, FileVersion fileVersion, boolean trusted) {
+
+		getDLProcessorRegistry().trigger(fileEntry, fileVersion, trusted);
 	}
 
 	public static void unregister(DLProcessor dlProcessor) {

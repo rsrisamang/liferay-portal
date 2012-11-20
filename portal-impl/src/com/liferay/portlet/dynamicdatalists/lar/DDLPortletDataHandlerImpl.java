@@ -124,13 +124,12 @@ public class DDLPortletDataHandlerImpl
 			if (existingRecordSet == null) {
 				serviceContext.setUuid(recordSet.getUuid());
 
-				importedRecordSet =
-					DDLRecordSetLocalServiceUtil.addRecordSet(
-						userId, portletDataContext.getScopeGroupId(),
-						structureId, recordSet.getRecordSetKey(),
-						recordSet.getNameMap(), recordSet.getDescriptionMap(),
-						recordSet.getMinDisplayRows(), recordSet.getScope(),
-						serviceContext);
+				importedRecordSet = DDLRecordSetLocalServiceUtil.addRecordSet(
+					userId, portletDataContext.getScopeGroupId(), structureId,
+					recordSet.getRecordSetKey(), recordSet.getNameMap(),
+					recordSet.getDescriptionMap(),
+					recordSet.getMinDisplayRows(), recordSet.getScope(),
+					serviceContext);
 			}
 			else {
 				importedRecordSet =
@@ -155,6 +154,11 @@ public class DDLPortletDataHandlerImpl
 	@Override
 	public boolean isAlwaysExportable() {
 		return _ALWAYS_EXPORTABLE;
+	}
+
+	@Override
+	public boolean isDataLocalized() {
+		return _DATA_LOCALIZED;
 	}
 
 	@Override
@@ -275,6 +279,8 @@ public class DDLPortletDataHandlerImpl
 	}
 
 	private static final boolean _ALWAYS_EXPORTABLE = true;
+
+	private static final boolean _DATA_LOCALIZED = true;
 
 	private static final String _NAMESPACE = "ddl";
 

@@ -23,33 +23,16 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class WCC_ViewWCWebContentNullWCDSiteStagingTest extends BaseTestCase {
 	public void testWCC_ViewWCWebContentNullWCDSiteStaging()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/community-site-test/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Staging")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Staging");
 		selenium.clickAt("link=Staging", RuntimeVariables.replace("Staging"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"This is a Web Content article is not approved."),
 			selenium.getText("//div[@class='portlet-msg-alert']/a"));
 		selenium.open("/web/community-site-test/home");
-		loadRequiredJavaScriptModules();
 		assertFalse(selenium.isTextPresent("This is a Web Content article"));
 	}
 }

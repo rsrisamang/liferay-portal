@@ -22,30 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddPMMessageAttachmentTest extends BaseTestCase {
 	public void testAddPMMessageAttachment() throws Exception {
-		selenium.open("/user/joebloggs/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Messages')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
+		selenium.open("/user/joebloggs/so/dashboard/");
+		selenium.waitForVisible("//nav/ul/li[contains(.,'Messages')]/a/span");
 		selenium.clickAt("//nav/ul/li[contains(.,'Messages')]/a/span",
 			RuntimeVariables.replace("Messages"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Private Messaging"),
 			selenium.getText("//span[@class='portlet-title-default']"));
 		assertEquals("Mark as Unread",
@@ -55,49 +38,19 @@ public class AddPMMessageAttachmentTest extends BaseTestCase {
 			selenium.getValue("//input[@value='New Message']"));
 		selenium.clickAt("//input[@value='New Message']",
 			RuntimeVariables.replace("New Message"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//span[2]/span/button")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("//span[2]/span/button",
+		selenium.waitForVisible(
+			"//button[contains(@class,'autocomplete-button')]/span");
+		selenium.clickAt("//button[contains(@class,'autocomplete-button')]/span",
 			RuntimeVariables.replace("Dropdown"));
-		selenium.typeKeys("//input[@id='_1_WAR_privatemessagingportlet_to']",
+		selenium.sendKeys("//input[@id='_1_WAR_privatemessagingportlet_to']",
 			RuntimeVariables.replace("Social01"));
 		Thread.sleep(5000);
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Social01 Office01 User01")
-										.equals(selenium.getText("//li"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		assertEquals(RuntimeVariables.replace("Social01 Office01 User01"),
-			selenium.getText("//li"));
-		selenium.clickAt("//li",
+		selenium.waitForPartialText("//li[contains(@data-text,'Social01 Office01 User01')]",
+			"Social01 Office01 User01");
+		assertTrue(selenium.isPartialText(
+				"//li[contains(@data-text,'Social01 Office01 User01')]",
+				"Social01 Office01 User01"));
+		selenium.clickAt("//li[contains(@data-text,'Social01 Office01 User01')]",
 			RuntimeVariables.replace("Social01 Office01 User01"));
 		assertEquals("Social01 Office01 User01 <socialoffice01>,",
 			selenium.getValue(
@@ -112,28 +65,12 @@ public class AddPMMessageAttachmentTest extends BaseTestCase {
 			RuntimeVariables.replace("Message Body"));
 		assertTrue(selenium.isVisible(
 				"//input[@id='_1_WAR_privatemessagingportlet_msgFile1']"));
-		selenium.type("//input[@id='_1_WAR_privatemessagingportlet_msgFile1']",
+		selenium.uploadFile("//input[@id='_1_WAR_privatemessagingportlet_msgFile1']",
 			RuntimeVariables.replace(
-				"L:\\portal\\build\\portal-web\\test\\com\\liferay\\portalweb\\socialofficehome\\privatemessaging\\addpmmessageattachment\\dependencies\\PM_Attachment.jpg"));
+				"L:\\portal\\build\\portal-web\\test\\com\\liferay\\portalweb\\socialofficehome\\privatemessaging\\message\\addpmmessageattachment\\dependencies\\PM_Attachment.jpg"));
 		selenium.clickAt("//input[@value='Send']",
 			RuntimeVariables.replace("Send"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div[@class='portlet-msg-success']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[@class='portlet-msg-success']");
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

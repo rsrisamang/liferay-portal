@@ -235,21 +235,6 @@ public class DDMStorageLinkLocalServiceUtil {
 	}
 
 	/**
-	* Updates the d d m storage link in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param ddmStorageLink the d d m storage link
-	* @param merge whether to merge the d d m storage link with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the d d m storage link that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink updateDDMStorageLink(
-		com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink ddmStorageLink,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateDDMStorageLink(ddmStorageLink, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -317,6 +302,11 @@ public class DDMStorageLinkLocalServiceUtil {
 		long structureId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getStructureStorageLinks(structureId);
+	}
+
+	public static int getStructureStorageLinksCount(long structureId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getStructureStorageLinksCount(structureId);
 	}
 
 	public static com.liferay.portlet.dynamicdatamapping.model.DDMStorageLink updateStorageLink(

@@ -237,22 +237,6 @@ public class WorkflowDefinitionLinkLocalServiceUtil {
 	}
 
 	/**
-	* Updates the workflow definition link in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param workflowDefinitionLink the workflow definition link
-	* @param merge whether to merge the workflow definition link with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the workflow definition link that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.WorkflowDefinitionLink updateWorkflowDefinitionLink(
-		com.liferay.portal.model.WorkflowDefinitionLink workflowDefinitionLink,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService()
-				   .updateWorkflowDefinitionLink(workflowDefinitionLink, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -378,12 +362,12 @@ public class WorkflowDefinitionLinkLocalServiceUtil {
 
 	public static void updateWorkflowDefinitionLinks(long userId,
 		long companyId, long groupId, java.lang.String className, long classPK,
-		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.Long, java.lang.String>> workflowDefinitions)
+		java.util.List<com.liferay.portal.kernel.util.ObjectValuePair<java.lang.Long, java.lang.String>> workflowDefinitionOVPs)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		getService()
 			.updateWorkflowDefinitionLinks(userId, companyId, groupId,
-			className, classPK, workflowDefinitions);
+			className, classPK, workflowDefinitionOVPs);
 	}
 
 	public static WorkflowDefinitionLinkLocalService getService() {

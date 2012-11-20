@@ -281,7 +281,14 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, virtualHost);
+			if (!session.contains(virtualHost)) {
+				virtualHost = (VirtualHost)session.get(VirtualHostImpl.class,
+						virtualHost.getPrimaryKeyObj());
+			}
+
+			if (virtualHost != null) {
+				session.delete(virtualHost);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -290,14 +297,16 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 			closeSession(session);
 		}
 
-		clearCache(virtualHost);
+		if (virtualHost != null) {
+			clearCache(virtualHost);
+		}
 
 		return virtualHost;
 	}
 
 	@Override
 	public VirtualHost updateImpl(
-		com.liferay.portal.model.VirtualHost virtualHost, boolean merge)
+		com.liferay.portal.model.VirtualHost virtualHost)
 		throws SystemException {
 		virtualHost = toUnwrappedModel(virtualHost);
 
@@ -310,9 +319,14 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, virtualHost, merge);
+			if (virtualHost.isNew()) {
+				session.save(virtualHost);
 
-			virtualHost.setNew(false);
+				virtualHost.setNew(false);
+			}
+			else {
+				session.merge(virtualHost);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -348,6 +362,7 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_HOSTNAME, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_HOSTNAME, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_HOSTNAME,
@@ -362,6 +377,7 @@ public class VirtualHostPersistenceImpl extends BasePersistenceImpl<VirtualHost>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_L, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_L, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_L,

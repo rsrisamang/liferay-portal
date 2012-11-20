@@ -19,25 +19,36 @@ import com.liferay.portal.kernel.io.unsync.UnsyncStringWriter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.servlet.PipingServletResponse;
+import com.liferay.portal.kernel.servlet.PluginContextListener;
+import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateContextType;
 import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.MethodHandler;
-import com.liferay.portal.kernel.util.MethodKey;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.model.LayoutTemplate;
+import com.liferay.portal.model.LayoutTemplateConstants;
 import com.liferay.portal.model.Portlet;
+import com.liferay.portal.model.PortletConstants;
+import com.liferay.portal.security.pacl.PACLClassLoaderUtil;
+import com.liferay.portal.service.LayoutTemplateLocalServiceUtil;
 import com.liferay.portal.servlet.ThreadLocalFacadeServletRequestWrapperUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.layoutconfiguration.util.velocity.CustomizationSettingsProcessor;
 import com.liferay.portlet.layoutconfiguration.util.velocity.TemplateProcessor;
+import com.liferay.portlet.layoutconfiguration.util.xml.ActionURLLogic;
+import com.liferay.portlet.layoutconfiguration.util.xml.PortletLogic;
+import com.liferay.portlet.layoutconfiguration.util.xml.RenderURLLogic;
 import com.liferay.portlet.layoutconfiguration.util.xml.RuntimeLogic;
+import com.liferay.taglib.util.VelocityTaglib;
 
 import java.io.Closeable;
 
@@ -56,6 +67,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.portlet.PortletResponse;
+import javax.portlet.RenderResponse;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,13 +85,199 @@ import org.apache.commons.lang.time.StopWatch;
 public class RuntimePageImpl implements RuntimePage {
 
 	public void processCustomizationSettings(
-			PageContext pageContext, String velocityTemplateId,
-			String velocityTemplateContent)
+			PageContext pageContext, TemplateResource templateResource)
 		throws Exception {
 
-		if (Validator.isNull(velocityTemplateContent)) {
-			return;
+		doDispatch(pageContext, null, templateResource, false);
+	}
+
+	public void processTemplate(
+			PageContext pageContext, String portletId,
+			TemplateResource templateResource)
+		throws Exception {
+
+		doDispatch(pageContext, portletId, templateResource, true);
+	}
+
+	public void processTemplate(
+			PageContext pageContext, TemplateResource templateResource)
+		throws Exception {
+
+		processTemplate(pageContext, null, templateResource);
+	}
+
+	public String processXML(
+			HttpServletRequest request, HttpServletResponse response,
+			String content)
+		throws Exception {
+
+		PortletResponse portletResponse = (PortletResponse)request.getAttribute(
+			JavaConstants.JAVAX_PORTLET_RESPONSE);
+
+		if (!(portletResponse instanceof RenderResponse)) {
+			throw new IllegalArgumentException(
+				"processXML can only be invoked in the render phase");
 		}
+
+		RenderResponse renderResponse = (RenderResponse)portletResponse;
+
+		RuntimeLogic portletLogic = new PortletLogic(request, response);
+		RuntimeLogic actionURLLogic = new ActionURLLogic(renderResponse);
+		RuntimeLogic renderURLLogic = new RenderURLLogic(renderResponse);
+
+		content = processXML(request, content, portletLogic);
+		content = processXML(request, content, actionURLLogic);
+		content = processXML(request, content, renderURLLogic);
+
+		return content;
+	}
+
+	public String processXML(
+			HttpServletRequest request, String content,
+			RuntimeLogic runtimeLogic)
+		throws Exception {
+
+		if (Validator.isNull(content)) {
+			return StringPool.BLANK;
+		}
+
+		int index = content.indexOf(runtimeLogic.getOpenTag());
+
+		if (index == -1) {
+			return content;
+		}
+
+		Portlet renderPortlet = (Portlet)request.getAttribute(
+			WebKeys.RENDER_PORTLET);
+
+		Boolean renderPortletResource = (Boolean)request.getAttribute(
+			WebKeys.RENDER_PORTLET_RESOURCE);
+
+		String outerPortletId = (String)request.getAttribute(
+			WebKeys.OUTER_PORTLET_ID);
+
+		if (outerPortletId == null) {
+			request.setAttribute(
+				WebKeys.OUTER_PORTLET_ID, renderPortlet.getPortletId());
+		}
+
+		try {
+			request.setAttribute(WebKeys.RENDER_PORTLET_RESOURCE, Boolean.TRUE);
+
+			StringBundler sb = new StringBundler();
+
+			int x = 0;
+			int y = index;
+
+			while (y != -1) {
+				sb.append(content.substring(x, y));
+
+				int close1 = content.indexOf(runtimeLogic.getClose1Tag(), y);
+				int close2 = content.indexOf(runtimeLogic.getClose2Tag(), y);
+
+				if ((close2 == -1) || ((close1 != -1) && (close1 < close2))) {
+					x = close1 + runtimeLogic.getClose1Tag().length();
+				}
+				else {
+					x = close2 + runtimeLogic.getClose2Tag().length();
+				}
+
+				String runtimePortletTag = content.substring(y, x);
+
+				if ((renderPortlet != null) &&
+					runtimePortletTag.contains(renderPortlet.getPortletId())) {
+
+					return StringPool.BLANK;
+				}
+
+				sb.append(runtimeLogic.processXML(runtimePortletTag));
+
+				y = content.indexOf(runtimeLogic.getOpenTag(), x);
+			}
+
+			if (y == -1) {
+				sb.append(content.substring(x));
+			}
+
+			return sb.toString();
+		}
+		finally {
+			if (outerPortletId == null) {
+				request.removeAttribute(WebKeys.OUTER_PORTLET_ID);
+			}
+
+			request.setAttribute(WebKeys.RENDER_PORTLET, renderPortlet);
+
+			if (renderPortletResource == null) {
+				request.removeAttribute(WebKeys.RENDER_PORTLET_RESOURCE);
+			}
+			else {
+				request.setAttribute(
+					WebKeys.RENDER_PORTLET_RESOURCE, renderPortletResource);
+			}
+		}
+	}
+
+	protected void doDispatch(
+			PageContext pageContext, String portletId,
+			TemplateResource templateResource, boolean processTemplate)
+		throws Exception {
+
+		LayoutTemplate layoutTemplate = getLayoutTemplate(
+			templateResource.getTemplateId());
+
+		String pluginServletContextName = GetterUtil.getString(
+			layoutTemplate.getServletContextName());
+
+		ServletContext pluginServletContext = ServletContextPool.get(
+			pluginServletContextName);
+
+		ClassLoader pluginClassLoader = null;
+
+		if (pluginServletContext != null) {
+			pluginClassLoader =
+				(ClassLoader)pluginServletContext.getAttribute(
+					PluginContextListener.PLUGIN_CLASS_LOADER);
+		}
+
+		ClassLoader contextClassLoader =
+			PACLClassLoaderUtil.getContextClassLoader();
+
+		try {
+			TemplateContextType templateContextType =
+				TemplateContextType.STANDARD;
+
+			if ((pluginClassLoader != null) &&
+				(pluginClassLoader != contextClassLoader)) {
+
+				PACLClassLoaderUtil.setContextClassLoader(pluginClassLoader);
+
+				templateContextType = TemplateContextType.CLASS_LOADER;
+			}
+
+			if (processTemplate) {
+				doProcessTemplate(
+					pageContext, portletId, templateResource,
+					templateContextType);
+			}
+			else {
+				doProcessCustomizationSettings(
+					pageContext, templateResource, templateContextType);
+			}
+		}
+		finally {
+			if ((pluginClassLoader != null) &&
+				(pluginClassLoader != contextClassLoader)) {
+
+				PACLClassLoaderUtil.setContextClassLoader(contextClassLoader);
+			}
+		}
+	}
+
+	protected void doProcessCustomizationSettings(
+			PageContext pageContext, TemplateResource templateResource,
+			TemplateContextType templateContextType)
+		throws Exception {
 
 		HttpServletRequest request =
 			(HttpServletRequest)pageContext.getRequest();
@@ -88,8 +288,8 @@ public class RuntimePageImpl implements RuntimePage {
 			new CustomizationSettingsProcessor(pageContext);
 
 		Template template = TemplateManagerUtil.getTemplate(
-			TemplateManager.VELOCITY, velocityTemplateId,
-			velocityTemplateContent, TemplateContextType.STANDARD);
+			TemplateManager.VELOCITY, templateResource,
+			TemplateContextType.STANDARD);
 
 		template.put("processor", processor);
 
@@ -99,11 +299,9 @@ public class RuntimePageImpl implements RuntimePage {
 
 		// liferay:include tag library
 
-		MethodHandler methodHandler = new MethodHandler(
-			_initMethodKey, pageContext.getServletContext(), request, response,
-			pageContext);
-
-		Object velocityTaglib = methodHandler.invoke(true);
+		VelocityTaglib velocityTaglib = new VelocityTaglib(
+			pageContext.getServletContext(), request, response, pageContext,
+			template);
 
 		template.put("taglibLiferay", velocityTaglib);
 		template.put("theme", velocityTaglib);
@@ -118,23 +316,11 @@ public class RuntimePageImpl implements RuntimePage {
 		}
 	}
 
-	public void processTemplate(
-			PageContext pageContext, String velocityTemplateId,
-			String velocityTemplateContent)
-		throws Exception {
-
-		processTemplate(
-			pageContext, null, velocityTemplateId, velocityTemplateContent);
-	}
-
-	public void processTemplate(
+	protected void doProcessTemplate(
 			PageContext pageContext, String portletId,
-			String velocityTemplateId, String velocityTemplateContent)
+			TemplateResource templateResource,
+			TemplateContextType templateContextType)
 		throws Exception {
-
-		if (Validator.isNull(velocityTemplateContent)) {
-			return;
-		}
 
 		HttpServletRequest request =
 			(HttpServletRequest)pageContext.getRequest();
@@ -145,8 +331,7 @@ public class RuntimePageImpl implements RuntimePage {
 			request, response, portletId);
 
 		Template template = TemplateManagerUtil.getTemplate(
-			TemplateManager.VELOCITY, velocityTemplateId,
-			velocityTemplateContent, TemplateContextType.STANDARD);
+			TemplateManager.VELOCITY, templateResource, templateContextType);
 
 		template.put("processor", processor);
 
@@ -158,12 +343,10 @@ public class RuntimePageImpl implements RuntimePage {
 
 		UnsyncStringWriter unsyncStringWriter = new UnsyncStringWriter();
 
-		MethodHandler methodHandler = new MethodHandler(
-			_initMethodKey, pageContext.getServletContext(), request,
+		VelocityTaglib velocityTaglib = new VelocityTaglib(
+			pageContext.getServletContext(), request,
 			new PipingServletResponse(response, unsyncStringWriter),
-			pageContext);
-
-		Object velocityTaglib = methodHandler.invoke(true);
+			pageContext, template);
 
 		template.put("taglibLiferay", velocityTaglib);
 		template.put("theme", velocityTaglib);
@@ -283,82 +466,43 @@ public class RuntimePageImpl implements RuntimePage {
 		sb.writeTo(pageContext.getOut());
 	}
 
-	public String processXML(
-			HttpServletRequest request, String content,
-			RuntimeLogic runtimeLogic)
-		throws Exception {
+	protected LayoutTemplate getLayoutTemplate(String velocityTemplateId) {
+		String separator = LayoutTemplateConstants.CUSTOM_SEPARATOR;
+		boolean standard = false;
 
-		if (Validator.isNull(content)) {
-			return StringPool.BLANK;
+		if (velocityTemplateId.contains(
+				LayoutTemplateConstants.STANDARD_SEPARATOR)) {
+
+			separator = LayoutTemplateConstants.STANDARD_SEPARATOR;
+			standard = true;
 		}
 
-		int index = content.indexOf(runtimeLogic.getOpenTag());
+		String layoutTemplateId = null;
 
-		if (index == -1) {
-			return content;
+		String themeId = null;
+
+		int pos = velocityTemplateId.indexOf(separator);
+
+		if (pos != -1) {
+			layoutTemplateId = velocityTemplateId.substring(
+				pos + separator.length());
+
+			themeId = velocityTemplateId.substring(0, pos);
 		}
 
-		Portlet renderPortlet = (Portlet)request.getAttribute(
-			WebKeys.RENDER_PORTLET);
+		pos = layoutTemplateId.indexOf(PortletConstants.INSTANCE_SEPARATOR);
 
-		Boolean renderPortletResource = (Boolean)request.getAttribute(
-			WebKeys.RENDER_PORTLET_RESOURCE);
+		if (pos != -1) {
+			layoutTemplateId = layoutTemplateId.substring(
+				pos + PortletConstants.INSTANCE_SEPARATOR.length() + 1);
 
-		String outerPortletId = (String)request.getAttribute(
-			WebKeys.OUTER_PORTLET_ID);
+			pos = layoutTemplateId.indexOf(StringPool.UNDERLINE);
 
-		if (outerPortletId == null) {
-			request.setAttribute(
-				WebKeys.OUTER_PORTLET_ID, renderPortlet.getPortletId());
+			layoutTemplateId = layoutTemplateId.substring(pos + 1);
 		}
 
-		try {
-			request.setAttribute(WebKeys.RENDER_PORTLET_RESOURCE, Boolean.TRUE);
-
-			StringBundler sb = new StringBundler();
-
-			int x = 0;
-			int y = index;
-
-			while (y != -1) {
-				sb.append(content.substring(x, y));
-
-				int close1 = content.indexOf(runtimeLogic.getClose1Tag(), y);
-				int close2 = content.indexOf(runtimeLogic.getClose2Tag(), y);
-
-				if ((close2 == -1) || ((close1 != -1) && (close1 < close2))) {
-					x = close1 + runtimeLogic.getClose1Tag().length();
-				}
-				else {
-					x = close2 + runtimeLogic.getClose2Tag().length();
-				}
-
-				sb.append(runtimeLogic.processXML(content.substring(y, x)));
-
-				y = content.indexOf(runtimeLogic.getOpenTag(), x);
-			}
-
-			if (y == -1) {
-				sb.append(content.substring(x));
-			}
-
-			return sb.toString();
-		}
-		finally {
-			if (outerPortletId == null) {
-				request.removeAttribute(WebKeys.OUTER_PORTLET_ID);
-			}
-
-			request.setAttribute(WebKeys.RENDER_PORTLET, renderPortlet);
-
-			if (renderPortletResource == null) {
-				request.removeAttribute(WebKeys.RENDER_PORTLET_RESOURCE);
-			}
-			else {
-				request.setAttribute(
-					WebKeys.RENDER_PORTLET_RESOURCE, renderPortletResource);
-			}
-		}
+		return LayoutTemplateLocalServiceUtil.getLayoutTemplate(
+			layoutTemplateId, standard, themeId);
 	}
 
 	protected void parallelyRenderPortlets(
@@ -528,10 +672,6 @@ public class RuntimePageImpl implements RuntimePage {
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(RuntimePageImpl.class);
-
-	private static MethodKey _initMethodKey = new MethodKey(
-		"com.liferay.taglib.util.VelocityTaglib", "init", ServletContext.class,
-		HttpServletRequest.class, HttpServletResponse.class, PageContext.class);
 
 	private int _waitTime = Integer.MAX_VALUE;
 

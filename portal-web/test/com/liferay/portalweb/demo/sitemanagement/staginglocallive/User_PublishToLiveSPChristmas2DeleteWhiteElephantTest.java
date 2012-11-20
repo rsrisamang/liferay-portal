@@ -29,32 +29,16 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'local-staging')]"));
 				assertEquals(RuntimeVariables.replace("Staging"),
 					selenium.getText(
@@ -62,10 +46,9 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 				selenium.clickAt("//div[@class='staging-bar']/ul/li[2]/span/a",
 					RuntimeVariables.replace("Staging"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'local-staging')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'live-view')]"));
 
 				boolean christmas2Present = selenium.isElementPresent(
@@ -80,7 +63,6 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 				selenium.clickAt("link=Christmas 2",
 					RuntimeVariables.replace("Christmas 2"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				assertEquals(RuntimeVariables.replace(
@@ -91,91 +73,24 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 				assertTrue(selenium.isVisible("link=Home"));
 				selenium.clickAt("link=Home", RuntimeVariables.replace("Home"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
+				Thread.sleep(5000);
 				selenium.clickAt("//span[2]/span/ul/li/strong/a",
 					RuntimeVariables.replace("Christmas 2 Staging"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a");
 				assertEquals(RuntimeVariables.replace(
 						"Publish Christmas 2 to Live now."),
 					selenium.getText(
 						"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a"));
 				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a",
 					RuntimeVariables.replace("Publish Christmas 2 to Live now."));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//div[2]/div[1]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div[2]/div[1]/a");
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//input[@value='Change Selection']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@value='Change Selection']");
 				selenium.clickAt("//input[@value='Change Selection']",
 					RuntimeVariables.replace("Change Selection"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace(
-									"Note that selecting no pages from the tree reverts to implicit selection of all pages.")
-												.equals(selenium.getText(
-										"//div[@class='portlet-msg-info']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//div[@class='portlet-msg-info']",
+					"Note that selecting no pages from the tree reverts to implicit selection of all pages.");
 				assertEquals(RuntimeVariables.replace(
 						"Note that selecting no pages from the tree reverts to implicit selection of all pages."),
 					selenium.getText("//div[@class='portlet-msg-info']"));
@@ -191,24 +106,10 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 
 				selenium.clickAt("//li/div/div[1]",
 					RuntimeVariables.replace("Drop Down Arrow"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[contains(@class,'aui-tree-expanded')]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.clickAt("//li/div/div[1]",
+					RuntimeVariables.replace("Drop Down Arrow"));
+				selenium.waitForVisible(
+					"//div[contains(@class,'aui-tree-expanded')]");
 				assertTrue(selenium.isVisible(
 						"//div[contains(@class,'aui-tree-expanded')]"));
 				assertTrue(selenium.isVisible(
@@ -216,23 +117,7 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 
 			case 3:
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//div[4]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div[4]");
 				assertEquals(RuntimeVariables.replace("Public Pages"),
 					selenium.getText("//div[4]"));
 				selenium.clickAt("//div[4]",
@@ -240,23 +125,7 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 				selenium.clickAt("//div[4]",
 					RuntimeVariables.replace("Public Pages"));
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//li/ul/li[1]/div/div[4]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//li/ul/li[1]/div/div[4]");
 				assertEquals(RuntimeVariables.replace("Home"),
 					selenium.getText("//li/ul/li[1]/div/div[4]"));
 				selenium.clickAt("//li/ul/li[1]/div/div[4]",
@@ -273,67 +142,36 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 					selenium.getText("//li[4]/div/div[4]"));
 				selenium.clickAt("//li[4]/div/div[4]",
 					RuntimeVariables.replace("White Elephant"));
-				assertEquals(RuntimeVariables.replace("Prices"),
+				assertEquals(RuntimeVariables.replace("Prices [main-variation]"),
 					selenium.getText("//li[5]/div/div[4]"));
 				selenium.clickAt("//li[5]/div/div[4]",
-					RuntimeVariables.replace("Prices"));
+					RuntimeVariables.replace("Prices [main-variation]"));
 				Thread.sleep(5000);
 				selenium.clickAt("//input[@value='Select']",
 					RuntimeVariables.replace("Select"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//tr/td[2]/span[contains(.,'Home')]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				assertEquals(RuntimeVariables.replace("Home"),
+				selenium.waitForVisible("//tr/td[2]/span[contains(.,'Home')]");
+				assertEquals(RuntimeVariables.replace("Home [Main Variation]"),
 					selenium.getText("//tr/td[2]/span[contains(.,'Home')]"));
-				assertEquals(RuntimeVariables.replace("Calendar"),
+				assertEquals(RuntimeVariables.replace(
+						"Calendar [Main Variation]"),
 					selenium.getText("//tr/td[2]/span[contains(.,'Calendar')]"));
-				assertEquals(RuntimeVariables.replace("Wiki"),
+				assertEquals(RuntimeVariables.replace("Wiki [Main Variation]"),
 					selenium.getText("//tr/td[2]/span[contains(.,'Wiki')]"));
-				assertEquals(RuntimeVariables.replace("White Elephant"),
+				assertEquals(RuntimeVariables.replace(
+						"White Elephant [Main Variation]"),
 					selenium.getText(
 						"//tr/td[2]/span[contains(.,'White Elephant')]"));
-				assertEquals(RuntimeVariables.replace("Change"),
-					selenium.getText(
-						"//tr[contains(.,'White Elephant')]/td[3]/div/span/a"));
+				assertTrue(selenium.isPartialText(
+						"//tr[contains(.,'White Elephant')]/td[3]/div/span/a",
+						"Change"));
 				selenium.clickAt("//tr[contains(.,'White Elephant')]/td[3]/div/span/a",
 					RuntimeVariables.replace("Change"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//tr[contains(.,'White Elephant')]/td[3]/div[2]/span[1]/span/span/input")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//tr[contains(.,'White Elephant')]/td[3]/div[2]/span[1]/span/span/input");
 				selenium.clickAt("//tr[contains(.,'White Elephant')]/td[3]/div[2]/span[1]/span/span/input",
 					RuntimeVariables.replace("Delete live page."));
 				assertEquals(RuntimeVariables.replace("Prices"),
-					selenium.getText("//tr/td[2]/span[contains(.,'Prices')]"));
+					selenium.getText("//td[2]/span[contains(.,'Prices')]"));
 				Thread.sleep(5000);
 
 				boolean allVisible = selenium.isVisible("_88_rangeAll");
@@ -348,65 +186,15 @@ public class User_PublishToLiveSPChristmas2DeleteWhiteElephantTest
 					RuntimeVariables.replace("Plus"));
 
 			case 4:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//input[@id='_88_rangeAll']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("//input[@id='_88_rangeAll']");
 				selenium.clickAt("//input[@id='_88_rangeAll']",
 					RuntimeVariables.replace("All"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@value='Publish']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@value='Publish']");
 				selenium.clickAt("//input[@value='Publish']",
 					RuntimeVariables.replace("Publish"));
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to publish these pages[\\s\\S]$"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div[@class='portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request completed successfully."),
 					selenium.getText("//div[@class='portlet-msg-success']"));

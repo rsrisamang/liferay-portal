@@ -22,22 +22,27 @@ import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.sender.MessageSender;
 import com.liferay.portal.kernel.messaging.sender.SynchronousMessageSender;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineUtil;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.template.TemplateManagerUtil;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutConstants;
+import com.liferay.portal.model.LayoutPrototype;
+import com.liferay.portal.model.LayoutSetPrototype;
 import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.PortletImpl;
+import com.liferay.portal.repository.liferayrepository.LiferayRepository;
 import com.liferay.portal.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
@@ -46,6 +51,8 @@ import com.liferay.portal.security.permission.ResourceActionsUtil;
 import com.liferay.portal.tools.DBUpgrader;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PortalInstances;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.TestPropsValues;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
@@ -62,11 +69,18 @@ import com.liferay.portlet.documentlibrary.trash.DLFolderTrashHandler;
 import com.liferay.portlet.documentlibrary.util.DLIndexer;
 import com.liferay.portlet.documentlibrary.workflow.DLFileEntryWorkflowHandler;
 import com.liferay.portlet.journal.workflow.JournalArticleWorkflowHandler;
-import com.liferay.portlet.messageboards.util.MBIndexer;
+import com.liferay.portlet.messageboards.trash.MBThreadTrashHandler;
+import com.liferay.portlet.messageboards.util.MBMessageIndexer;
 import com.liferay.portlet.messageboards.workflow.MBDiscussionWorkflowHandler;
 import com.liferay.portlet.messageboards.workflow.MBMessageWorkflowHandler;
+import com.liferay.portlet.trash.util.TrashIndexer;
 import com.liferay.portlet.usersadmin.util.ContactIndexer;
 import com.liferay.portlet.usersadmin.util.UserIndexer;
+import com.liferay.portlet.wiki.trash.WikiNodeTrashHandler;
+import com.liferay.portlet.wiki.trash.WikiPageTrashHandler;
+import com.liferay.portlet.wiki.util.WikiNodeIndexer;
+import com.liferay.portlet.wiki.util.WikiPageIndexer;
+import com.liferay.portlet.wiki.workflow.WikiPageWorkflowHandler;
 import com.liferay.util.PwdGenerator;
 
 import java.util.Calendar;
@@ -88,6 +102,10 @@ public class ServiceTestUtil {
 
 	public static final int THREAD_COUNT = 25;
 
+	public static Group addGroup() throws Exception {
+		return addGroup(randomString());
+	}
+
 	public static Group addGroup(long parentGroupId, String name)
 		throws Exception {
 
@@ -106,8 +124,9 @@ public class ServiceTestUtil {
 		boolean active = true;
 
 		return GroupLocalServiceUtil.addGroup(
-			TestPropsValues.getUserId(), parentGroupId, null, 0, name,
-			description, type, friendlyURL, site, active, getServiceContext());
+			TestPropsValues.getUserId(), parentGroupId, null, 0,
+			GroupConstants.DEFAULT_LIVE_GROUP_ID, name, description, type,
+			friendlyURL, site, active, getServiceContext());
 	}
 
 	public static Group addGroup(String name) throws Exception {
@@ -115,6 +134,13 @@ public class ServiceTestUtil {
 	}
 
 	public static Layout addLayout(long groupId, String name) throws Exception {
+		return addLayout(groupId, name, false);
+	}
+
+	public static Layout addLayout(
+			long groupId, String name, boolean privateLayout)
+		throws Exception {
+
 		String friendlyURL =
 			StringPool.SLASH + FriendlyURLNormalizerUtil.normalize(name);
 
@@ -132,10 +158,34 @@ public class ServiceTestUtil {
 		String description = "This is a test page.";
 
 		return LayoutLocalServiceUtil.addLayout(
-			TestPropsValues.getUserId(), groupId, false,
+			TestPropsValues.getUserId(), groupId, privateLayout,
 			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID, name, null, description,
 			LayoutConstants.TYPE_PORTLET, false, friendlyURL,
 			getServiceContext());
+	}
+
+	public static LayoutPrototype addLayoutPrototype(String name)
+		throws Exception {
+
+		HashMap<Locale, String> nameMap = new HashMap<Locale, String>();
+
+		nameMap.put(LocaleUtil.getDefault(), name);
+
+		return LayoutPrototypeLocalServiceUtil.addLayoutPrototype(
+			TestPropsValues.getUserId(), TestPropsValues.getCompanyId(),
+			nameMap, null, true);
+	}
+
+	public static LayoutSetPrototype addLayoutSetPrototype(String name)
+		throws Exception {
+
+		HashMap<Locale, String> nameMap = new HashMap<Locale, String>();
+
+		nameMap.put(LocaleUtil.getDefault(), name);
+
+		return LayoutSetPrototypeLocalServiceUtil.addLayoutSetPrototype(
+			TestPropsValues.getUserId(), TestPropsValues.getCompanyId(),
+			nameMap, null, true, true, getServiceContext());
 	}
 
 	public static User addUser(
@@ -181,24 +231,36 @@ public class ServiceTestUtil {
 	}
 
 	public static void destroyServices() {
-		FileUtil.delete(PropsValues.LIFERAY_HOME + "/data");
+		_deleteDLDirectories();
 	}
 
 	public static SearchContext getSearchContext() throws Exception {
+		return getSearchContext(TestPropsValues.getGroupId());
+	}
+
+	public static SearchContext getSearchContext(long groupId)
+		throws Exception {
+
 		SearchContext searchContext = new SearchContext();
 
 		searchContext.setCompanyId(TestPropsValues.getCompanyId());
-		searchContext.setGroupIds(new long[] {TestPropsValues.getGroupId()});
+		searchContext.setGroupIds(new long[] {groupId});
 		searchContext.setUserId(TestPropsValues.getUserId());
 
 		return searchContext;
 	}
 
 	public static ServiceContext getServiceContext() throws Exception {
+		return getServiceContext(TestPropsValues.getGroupId());
+	}
+
+	public static ServiceContext getServiceContext(long groupId)
+		throws Exception {
+
 		ServiceContext serviceContext = new ServiceContext();
 
 		serviceContext.setCompanyId(TestPropsValues.getCompanyId());
-		serviceContext.setScopeGroupId(TestPropsValues.getGroupId());
+		serviceContext.setScopeGroupId(groupId);
 		serviceContext.setUserId(TestPropsValues.getUserId());
 
 		return serviceContext;
@@ -232,14 +294,21 @@ public class ServiceTestUtil {
 	public static void initServices() {
 		InitUtil.initWithSpring();
 
-		FileUtil.delete(PropsValues.LIFERAY_HOME + "/data");
-
-		FileUtil.mkdirs(PropsValues.LUCENE_DIR);
+		_deleteDLDirectories();
 
 		// JCR
 
 		try {
 			JCRFactoryUtil.prepare();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Template manager
+
+		try {
+			TemplateManagerUtil.init();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -252,7 +321,10 @@ public class ServiceTestUtil {
 		IndexerRegistryUtil.register(new UserIndexer());
 		IndexerRegistryUtil.register(new BookmarksIndexer());
 		IndexerRegistryUtil.register(new DLIndexer());
-		IndexerRegistryUtil.register(new MBIndexer());
+		IndexerRegistryUtil.register(new MBMessageIndexer());
+		IndexerRegistryUtil.register(new TrashIndexer());
+		IndexerRegistryUtil.register(new WikiNodeIndexer());
+		IndexerRegistryUtil.register(new WikiPageIndexer());
 
 		// Upgrade
 
@@ -280,7 +352,7 @@ public class ServiceTestUtil {
 		// Scheduler
 
 		try {
-			SchedulerEngineUtil.start();
+			SchedulerEngineHelperUtil.start();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -294,6 +366,10 @@ public class ServiceTestUtil {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		// Class names
+
+		_checkClassNames();
 
 		// Resource actions
 
@@ -317,6 +393,9 @@ public class ServiceTestUtil {
 		TrashHandlerRegistryUtil.register(new DLFileEntryTrashHandler());
 		TrashHandlerRegistryUtil.register(new DLFileShortcutTrashHandler());
 		TrashHandlerRegistryUtil.register(new DLFolderTrashHandler());
+		TrashHandlerRegistryUtil.register(new MBThreadTrashHandler());
+		TrashHandlerRegistryUtil.register(new WikiNodeTrashHandler());
+		TrashHandlerRegistryUtil.register(new WikiPageTrashHandler());
 
 		// Workflow
 
@@ -327,6 +406,7 @@ public class ServiceTestUtil {
 		WorkflowHandlerRegistryUtil.register(new MBDiscussionWorkflowHandler());
 		WorkflowHandlerRegistryUtil.register(new MBMessageWorkflowHandler());
 		WorkflowHandlerRegistryUtil.register(new UserWorkflowHandler());
+		WorkflowHandlerRegistryUtil.register(new WikiPageWorkflowHandler());
 
 		// Company
 
@@ -377,6 +457,10 @@ public class ServiceTestUtil {
 		return PwdGenerator.getPassword();
 	}
 
+	private static void _checkClassNames() {
+		PortalUtil.getClassNameId(LiferayRepository.class.getName());
+	}
+
 	private static void _checkResourceActions() throws Exception {
 		for (int i = 0; i < 200; i++) {
 			String portletId = String.valueOf(i);
@@ -403,6 +487,13 @@ public class ServiceTestUtil {
 					modelName, modelActions);
 			}
 		}
+	}
+
+	private static void _deleteDLDirectories() {
+		FileUtil.deltree(PropsValues.DL_STORE_FILE_SYSTEM_ROOT_DIR);
+
+		FileUtil.deltree(
+			PropsUtil.get(PropsKeys.JCR_JACKRABBIT_REPOSITORY_ROOT));
 	}
 
 	private static Random _random = new Random();

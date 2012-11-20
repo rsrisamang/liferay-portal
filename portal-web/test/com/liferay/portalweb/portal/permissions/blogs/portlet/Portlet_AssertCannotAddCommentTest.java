@@ -27,53 +27,18 @@ public class Portlet_AssertCannotAddCommentTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"link=Blogs Permissions Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Blogs Permissions Page");
 				selenium.clickAt("link=Blogs Permissions Page",
 					RuntimeVariables.replace("Blogs Permissions Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("//div[@class='entry-title']/h2/a",
 					RuntimeVariables.replace("Blogs Entry Title Temporary"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Comments")
-												.equals(selenium.getText(
-										"//div[@class='lfr-panel-title']/span"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//div[@class='lfr-panel-title']/span",
+					"Comments");
 				assertEquals(RuntimeVariables.replace("Comments"),
 					selenium.getText("//div[@class='lfr-panel-title']/span"));
 
@@ -90,8 +55,8 @@ public class Portlet_AssertCannotAddCommentTest extends BaseTestCase {
 					RuntimeVariables.replace(""));
 
 			case 2:
-				assertFalse(selenium.isElementPresent("link=Add Comment"));
-				assertFalse(selenium.isElementPresent("link=Be the first."));
+				assertTrue(selenium.isElementNotPresent("link=Add Comment"));
+				assertTrue(selenium.isElementNotPresent("link=Be the first."));
 
 			case 100:
 				label = -1;

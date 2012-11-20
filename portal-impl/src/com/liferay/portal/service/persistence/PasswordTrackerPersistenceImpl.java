@@ -262,7 +262,14 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, passwordTracker);
+			if (!session.contains(passwordTracker)) {
+				passwordTracker = (PasswordTracker)session.get(PasswordTrackerImpl.class,
+						passwordTracker.getPrimaryKeyObj());
+			}
+
+			if (passwordTracker != null) {
+				session.delete(passwordTracker);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -271,14 +278,16 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 			closeSession(session);
 		}
 
-		clearCache(passwordTracker);
+		if (passwordTracker != null) {
+			clearCache(passwordTracker);
+		}
 
 		return passwordTracker;
 	}
 
 	@Override
 	public PasswordTracker updateImpl(
-		com.liferay.portal.model.PasswordTracker passwordTracker, boolean merge)
+		com.liferay.portal.model.PasswordTracker passwordTracker)
 		throws SystemException {
 		passwordTracker = toUnwrappedModel(passwordTracker);
 
@@ -291,9 +300,14 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, passwordTracker, merge);
+			if (passwordTracker.isNew()) {
+				session.save(passwordTracker);
 
-			passwordTracker.setNew(false);
+				passwordTracker.setNew(false);
+			}
+			else {
+				session.merge(passwordTracker);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -307,6 +321,7 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 		if (isNew || !PasswordTrackerModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((passwordTrackerModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_USERID.getColumnBitmask()) != 0) {
@@ -588,10 +603,6 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	/**
 	 * Returns the first password tracker in the ordered set where userId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching password tracker
@@ -601,32 +612,47 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	public PasswordTracker findByUserId_First(long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchPasswordTrackerException, SystemException {
+		PasswordTracker passwordTracker = fetchByUserId_First(userId,
+				orderByComparator);
+
+		if (passwordTracker != null) {
+			return passwordTracker;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("userId=");
+		msg.append(userId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchPasswordTrackerException(msg.toString());
+	}
+
+	/**
+	 * Returns the first password tracker in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching password tracker, or <code>null</code> if a matching password tracker could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public PasswordTracker fetchByUserId_First(long userId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<PasswordTracker> list = findByUserId(userId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("userId=");
-			msg.append(userId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchPasswordTrackerException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last password tracker in the ordered set where userId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param userId the user ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -637,34 +663,49 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	public PasswordTracker findByUserId_Last(long userId,
 		OrderByComparator orderByComparator)
 		throws NoSuchPasswordTrackerException, SystemException {
+		PasswordTracker passwordTracker = fetchByUserId_Last(userId,
+				orderByComparator);
+
+		if (passwordTracker != null) {
+			return passwordTracker;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("userId=");
+		msg.append(userId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchPasswordTrackerException(msg.toString());
+	}
+
+	/**
+	 * Returns the last password tracker in the ordered set where userId = &#63;.
+	 *
+	 * @param userId the user ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching password tracker, or <code>null</code> if a matching password tracker could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public PasswordTracker fetchByUserId_Last(long userId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUserId(userId);
 
 		List<PasswordTracker> list = findByUserId(userId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("userId=");
-			msg.append(userId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchPasswordTrackerException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the password trackers before and after the current password tracker in the ordered set where userId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param passwordTrackerId the primary key of the current password tracker
 	 * @param userId the user ID

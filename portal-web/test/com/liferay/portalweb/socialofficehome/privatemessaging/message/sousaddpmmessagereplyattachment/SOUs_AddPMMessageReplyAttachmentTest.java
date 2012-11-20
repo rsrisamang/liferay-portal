@@ -23,94 +23,30 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class SOUs_AddPMMessageReplyAttachmentTest extends BaseTestCase {
 	public void testSOUs_AddPMMessageReplyAttachment()
 		throws Exception {
-		selenium.open("/user/socialoffice01/home");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//span[@class='notification-count']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("//span[@class='notification-count']",
-			RuntimeVariables.replace("Notification Count"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div[@class='title']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
+		selenium.open("/user/socialoffice01/so/dashboard");
+		selenium.waitForElementPresent("//li[@id='_145_notificationsMenu']");
+		assertEquals(RuntimeVariables.replace("1"),
+			selenium.getText("//span[@class='notification-count']"));
+		selenium.mouseOver("//li[@id='_145_notificationsMenu']");
+		selenium.waitForVisible("//div[@class='title']");
 		assertEquals(RuntimeVariables.replace("Joe Bloggs sent you a message."),
 			selenium.getText("//div[@class='title']"));
-		assertEquals(RuntimeVariables.replace("Mark as Read"),
+		assertEquals(RuntimeVariables.replace("Mark All as Read"),
 			selenium.getText("//span[@class='dismiss-notifications']/a"));
 		selenium.clickAt("//span[@class='dismiss-notifications']/a",
-			RuntimeVariables.replace("Mark as Read"));
+			RuntimeVariables.replace("Mark All as Read"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//span[@class='notification-count']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("//span[@class='notification-count']",
-			RuntimeVariables.replace("Notification Count"));
+		selenium.waitForElementPresent("//li[@id='_145_notificationsMenu']");
+		assertEquals(RuntimeVariables.replace("0"),
+			selenium.getText("//span[@class='notification-count']"));
+		selenium.mouseOver("//li[@id='_145_notificationsMenu']");
 		assertFalse(selenium.isTextPresent("Joe Bloggs sent you a message."));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Messages')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//nav/ul/li[contains(.,'Messages')]/a/span");
 		selenium.clickAt("//nav/ul/li[contains(.,'Messages')]/a/span",
 			RuntimeVariables.replace("Messages"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Private Messaging"),
 			selenium.getText("//span[@class='portlet-title-default']"));
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),
@@ -124,42 +60,26 @@ public class SOUs_AddPMMessageReplyAttachmentTest extends BaseTestCase {
 		selenium.clickAt("//div[@class='subject']",
 			RuntimeVariables.replace("Message Subject"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Message Subject"),
 			selenium.getText("//h1[@class='header-title']/span"));
 		assertEquals(RuntimeVariables.replace("Between Joe Bloggs And you"),
 			selenium.getText(
 				"//div[@class='aui-layout-content thread-info-content ']"));
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),
-			selenium.getText("xPath=(//span[@class='name'])[2]"));
+			selenium.getText(
+				"xPath=(//span[@class='name'])[contains(.,'Joe Bloggs')]"));
 		assertTrue(selenium.isPartialText("//div[@class='body']", "Message Body"));
 		assertTrue(selenium.isVisible("//textarea[@class='message-body']"));
 		selenium.type("//textarea[@class='message-body']",
 			RuntimeVariables.replace("Message Subject Reply"));
 		assertTrue(selenium.isVisible(
 				"//input[@id='_1_WAR_privatemessagingportlet_msgFile1']"));
-		selenium.type("//input[@id='_1_WAR_privatemessagingportlet_msgFile1']",
+		selenium.uploadFile("//input[@id='_1_WAR_privatemessagingportlet_msgFile1']",
 			RuntimeVariables.replace(
-				"L:\\portal\\build\\portal-web\\test\\com\\liferay\\portalweb\\socialofficehome\\message\\sousaddpmmessagereplyattachment\\dependencies\\PM_Attachment.jpg"));
+				"L:\\portal\\build\\portal-web\\test\\com\\liferay\\portalweb\\socialofficehome\\privatemessaging\\message\\sousaddpmmessagereplyattachment\\dependencies\\PM_Attachment.jpg"));
 		selenium.clickAt("//input[@value='Send']",
 			RuntimeVariables.replace("Send"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div[@class='portlet-msg-success']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[@class='portlet-msg-success']");
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

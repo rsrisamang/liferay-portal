@@ -22,34 +22,17 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class RemoveCustomersPortletTest extends BaseTestCase {
 	public void testRemoveCustomersPortlet() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"link=Sample Icefaces IPC Ajax Push Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Sample Icefaces IPC Ajax Push Test Page");
 		selenium.click(RuntimeVariables.replace(
 				"link=Sample Icefaces IPC Ajax Push Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isTextPresent("Sample ICEfaces IPC - Customers"));
 		selenium.click("//img[@alt='Remove']");
-		assertTrue(selenium.getConfirmation()
-						   .matches("^Are you sure you want to remove this component[\\s\\S]$"));
+		selenium.waitForConfirmation(
+			"Are you sure you want to remove this component?");
 		assertFalse(selenium.isTextPresent("Sample ICEfaces IPC - Customers"));
 	}
 }

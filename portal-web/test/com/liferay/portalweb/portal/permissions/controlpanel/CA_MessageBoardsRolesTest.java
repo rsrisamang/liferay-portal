@@ -22,13 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class CA_MessageBoardsRolesTest extends BaseTestCase {
 	public void testCA_MessageBoardsRoles() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.clickAt("link=Define Permissions", RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.select("_128_add-permissions",
 			RuntimeVariables.replace("label=Message Boards"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.check("_128_rowIds");
 		selenium.check(
 			"//input[@name='_128_rowIds' and @value='com.liferay.portlet.messageboardsBAN_USER']");
@@ -66,7 +66,6 @@ public class CA_MessageBoardsRolesTest extends BaseTestCase {
 			"//input[@name='_128_rowIds' and @value='com.liferay.portlet.messageboards.model.MBMessageVIEW']");
 		selenium.clickAt("//input[@value='Save']", RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isTextPresent("The role permissions were updated."));
 	}
 }

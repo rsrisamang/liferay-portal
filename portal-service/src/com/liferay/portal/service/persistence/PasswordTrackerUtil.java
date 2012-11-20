@@ -94,19 +94,19 @@ public class PasswordTrackerUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
-	public static PasswordTracker update(PasswordTracker passwordTracker,
-		boolean merge) throws SystemException {
-		return getPersistence().update(passwordTracker, merge);
+	public static PasswordTracker update(PasswordTracker passwordTracker)
+		throws SystemException {
+		return getPersistence().update(passwordTracker);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static PasswordTracker update(PasswordTracker passwordTracker,
-		boolean merge, ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(passwordTracker, merge, serviceContext);
+		ServiceContext serviceContext) throws SystemException {
+		return getPersistence().update(passwordTracker, serviceContext);
 	}
 
 	/**
@@ -156,9 +156,9 @@ public class PasswordTrackerUtil {
 	}
 
 	public static com.liferay.portal.model.PasswordTracker updateImpl(
-		com.liferay.portal.model.PasswordTracker passwordTracker, boolean merge)
+		com.liferay.portal.model.PasswordTracker passwordTracker)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(passwordTracker, merge);
+		return getPersistence().updateImpl(passwordTracker);
 	}
 
 	/**
@@ -245,10 +245,6 @@ public class PasswordTrackerUtil {
 	/**
 	* Returns the first password tracker in the ordered set where userId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param userId the user ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching password tracker
@@ -264,11 +260,22 @@ public class PasswordTrackerUtil {
 	}
 
 	/**
-	* Returns the last password tracker in the ordered set where userId = &#63;.
+	* Returns the first password tracker in the ordered set where userId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param userId the user ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching password tracker, or <code>null</code> if a matching password tracker could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.PasswordTracker fetchByUserId_First(
+		long userId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUserId_First(userId, orderByComparator);
+	}
+
+	/**
+	* Returns the last password tracker in the ordered set where userId = &#63;.
 	*
 	* @param userId the user ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -285,11 +292,22 @@ public class PasswordTrackerUtil {
 	}
 
 	/**
-	* Returns the password trackers before and after the current password tracker in the ordered set where userId = &#63;.
+	* Returns the last password tracker in the ordered set where userId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param userId the user ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching password tracker, or <code>null</code> if a matching password tracker could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.PasswordTracker fetchByUserId_Last(
+		long userId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUserId_Last(userId, orderByComparator);
+	}
+
+	/**
+	* Returns the password trackers before and after the current password tracker in the ordered set where userId = &#63;.
 	*
 	* @param passwordTrackerId the primary key of the current password tracker
 	* @param userId the user ID

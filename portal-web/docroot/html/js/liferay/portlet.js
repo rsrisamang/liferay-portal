@@ -7,7 +7,6 @@
 
 	var Portlet = {
 		list: [],
-		runtimePortletIds: [],
 
 		isStatic: function(portletId) {
 			var instance = this;
@@ -17,7 +16,7 @@
 			return (id in instance._staticPortlets);
 		},
 
-		refreshLayout: function(portletBoundary){
+		refreshLayout: function(portletBoundary) {
 		},
 
 		_defCloseFn: function(event) {
@@ -543,9 +542,9 @@
 			if (portlet) {
 				data = data || {};
 
-                if (!A.Object.owns(data, 'portletAjaxable')) {
-                    data.portletAjaxable = true;
-                }
+				if (!A.Object.owns(data, 'portletAjaxable')) {
+					data.portletAjaxable = true;
+				}
 
 				var id = portlet.attr('portlet');
 

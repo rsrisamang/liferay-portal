@@ -27,29 +27,13 @@ public class TearDownPageCommentTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Page Comments Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Page Comments Test Page");
 				selenium.clickAt("link=Page Comments Test Page",
 					RuntimeVariables.replace("Page Comments Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean pageComment1Present = selenium.isElementPresent(
 						"//li[@class='lfr-discussion-delete']/span/a/span");
@@ -65,41 +49,10 @@ public class TearDownPageCommentTest extends BaseTestCase {
 						"//li[@class='lfr-discussion-delete']/span/a/span"));
 				selenium.clickAt("//li[@class='lfr-discussion-delete']/span/a/span",
 					RuntimeVariables.replace("Delete"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if ("Are you sure you want to delete this? It will be deleted immediately.".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-message-response portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this? It will be deleted immediately.");
+				selenium.waitForVisible(
+					"//div[@class='lfr-message-response portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request processed successfully."),
 					selenium.getText(
@@ -120,41 +73,10 @@ public class TearDownPageCommentTest extends BaseTestCase {
 						"//li[@class='lfr-discussion-delete']/span/a/span"));
 				selenium.clickAt("//li[@class='lfr-discussion-delete']/span/a/span",
 					RuntimeVariables.replace("Delete"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if ("Are you sure you want to delete this? It will be deleted immediately.".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-message-response portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this? It will be deleted immediately.");
+				selenium.waitForVisible(
+					"//div[@class='lfr-message-response portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request processed successfully."),
 					selenium.getText(
@@ -175,41 +97,10 @@ public class TearDownPageCommentTest extends BaseTestCase {
 						"//li[@class='lfr-discussion-delete']/span/a/span"));
 				selenium.clickAt("//li[@class='lfr-discussion-delete']/span/a/span",
 					RuntimeVariables.replace("Delete"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if ("Are you sure you want to delete this? It will be deleted immediately.".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-message-response portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this? It will be deleted immediately.");
+				selenium.waitForVisible(
+					"//div[@class='lfr-message-response portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request processed successfully."),
 					selenium.getText(
@@ -230,41 +121,10 @@ public class TearDownPageCommentTest extends BaseTestCase {
 						"//li[@class='lfr-discussion-delete']/span/a/span"));
 				selenium.click(
 					"//li[@class='lfr-discussion-delete']/span/a/span");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if ("Are you sure you want to delete this? It will be deleted immediately.".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-message-response portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this? It will be deleted immediately.");
+				selenium.waitForVisible(
+					"//div[@class='lfr-message-response portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request processed successfully."),
 					selenium.getText(
@@ -285,41 +145,10 @@ public class TearDownPageCommentTest extends BaseTestCase {
 						"//li[@class='lfr-discussion-delete']/span/a/span"));
 				selenium.click(
 					"//li[@class='lfr-discussion-delete']/span/a/span");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if ("Are you sure you want to delete this? It will be deleted immediately.".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-message-response portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this? It will be deleted immediately.");
+				selenium.waitForVisible(
+					"//div[@class='lfr-message-response portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request processed successfully."),
 					selenium.getText(

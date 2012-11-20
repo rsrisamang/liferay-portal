@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -114,7 +114,7 @@ public class TrashVersionPersistenceTest {
 
 		newTrashVersion.setStatus(ServiceTestUtil.nextInt());
 
-		_persistence.update(newTrashVersion, false);
+		_persistence.update(newTrashVersion);
 
 		TrashVersion existingTrashVersion = _persistence.findByPrimaryKey(newTrashVersion.getPrimaryKey());
 
@@ -255,7 +255,7 @@ public class TrashVersionPersistenceTest {
 
 		trashVersion.setStatus(ServiceTestUtil.nextInt());
 
-		_persistence.update(trashVersion, false);
+		_persistence.update(trashVersion);
 
 		return trashVersion;
 	}

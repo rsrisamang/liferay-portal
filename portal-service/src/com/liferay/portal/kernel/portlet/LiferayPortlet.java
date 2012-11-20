@@ -15,16 +15,18 @@
 package com.liferay.portal.kernel.portlet;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.MethodCache;
+import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 
 import java.io.IOException;
@@ -32,13 +34,11 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.GenericPortlet;
 import javax.portlet.MimeResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -124,7 +124,7 @@ public class LiferayPortlet extends GenericPortlet {
 		String successMessage = ParamUtil.getString(
 			actionRequest, "successMessage");
 
-		SessionMessages.add(actionRequest, "request_processed", successMessage);
+		SessionMessages.add(actionRequest, "requestProcessed", successMessage);
 	}
 
 	protected boolean callActionMethod(
@@ -134,14 +134,19 @@ public class LiferayPortlet extends GenericPortlet {
 		String actionName = ParamUtil.getString(
 			actionRequest, ActionRequest.ACTION_NAME);
 
-		if (Validator.isNull(actionName)) {
+		if (Validator.isNull(actionName) ||
+			actionName.equals("callActionMethod") ||
+			actionName.equals("processAction")) {
+
 			return false;
 		}
 
 		try {
-			Method method = MethodCache.get(
-				_classesMap, _methodsMap, getClass().getName(), actionName,
-				new Class[] {ActionRequest.class, ActionResponse.class});
+			MethodKey methodKey = new MethodKey(
+				getClass(), actionName, ActionRequest.class,
+				ActionResponse.class);
+
+			Method method = methodKey.getMethod();
 
 			method.invoke(this, actionRequest, actionResponse);
 
@@ -283,6 +288,16 @@ public class LiferayPortlet extends GenericPortlet {
 		return redirect;
 	}
 
+	@Override
+	protected String getTitle(RenderRequest renderRequest) {
+		try {
+			return PortalUtil.getPortletTitle(renderRequest);
+		}
+		catch (Exception e) {
+			return super.getTitle(renderRequest);
+		}
+	}
+
 	protected boolean isProcessActionRequest(ActionRequest actionRequest) {
 		return isProcessPortletRequest(actionRequest);
 	}
@@ -321,6 +336,45 @@ public class LiferayPortlet extends GenericPortlet {
 		}
 	}
 
+	protected String translate(PortletRequest portletRequest, String key) {
+		PortletConfig portletConfig =
+			(PortletConfig)portletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_CONFIG);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return LanguageUtil.get(portletConfig, themeDisplay.getLocale(), key);
+	}
+
+	protected String translate(
+		PortletRequest portletRequest, String key, Object argument) {
+
+		PortletConfig portletConfig =
+			(PortletConfig)portletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_CONFIG);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return LanguageUtil.format(
+			portletConfig, themeDisplay.getLocale(), key, argument);
+	}
+
+	protected String translate(
+		PortletRequest portletRequest, String key, Object[] arguments) {
+
+		PortletConfig portletConfig =
+			(PortletConfig)portletRequest.getAttribute(
+				JavaConstants.JAVAX_PORTLET_CONFIG);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		return LanguageUtil.format(
+			portletConfig, themeDisplay.getLocale(), key, arguments);
+	}
+
 	protected void writeJSON(
 			PortletRequest portletRequest, ActionResponse actionResponse,
 			Object json)
@@ -347,9 +401,5 @@ public class LiferayPortlet extends GenericPortlet {
 	protected boolean addProcessActionSuccessMessage;
 
 	private static final boolean _PROCESS_PORTLET_REQUEST = true;
-
-	private Map<String, Class<?>> _classesMap = new HashMap<String, Class<?>>();
-	private Map<MethodKey, Method> _methodsMap =
-		new HashMap<MethodKey, Method>();
 
 }

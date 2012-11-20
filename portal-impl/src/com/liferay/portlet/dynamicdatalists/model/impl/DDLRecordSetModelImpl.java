@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatalists.model.impl;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
@@ -110,6 +111,10 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 	 * @return the normal model instance
 	 */
 	public static DDLRecordSet toModel(DDLRecordSetSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		DDLRecordSet model = new DDLRecordSetImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -137,6 +142,10 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 	 * @return the normal model instances
 	 */
 	public static List<DDLRecordSet> toModels(DDLRecordSetSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<DDLRecordSet> models = new ArrayList<DDLRecordSet>(soapModels.length);
 
 		for (DDLRecordSetSoap soapModel : soapModels) {
@@ -637,17 +646,6 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 	}
 
 	@Override
-	public DDLRecordSet toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (DDLRecordSet)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			DDLRecordSet.class.getName(), getPrimaryKey());
@@ -658,6 +656,25 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+		setName(getName(defaultImportLocale), defaultImportLocale,
+			defaultImportLocale);
+		setDescription(getDescription(defaultImportLocale),
+			defaultImportLocale, defaultImportLocale);
+	}
+
+	@Override
+	public DDLRecordSet toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (DDLRecordSet)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -933,7 +950,7 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 	}
 
 	private static ClassLoader _classLoader = DDLRecordSet.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			DDLRecordSet.class
 		};
 	private String _uuid;
@@ -960,5 +977,5 @@ public class DDLRecordSetModelImpl extends BaseModelImpl<DDLRecordSet>
 	private int _minDisplayRows;
 	private int _scope;
 	private long _columnBitmask;
-	private DDLRecordSet _escapedModelProxy;
+	private DDLRecordSet _escapedModel;
 }

@@ -44,6 +44,7 @@ import com.liferay.portlet.journal.TemplateNameException;
 import com.liferay.portlet.journal.TemplateSmallImageNameException;
 import com.liferay.portlet.journal.TemplateSmallImageSizeException;
 import com.liferay.portlet.journal.TemplateXslException;
+import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.model.JournalStructure;
 import com.liferay.portlet.journal.model.JournalTemplate;
 import com.liferay.portlet.journal.model.JournalTemplateConstants;
@@ -132,7 +133,7 @@ public class JournalTemplateLocalServiceImpl
 		template.setSmallImageId(counterLocalService.increment());
 		template.setSmallImageURL(smallImageURL);
 
-		journalTemplatePersistence.update(template, false);
+		journalTemplatePersistence.update(template);
 
 		// Resources
 
@@ -217,13 +218,13 @@ public class JournalTemplateLocalServiceImpl
 
 		String xsl = template.getXsl();
 
-		if ((xsl != null) && (xsl.indexOf("\\n") != -1)) {
+		if ((xsl != null) && xsl.contains("\\n")) {
 			xsl = StringUtil.replace(
 				xsl, new String[] {"\\n", "\\r"}, new String[] {"\n", "\r"});
 
 			template.setXsl(xsl);
 
-			journalTemplatePersistence.update(template, false);
+			journalTemplatePersistence.update(template);
 		}
 	}
 
@@ -277,7 +278,7 @@ public class JournalTemplateLocalServiceImpl
 		newTemplate.setSmallImageId(counterLocalService.increment());
 		newTemplate.setSmallImageURL(oldTemplate.getSmallImageURL());
 
-		journalTemplatePersistence.update(newTemplate, false);
+		journalTemplatePersistence.update(newTemplate);
 
 		// Small image
 
@@ -313,7 +314,9 @@ public class JournalTemplateLocalServiceImpl
 		}
 		else {
 			if (journalArticlePersistence.countByG_C_T(
-					template.getGroupId(), 0, template.getTemplateId()) > 0) {
+					template.getGroupId(),
+					JournalArticleConstants.CLASSNAME_ID_DEFAULT,
+					template.getTemplateId()) > 0) {
 
 				throw new RequiredTemplateException();
 			}
@@ -594,7 +597,7 @@ public class JournalTemplateLocalServiceImpl
 		template.setSmallImageURL(smallImageURL);
 		template.setModifiedDate(serviceContext.getModifiedDate(null));
 
-		journalTemplatePersistence.update(template, false);
+		journalTemplatePersistence.update(template);
 
 		// Expando
 

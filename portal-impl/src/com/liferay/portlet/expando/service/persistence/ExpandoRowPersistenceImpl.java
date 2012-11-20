@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
@@ -287,7 +286,14 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, expandoRow);
+			if (!session.contains(expandoRow)) {
+				expandoRow = (ExpandoRow)session.get(ExpandoRowImpl.class,
+						expandoRow.getPrimaryKeyObj());
+			}
+
+			if (expandoRow != null) {
+				session.delete(expandoRow);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -296,14 +302,16 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 			closeSession(session);
 		}
 
-		clearCache(expandoRow);
+		if (expandoRow != null) {
+			clearCache(expandoRow);
+		}
 
 		return expandoRow;
 	}
 
 	@Override
 	public ExpandoRow updateImpl(
-		com.liferay.portlet.expando.model.ExpandoRow expandoRow, boolean merge)
+		com.liferay.portlet.expando.model.ExpandoRow expandoRow)
 		throws SystemException {
 		expandoRow = toUnwrappedModel(expandoRow);
 
@@ -316,9 +324,14 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, expandoRow, merge);
+			if (expandoRow.isNew()) {
+				session.save(expandoRow);
 
-			expandoRow.setNew(false);
+				expandoRow.setNew(false);
+			}
+			else {
+				session.merge(expandoRow);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -332,6 +345,7 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 		if (isNew || !ExpandoRowModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((expandoRowModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_TABLEID.getColumnBitmask()) != 0) {
@@ -372,6 +386,7 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_T_C, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_T_C, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_T_C,
@@ -397,6 +412,7 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 
 		expandoRowImpl.setRowId(expandoRow.getRowId());
 		expandoRowImpl.setCompanyId(expandoRow.getCompanyId());
+		expandoRowImpl.setModifiedDate(expandoRow.getModifiedDate());
 		expandoRowImpl.setTableId(expandoRow.getTableId());
 		expandoRowImpl.setClassPK(expandoRow.getClassPK());
 
@@ -632,10 +648,6 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 	/**
 	 * Returns the first expando row in the ordered set where tableId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param tableId the table ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching expando row
@@ -645,31 +657,45 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 	public ExpandoRow findByTableId_First(long tableId,
 		OrderByComparator orderByComparator)
 		throws NoSuchRowException, SystemException {
+		ExpandoRow expandoRow = fetchByTableId_First(tableId, orderByComparator);
+
+		if (expandoRow != null) {
+			return expandoRow;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("tableId=");
+		msg.append(tableId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchRowException(msg.toString());
+	}
+
+	/**
+	 * Returns the first expando row in the ordered set where tableId = &#63;.
+	 *
+	 * @param tableId the table ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching expando row, or <code>null</code> if a matching expando row could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public ExpandoRow fetchByTableId_First(long tableId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<ExpandoRow> list = findByTableId(tableId, 0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("tableId=");
-			msg.append(tableId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchRowException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last expando row in the ordered set where tableId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param tableId the table ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -680,34 +706,48 @@ public class ExpandoRowPersistenceImpl extends BasePersistenceImpl<ExpandoRow>
 	public ExpandoRow findByTableId_Last(long tableId,
 		OrderByComparator orderByComparator)
 		throws NoSuchRowException, SystemException {
+		ExpandoRow expandoRow = fetchByTableId_Last(tableId, orderByComparator);
+
+		if (expandoRow != null) {
+			return expandoRow;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("tableId=");
+		msg.append(tableId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchRowException(msg.toString());
+	}
+
+	/**
+	 * Returns the last expando row in the ordered set where tableId = &#63;.
+	 *
+	 * @param tableId the table ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching expando row, or <code>null</code> if a matching expando row could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public ExpandoRow fetchByTableId_Last(long tableId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByTableId(tableId);
 
 		List<ExpandoRow> list = findByTableId(tableId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("tableId=");
-			msg.append(tableId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchRowException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the expando rows before and after the current expando row in the ordered set where tableId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param rowId the primary key of the current expando row
 	 * @param tableId the table ID

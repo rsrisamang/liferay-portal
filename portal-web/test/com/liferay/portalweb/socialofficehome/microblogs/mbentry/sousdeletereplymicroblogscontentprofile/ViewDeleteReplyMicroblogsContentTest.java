@@ -23,36 +23,16 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewDeleteReplyMicroblogsContentTest extends BaseTestCase {
 	public void testViewDeleteReplyMicroblogsContent()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace("Microblogs Status Update"),
-			selenium.getText("//span[@class='portlet-title-default']"));
 		assertTrue(selenium.isElementPresent(
 				"//div[contains(@id,'_2_WAR_microblogsportlet_autocompleteContent')]"));
 		assertEquals(RuntimeVariables.replace("Microblogs Post"),
 			selenium.getText("//div[@class='content']"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Microblogs')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("//nav/ul/li[contains(.,'Microblogs')]/a/span",
 			RuntimeVariables.replace("Microblogs"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),
 			selenium.getText(
 				"xPath=(//div[@class='user-name']/span)[contains(.,'Joe Bloggs')]"));
@@ -60,9 +40,9 @@ public class ViewDeleteReplyMicroblogsContentTest extends BaseTestCase {
 			selenium.getText("xPath=(//div[@class='content'])[1]"));
 		assertEquals(RuntimeVariables.replace("Comment"),
 			selenium.getText("//span[@class='action comment']/a"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"xPath=(//div[@class='user-name']/span)[contains(.,'Social01 Office01 User01')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"xPath=(//div[@class='content'])[2]"));
 		assertFalse(selenium.isTextPresent("1 Comment"));
 	}

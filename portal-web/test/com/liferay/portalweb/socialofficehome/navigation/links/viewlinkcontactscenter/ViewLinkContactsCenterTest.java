@@ -22,30 +22,14 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewLinkContactsCenterTest extends BaseTestCase {
 	public void testViewLinkContactsCenter() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Contacts Center')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//nav/ul/li[contains(.,'Contacts Center')]/a/span");
 		selenium.clickAt("//nav/ul/li[contains(.,'Contacts Center')]/a/span",
 			RuntimeVariables.replace("Contacts Center"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isElementPresent(
 				"//div[@class='aui-layout contacts-result']"));
 		assertTrue(selenium.isVisible("//div[@class='lfr-contact-checkbox']"));
@@ -60,7 +44,9 @@ public class ViewLinkContactsCenterTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("Sites"),
 			selenium.getText("//div[@id='so-sidebar']/h3"));
 		assertTrue(selenium.isVisible("//div/input[1]"));
+		assertEquals(RuntimeVariables.replace("Liferay, Inc."),
+			selenium.getText("//li/span[2]/a"));
 		assertEquals(RuntimeVariables.replace("Liferay"),
-			selenium.getText("//li[3]/span[2]"));
+			selenium.getText("//li[2]/span[2]/a"));
 	}
 }

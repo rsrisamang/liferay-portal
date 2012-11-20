@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.journal.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.AttachedModel;
@@ -777,6 +778,13 @@ public interface JournalArticleModel extends AttachedModel,
 	public boolean isApproved();
 
 	/**
+	 * Returns <code>true</code> if this journal article is denied.
+	 *
+	 * @return <code>true</code> if this journal article is denied; <code>false</code> otherwise
+	 */
+	public boolean isDenied();
+
+	/**
 	 * Returns <code>true</code> if this journal article is a draft.
 	 *
 	 * @return <code>true</code> if this journal article is a draft; <code>false</code> otherwise
@@ -791,6 +799,20 @@ public interface JournalArticleModel extends AttachedModel,
 	public boolean isExpired();
 
 	/**
+	 * Returns <code>true</code> if this journal article is inactive.
+	 *
+	 * @return <code>true</code> if this journal article is inactive; <code>false</code> otherwise
+	 */
+	public boolean isInactive();
+
+	/**
+	 * Returns <code>true</code> if this journal article is incomplete.
+	 *
+	 * @return <code>true</code> if this journal article is incomplete; <code>false</code> otherwise
+	 */
+	public boolean isIncomplete();
+
+	/**
 	 * Returns <code>true</code> if this journal article is in the Recycle Bin.
 	 *
 	 * @return <code>true</code> if this journal article is in the Recycle Bin; <code>false</code> otherwise
@@ -803,6 +825,13 @@ public interface JournalArticleModel extends AttachedModel,
 	 * @return <code>true</code> if this journal article is pending; <code>false</code> otherwise
 	 */
 	public boolean isPending();
+
+	/**
+	 * Returns <code>true</code> if this journal article is scheduled.
+	 *
+	 * @return <code>true</code> if this journal article is scheduled; <code>false</code> otherwise
+	 */
+	public boolean isScheduled();
 
 	public boolean isNew();
 
@@ -822,6 +851,9 @@ public interface JournalArticleModel extends AttachedModel,
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(JournalArticle journalArticle);
@@ -831,6 +863,8 @@ public interface JournalArticleModel extends AttachedModel,
 	public CacheModel<JournalArticle> toCacheModel();
 
 	public JournalArticle toEscapedModel();
+
+	public JournalArticle toUnescapedModel();
 
 	public String toString();
 

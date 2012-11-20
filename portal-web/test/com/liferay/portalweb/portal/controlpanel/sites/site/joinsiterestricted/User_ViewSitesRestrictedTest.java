@@ -22,35 +22,23 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class User_ViewSitesRestrictedTest extends BaseTestCase {
 	public void testUser_ViewSitesRestricted() throws Exception {
-		selenium.open("/user/selenium01/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=My Sites")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
+		selenium.open("/user/usersn/home/");
 		selenium.clickAt("link=My Sites", RuntimeVariables.replace("My Sites"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.type("//input[@id='_29_name']",
-			RuntimeVariables.replace("Test Restricted Community"));
-		selenium.clickAt("//form/span/span[2]/span/input",
+		selenium.type("//input[@name='_29_keywords']",
+			RuntimeVariables.replace("Site Name"));
+		selenium.clickAt("xPath=(//input[@value='Search'])[3]",
 			RuntimeVariables.replace("Search"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace("Test Restricted Community"),
-			selenium.getText("//div[1]/div/table/tbody/tr[3]/td[1]"));
+		assertEquals(RuntimeVariables.replace("Site Name"),
+			selenium.getText("//tr[contains(.,'Site Name')]/td[1]"));
+		assertEquals(RuntimeVariables.replace("2"),
+			selenium.getText("//tr[contains(.,'Site Name')]/td[2]"));
+		assertEquals(RuntimeVariables.replace(""),
+			selenium.getText("//tr[contains(.,'Site Name')]/td[3]"));
+		assertEquals(RuntimeVariables.replace("Leave"),
+			selenium.getText("//tr[contains(.,'Site Name')]/td[4]/span/a/span"));
 	}
 }

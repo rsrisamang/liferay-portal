@@ -98,6 +98,10 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 	 * @return the normal model instance
 	 */
 	public static MBBan toModel(MBBanSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		MBBan model = new MBBanImpl();
 
 		model.setBanId(soapModel.getBanId());
@@ -119,6 +123,10 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 	 * @return the normal model instances
 	 */
 	public static List<MBBan> toModels(MBBanSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<MBBan> models = new ArrayList<MBBan>(soapModels.length);
 
 		for (MBBanSoap soapModel : soapModels) {
@@ -359,17 +367,6 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 	}
 
 	@Override
-	public MBBan toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (MBBan)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			MBBan.class.getName(), getPrimaryKey());
@@ -380,6 +377,16 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MBBan toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MBBan)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -577,9 +584,7 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 	}
 
 	private static ClassLoader _classLoader = MBBan.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			MBBan.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { MBBan.class };
 	private long _banId;
 	private long _groupId;
 	private long _originalGroupId;
@@ -597,5 +602,5 @@ public class MBBanModelImpl extends BaseModelImpl<MBBan> implements MBBanModel {
 	private long _originalBanUserId;
 	private boolean _setOriginalBanUserId;
 	private long _columnBitmask;
-	private MBBan _escapedModelProxy;
+	private MBBan _escapedModel;
 }

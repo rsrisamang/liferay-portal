@@ -27,30 +27,12 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/joebloggs/so/dashboard/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Microblogs')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("//nav/ul/li[contains(.,'Microblogs')]/a/span",
 					RuntimeVariables.replace("Microblogs"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				Thread.sleep(5000);
 
 				boolean whatsHappeningEntry1Present = selenium.isElementPresent(
@@ -66,8 +48,6 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 					RuntimeVariables.replace("Delete"));
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete this post[\\s\\S]$"));
-
-			case 2:
 				Thread.sleep(5000);
 
 				boolean whatsHappeningEntry2Present = selenium.isElementPresent(
@@ -83,8 +63,6 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 					RuntimeVariables.replace("Delete"));
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete this post[\\s\\S]$"));
-
-			case 3:
 				Thread.sleep(5000);
 
 				boolean whatsHappeningEntry3Present = selenium.isElementPresent(
@@ -100,8 +78,6 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 					RuntimeVariables.replace("Delete"));
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete this post[\\s\\S]$"));
-
-			case 4:
 				Thread.sleep(5000);
 
 				boolean whatsHappeningEntry4Present = selenium.isElementPresent(
@@ -117,8 +93,6 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 					RuntimeVariables.replace("Delete"));
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete this post[\\s\\S]$"));
-
-			case 5:
 				Thread.sleep(5000);
 
 				boolean whatsHappeningEntry5Present = selenium.isElementPresent(
@@ -135,6 +109,10 @@ public class TearDownWHEntryContentTest extends BaseTestCase {
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete this post[\\s\\S]$"));
 
+			case 2:
+			case 3:
+			case 4:
+			case 5:
 			case 6:
 			case 100:
 				label = -1;

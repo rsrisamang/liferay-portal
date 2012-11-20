@@ -41,12 +41,12 @@ import javax.servlet.http.HttpServletRequest;
 public class StagingUtil {
 
 	public static String buildRemoteURL(
-		String remoteAddress, int remotePort, boolean secureConnection,
-		long remoteGroupId, boolean privateLayout) {
+		String remoteAddress, int remotePort, String remotePathContext,
+		boolean secureConnection, long remoteGroupId, boolean privateLayout) {
 
 		return getStaging().buildRemoteURL(
-			remoteAddress, remotePort, secureConnection, remoteGroupId,
-			privateLayout);
+			remoteAddress, remotePort, remotePathContext, secureConnection,
+			remoteGroupId, privateLayout);
 	}
 
 	public static void copyFromLive(PortletRequest PortletRequest)
@@ -76,15 +76,15 @@ public class StagingUtil {
 	public static void copyRemoteLayouts(
 			long sourceGroupId, boolean privateLayout,
 			Map<Long, Boolean> layoutIdMap, Map<String, String[]> parameterMap,
-			String remoteAddress, int remotePort, boolean secureConnection,
-			long remoteGroupId, boolean remotePrivateLayout, Date startDate,
-			Date endDate)
+			String remoteAddress, int remotePort, String remotePathContext,
+			boolean secureConnection, long remoteGroupId,
+			boolean remotePrivateLayout, Date startDate, Date endDate)
 		throws Exception {
 
 		getStaging().copyRemoteLayouts(
 			sourceGroupId, privateLayout, layoutIdMap, parameterMap,
-			remoteAddress, remotePort, secureConnection, remoteGroupId,
-			remotePrivateLayout, startDate, endDate);
+			remoteAddress, remotePort, remotePathContext, secureConnection,
+			remoteGroupId, remotePrivateLayout, startDate, endDate);
 	}
 
 	public static void deleteLastImportSettings(
@@ -110,6 +110,9 @@ public class StagingUtil {
 			user, layoutSetBranchId, plid);
 	}
 
+	/**
+	 * @deprecated {@link #disableStaging(Group, ServiceContext)}
+	 */
 	public static void disableStaging(
 			Group scopeGroup, Group liveGroup, ServiceContext serviceContext)
 		throws Exception {
@@ -118,12 +121,31 @@ public class StagingUtil {
 	}
 
 	public static void disableStaging(
+			Group liveGroup, ServiceContext serviceContext)
+		throws Exception {
+
+		getStaging().disableStaging(liveGroup, serviceContext);
+	}
+
+	/**
+	 * @deprecated {@link #disableStaging(PortletRequest, Group,
+	 *             ServiceContext)}
+	 */
+	public static void disableStaging(
 			PortletRequest portletRequest, Group scopeGroup, Group liveGroup,
 			ServiceContext serviceContext)
 		throws Exception {
 
 		getStaging().disableStaging(
 			portletRequest, scopeGroup, liveGroup, serviceContext);
+	}
+
+	public static void disableStaging(
+			PortletRequest portletRequest, Group liveGroup,
+			ServiceContext serviceContext)
+		throws Exception {
+
+		getStaging().disableStaging(portletRequest, liveGroup, serviceContext);
 	}
 
 	public static void enableLocalStaging(
@@ -140,14 +162,15 @@ public class StagingUtil {
 	public static void enableRemoteStaging(
 			long userId, Group scopeGroup, Group liveGroup,
 			boolean branchingPublic, boolean branchingPrivate,
-			String remoteAddress, long remoteGroupId, int remotePort,
-			boolean secureConnection, ServiceContext serviceContext)
+			String remoteAddress, int remotePort, String remotePathContext,
+			boolean secureConnection, long remoteGroupId,
+			ServiceContext serviceContext)
 		throws Exception {
 
 		getStaging().enableRemoteStaging(
 			userId, scopeGroup, liveGroup, branchingPublic, branchingPrivate,
-			remoteAddress, remoteGroupId, remotePort, secureConnection,
-			serviceContext);
+			remoteAddress, remotePort, remotePathContext, secureConnection,
+			remoteGroupId, serviceContext);
 	}
 
 	public static Group getLiveGroup(long groupId)
@@ -171,7 +194,7 @@ public class StagingUtil {
 
 	public static long getRecentLayoutRevisionId(
 			HttpServletRequest request, long layoutSetBranchId, long plid)
-		throws PortalException, SystemException{
+		throws PortalException, SystemException {
 
 		return getStaging().getRecentLayoutRevisionId(
 			request, layoutSetBranchId, plid);

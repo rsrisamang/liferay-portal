@@ -29,30 +29,12 @@ public class ViewClickTasksProgressBar100PercentCompleteTest
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/joebloggs/so/dashboard/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Tasks')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("//nav/ul/li[contains(.,'Tasks')]/a/span",
 					RuntimeVariables.replace("Tasks"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Tasks"),
 					selenium.getText("//span[@class='portlet-title-default']"));
 				assertEquals(RuntimeVariables.replace("Assigned to Me"),
@@ -60,23 +42,7 @@ public class ViewClickTasksProgressBar100PercentCompleteTest
 				selenium.clickAt("link=Assigned to Me",
 					RuntimeVariables.replace("Assigned to Me"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//td[1]/input")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForVisible("//td[1]/input");
 
 				boolean showCompleted1Checked = selenium.isChecked(
 						"//td[1]/input");
@@ -91,45 +57,11 @@ public class ViewClickTasksProgressBar100PercentCompleteTest
 					RuntimeVariables.replace("Check Show Completed Tasks"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//td[1]/div[1]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//td[1]/div[1]/a");
 				assertEquals(RuntimeVariables.replace("Task Description"),
 					selenium.getText("//td[1]/div[1]/a"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//div[@style='width: 100%;']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				assertTrue(selenium.isElementPresent(
-						"//div[@style='width: 100%;']"));
+				selenium.mouseOver("//div[3]/a[5]");
+				selenium.waitForElementPresent("//div[@style='width: 100%;']");
 
 			case 100:
 				label = -1;

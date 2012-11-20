@@ -36,7 +36,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.ImagePersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -377,7 +376,14 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, journalArticleImage);
+			if (!session.contains(journalArticleImage)) {
+				journalArticleImage = (JournalArticleImage)session.get(JournalArticleImageImpl.class,
+						journalArticleImage.getPrimaryKeyObj());
+			}
+
+			if (journalArticleImage != null) {
+				session.delete(journalArticleImage);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -386,15 +392,17 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 			closeSession(session);
 		}
 
-		clearCache(journalArticleImage);
+		if (journalArticleImage != null) {
+			clearCache(journalArticleImage);
+		}
 
 		return journalArticleImage;
 	}
 
 	@Override
 	public JournalArticleImage updateImpl(
-		com.liferay.portlet.journal.model.JournalArticleImage journalArticleImage,
-		boolean merge) throws SystemException {
+		com.liferay.portlet.journal.model.JournalArticleImage journalArticleImage)
+		throws SystemException {
 		journalArticleImage = toUnwrappedModel(journalArticleImage);
 
 		boolean isNew = journalArticleImage.isNew();
@@ -406,9 +414,14 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, journalArticleImage, merge);
+			if (journalArticleImage.isNew()) {
+				session.save(journalArticleImage);
 
-			journalArticleImage.setNew(false);
+				journalArticleImage.setNew(false);
+			}
+			else {
+				session.merge(journalArticleImage);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -422,6 +435,7 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 		if (isNew || !JournalArticleImageModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((journalArticleImageModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_GROUPID.getColumnBitmask()) != 0) {
@@ -526,6 +540,7 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_G_A_V_E_E_L,
 					args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_G_A_V_E_E_L,
 					args);
 
@@ -802,10 +817,6 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	/**
 	 * Returns the first journal article image in the ordered set where groupId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching journal article image
@@ -815,32 +826,47 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByGroupId_First(long groupId,
 		OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByGroupId_First(groupId,
+				orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("groupId=");
+		msg.append(groupId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the first journal article image in the ordered set where groupId = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByGroupId_First(long groupId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<JournalArticleImage> list = findByGroupId(groupId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("groupId=");
-			msg.append(groupId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last journal article image in the ordered set where groupId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param groupId the group ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -851,34 +877,49 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByGroupId_Last(long groupId,
 		OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByGroupId_Last(groupId,
+				orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("groupId=");
+		msg.append(groupId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the last journal article image in the ordered set where groupId = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByGroupId_Last(long groupId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByGroupId(groupId);
 
 		List<JournalArticleImage> list = findByGroupId(groupId, count - 1,
 				count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("groupId=");
-			msg.append(groupId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param articleImageId the primary key of the current journal article image
 	 * @param groupId the group ID
@@ -1152,10 +1193,6 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	/**
 	 * Returns the first journal article image in the ordered set where tempImage = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param tempImage the temp image
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching journal article image
@@ -1165,32 +1202,47 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByTempImage_First(boolean tempImage,
 		OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByTempImage_First(tempImage,
+				orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("tempImage=");
+		msg.append(tempImage);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the first journal article image in the ordered set where tempImage = &#63;.
+	 *
+	 * @param tempImage the temp image
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByTempImage_First(boolean tempImage,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<JournalArticleImage> list = findByTempImage(tempImage, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("tempImage=");
-			msg.append(tempImage);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last journal article image in the ordered set where tempImage = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param tempImage the temp image
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -1201,34 +1253,49 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByTempImage_Last(boolean tempImage,
 		OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByTempImage_Last(tempImage,
+				orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("tempImage=");
+		msg.append(tempImage);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the last journal article image in the ordered set where tempImage = &#63;.
+	 *
+	 * @param tempImage the temp image
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByTempImage_Last(boolean tempImage,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByTempImage(tempImage);
 
 		List<JournalArticleImage> list = findByTempImage(tempImage, count - 1,
 				count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("tempImage=");
-			msg.append(tempImage);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the journal article images before and after the current journal article image in the ordered set where tempImage = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param articleImageId the primary key of the current journal article image
 	 * @param tempImage the temp image
@@ -1537,10 +1604,6 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	/**
 	 * Returns the first journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param groupId the group ID
 	 * @param articleId the article ID
 	 * @param version the version
@@ -1552,38 +1615,56 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByG_A_V_First(long groupId,
 		String articleId, double version, OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByG_A_V_First(groupId,
+				articleId, version, orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("groupId=");
+		msg.append(groupId);
+
+		msg.append(", articleId=");
+		msg.append(articleId);
+
+		msg.append(", version=");
+		msg.append(version);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the first journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param articleId the article ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByG_A_V_First(long groupId,
+		String articleId, double version, OrderByComparator orderByComparator)
+		throws SystemException {
 		List<JournalArticleImage> list = findByG_A_V(groupId, articleId,
 				version, 0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(8);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("groupId=");
-			msg.append(groupId);
-
-			msg.append(", articleId=");
-			msg.append(articleId);
-
-			msg.append(", version=");
-			msg.append(version);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param groupId the group ID
 	 * @param articleId the article ID
@@ -1596,40 +1677,58 @@ public class JournalArticleImagePersistenceImpl extends BasePersistenceImpl<Jour
 	public JournalArticleImage findByG_A_V_Last(long groupId, String articleId,
 		double version, OrderByComparator orderByComparator)
 		throws NoSuchArticleImageException, SystemException {
+		JournalArticleImage journalArticleImage = fetchByG_A_V_Last(groupId,
+				articleId, version, orderByComparator);
+
+		if (journalArticleImage != null) {
+			return journalArticleImage;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("groupId=");
+		msg.append(groupId);
+
+		msg.append(", articleId=");
+		msg.append(articleId);
+
+		msg.append(", version=");
+		msg.append(version);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchArticleImageException(msg.toString());
+	}
+
+	/**
+	 * Returns the last journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
+	 *
+	 * @param groupId the group ID
+	 * @param articleId the article ID
+	 * @param version the version
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public JournalArticleImage fetchByG_A_V_Last(long groupId,
+		String articleId, double version, OrderByComparator orderByComparator)
+		throws SystemException {
 		int count = countByG_A_V(groupId, articleId, version);
 
 		List<JournalArticleImage> list = findByG_A_V(groupId, articleId,
 				version, count - 1, count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(8);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("groupId=");
-			msg.append(groupId);
-
-			msg.append(", articleId=");
-			msg.append(articleId);
-
-			msg.append(", version=");
-			msg.append(version);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchArticleImageException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param articleImageId the primary key of the current journal article image
 	 * @param groupId the group ID

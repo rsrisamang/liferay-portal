@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchPermissionChecker;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringPool;
+import com.liferay.portal.kernel.util.UniqueList;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.GroupConstants;
@@ -42,11 +43,13 @@ import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerBag;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.security.permission.ResourceActionsUtil;
+import com.liferay.portal.security.permission.ResourceBlockIdsBag;
 import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.ResourceBlockLocalServiceUtil;
+import com.liferay.portal.service.ResourceBlockPermissionLocalServiceUtil;
 import com.liferay.portal.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
-import com.liferay.util.UniqueList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,10 +173,38 @@ public class SearchPermissionCheckerImpl implements SearchPermissionChecker {
 			roleIdsArray[i] = role.getRoleId();
 		}
 
-		boolean[] hasResourcePermissions =
-			ResourcePermissionLocalServiceUtil.hasResourcePermissions(
-				companyId, className, ResourceConstants.SCOPE_INDIVIDUAL,
-				classPK, roleIdsArray, ActionKeys.VIEW);
+		boolean[] hasResourcePermissions = null;
+
+		if (ResourceBlockLocalServiceUtil.isSupported(className)) {
+			ResourceBlockIdsBag resourceBlockIdsBag =
+				ResourceBlockLocalServiceUtil.getResourceBlockIdsBag(
+					companyId, groupId, className, roleIdsArray);
+
+			long actionId = ResourceBlockLocalServiceUtil.getActionId(
+				className, ActionKeys.VIEW);
+
+			List<Long> resourceBlockIds =
+				resourceBlockIdsBag.getResourceBlockIds(actionId);
+
+			hasResourcePermissions = new boolean[roleIdsArray.length];
+
+			for (long resourceBlockId : resourceBlockIds) {
+				for (int i = 0; i < roleIdsArray.length; i++) {
+					int count =
+						ResourceBlockPermissionLocalServiceUtil.
+							getResourceBlockPermissionsCount(
+								resourceBlockId, roleIdsArray[i]);
+
+					hasResourcePermissions[i] = (count > 0);
+				}
+			}
+		}
+		else {
+			hasResourcePermissions =
+				ResourcePermissionLocalServiceUtil.hasResourcePermissions(
+					companyId, className, ResourceConstants.SCOPE_INDIVIDUAL,
+					classPK, roleIdsArray, ActionKeys.VIEW);
+		}
 
 		List<Long> roleIds = new ArrayList<Long>();
 		List<String> groupRoleIds = new ArrayList<String>();

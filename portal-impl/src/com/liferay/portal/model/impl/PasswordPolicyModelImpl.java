@@ -122,6 +122,10 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 	 * @return the normal model instance
 	 */
 	public static PasswordPolicy toModel(PasswordPolicySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		PasswordPolicy model = new PasswordPolicyImpl();
 
 		model.setPasswordPolicyId(soapModel.getPasswordPolicyId());
@@ -167,6 +171,10 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 	 * @return the normal model instances
 	 */
 	public static List<PasswordPolicy> toModels(PasswordPolicySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<PasswordPolicy> models = new ArrayList<PasswordPolicy>(soapModels.length);
 
 		for (PasswordPolicySoap soapModel : soapModels) {
@@ -828,17 +836,6 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 	}
 
 	@Override
-	public PasswordPolicy toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (PasswordPolicy)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			PasswordPolicy.class.getName(), getPrimaryKey());
@@ -849,6 +846,16 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public PasswordPolicy toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (PasswordPolicy)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -1272,7 +1279,7 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 	}
 
 	private static ClassLoader _classLoader = PasswordPolicy.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			PasswordPolicy.class
 		};
 	private long _passwordPolicyId;
@@ -1314,5 +1321,5 @@ public class PasswordPolicyModelImpl extends BaseModelImpl<PasswordPolicy>
 	private long _resetFailureCount;
 	private long _resetTicketMaxAge;
 	private long _columnBitmask;
-	private PasswordPolicy _escapedModelProxy;
+	private PasswordPolicy _escapedModel;
 }

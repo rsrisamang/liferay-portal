@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
@@ -331,7 +330,14 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, mdrAction);
+			if (!session.contains(mdrAction)) {
+				mdrAction = (MDRAction)session.get(MDRActionImpl.class,
+						mdrAction.getPrimaryKeyObj());
+			}
+
+			if (mdrAction != null) {
+				session.delete(mdrAction);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -340,15 +346,17 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 			closeSession(session);
 		}
 
-		clearCache(mdrAction);
+		if (mdrAction != null) {
+			clearCache(mdrAction);
+		}
 
 		return mdrAction;
 	}
 
 	@Override
 	public MDRAction updateImpl(
-		com.liferay.portlet.mobiledevicerules.model.MDRAction mdrAction,
-		boolean merge) throws SystemException {
+		com.liferay.portlet.mobiledevicerules.model.MDRAction mdrAction)
+		throws SystemException {
 		mdrAction = toUnwrappedModel(mdrAction);
 
 		boolean isNew = mdrAction.isNew();
@@ -366,9 +374,14 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, mdrAction, merge);
+			if (mdrAction.isNew()) {
+				session.save(mdrAction);
 
-			mdrAction.setNew(false);
+				mdrAction.setNew(false);
+			}
+			else {
+				session.merge(mdrAction);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -382,6 +395,7 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 		if (isNew || !MDRActionModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((mdrActionModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_UUID.getColumnBitmask()) != 0) {
@@ -461,6 +475,7 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_UUID_G, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_UUID_G, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_UUID_G,
@@ -743,10 +758,6 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	/**
 	 * Returns the first m d r action in the ordered set where uuid = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching m d r action
@@ -756,31 +767,45 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByUuid_First(String uuid,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByUuid_First(uuid, orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the first m d r action in the ordered set where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByUuid_First(String uuid,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<MDRAction> list = findByUuid(uuid, 0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last m d r action in the ordered set where uuid = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param uuid the uuid
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -791,34 +816,48 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByUuid_Last(String uuid,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByUuid_Last(uuid, orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the last m d r action in the ordered set where uuid = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByUuid_Last(String uuid,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUuid(uuid);
 
 		List<MDRAction> list = findByUuid(uuid, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the m d r actions before and after the current m d r action in the ordered set where uuid = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param actionId the primary key of the current m d r action
 	 * @param uuid the uuid
@@ -1288,10 +1327,6 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	/**
 	 * Returns the first m d r action in the ordered set where uuid = &#63; and companyId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param uuid the uuid
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -1302,35 +1337,51 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByUuid_C_First(String uuid, long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByUuid_C_First(uuid, companyId,
+				orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(", companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the first m d r action in the ordered set where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByUuid_C_First(String uuid, long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<MDRAction> list = findByUuid_C(uuid, companyId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(", companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last m d r action in the ordered set where uuid = &#63; and companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param uuid the uuid
 	 * @param companyId the company ID
@@ -1342,37 +1393,53 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByUuid_C_Last(String uuid, long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByUuid_C_Last(uuid, companyId,
+				orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("uuid=");
+		msg.append(uuid);
+
+		msg.append(", companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the last m d r action in the ordered set where uuid = &#63; and companyId = &#63;.
+	 *
+	 * @param uuid the uuid
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByUuid_C_Last(String uuid, long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByUuid_C(uuid, companyId);
 
 		List<MDRAction> list = findByUuid_C(uuid, companyId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("uuid=");
-			msg.append(uuid);
-
-			msg.append(", companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the m d r actions before and after the current m d r action in the ordered set where uuid = &#63; and companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param actionId the primary key of the current m d r action
 	 * @param uuid the uuid
@@ -1667,10 +1734,6 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	/**
 	 * Returns the first m d r action in the ordered set where ruleGroupInstanceId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param ruleGroupInstanceId the rule group instance ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching m d r action
@@ -1680,32 +1743,48 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByRuleGroupInstanceId_First(long ruleGroupInstanceId,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByRuleGroupInstanceId_First(ruleGroupInstanceId,
+				orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ruleGroupInstanceId=");
+		msg.append(ruleGroupInstanceId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the first m d r action in the ordered set where ruleGroupInstanceId = &#63;.
+	 *
+	 * @param ruleGroupInstanceId the rule group instance ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByRuleGroupInstanceId_First(
+		long ruleGroupInstanceId, OrderByComparator orderByComparator)
+		throws SystemException {
 		List<MDRAction> list = findByRuleGroupInstanceId(ruleGroupInstanceId,
 				0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("ruleGroupInstanceId=");
-			msg.append(ruleGroupInstanceId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last m d r action in the ordered set where ruleGroupInstanceId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param ruleGroupInstanceId the rule group instance ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -1716,34 +1795,49 @@ public class MDRActionPersistenceImpl extends BasePersistenceImpl<MDRAction>
 	public MDRAction findByRuleGroupInstanceId_Last(long ruleGroupInstanceId,
 		OrderByComparator orderByComparator)
 		throws NoSuchActionException, SystemException {
+		MDRAction mdrAction = fetchByRuleGroupInstanceId_Last(ruleGroupInstanceId,
+				orderByComparator);
+
+		if (mdrAction != null) {
+			return mdrAction;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("ruleGroupInstanceId=");
+		msg.append(ruleGroupInstanceId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchActionException(msg.toString());
+	}
+
+	/**
+	 * Returns the last m d r action in the ordered set where ruleGroupInstanceId = &#63;.
+	 *
+	 * @param ruleGroupInstanceId the rule group instance ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching m d r action, or <code>null</code> if a matching m d r action could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public MDRAction fetchByRuleGroupInstanceId_Last(long ruleGroupInstanceId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByRuleGroupInstanceId(ruleGroupInstanceId);
 
 		List<MDRAction> list = findByRuleGroupInstanceId(ruleGroupInstanceId,
 				count - 1, count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("ruleGroupInstanceId=");
-			msg.append(ruleGroupInstanceId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchActionException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the m d r actions before and after the current m d r action in the ordered set where ruleGroupInstanceId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param actionId the primary key of the current m d r action
 	 * @param ruleGroupInstanceId the rule group instance ID

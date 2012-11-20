@@ -257,20 +257,11 @@ AUI.add(
 
 						var vocabularyIds = instance.get('vocabularyIds');
 
-						var serviceParameterTypesGetVocabularies = [
-							'[J'
-						];
-
-						var serviceParameterTypesGetGroupVocabularies = [
-							'[J',
-							'java.lang.String'
-						];
-
 						if (vocabularyIds.length > 0) {
-							Liferay.Service.Asset.AssetVocabulary.getVocabularies(
+							Liferay.Service(
+								'/assetvocabulary/get-vocabularies',
 								{
-									vocabularyIds: vocabularyIds,
-									serviceParameterTypes: A.JSON.stringify(serviceParameterTypesGetVocabularies)
+									vocabularyIds: vocabularyIds
 								},
 								callback
 							);
@@ -282,11 +273,11 @@ AUI.add(
 
 							groupIds.push(themeDisplay.getCompanyGroupId());
 
-							Liferay.Service.Asset.AssetVocabulary.getGroupsVocabularies(
+							Liferay.Service(
+								'/assetvocabulary/get-groups-vocabularies',
 								{
 									groupIds: groupIds,
-									className: className,
-									serviceParameterTypes: A.JSON.stringify(serviceParameterTypesGetGroupVocabularies)
+									className: className
 								},
 								callback
 							);
@@ -485,7 +476,8 @@ AUI.add(
 
 							searchResults.addClass('loading-animation');
 
-							Liferay.Service.Asset.AssetCategory.getJSONSearch(
+							Liferay.Service(
+								'/assetcategory/get-json-search',
 								{
 									groupId: vocabularyGroupIds[0],
 									name: Lang.sub(TPL_SEARCH_QUERY, [searchValue]),
@@ -594,8 +586,9 @@ AUI.add(
 									url: themeDisplay.getPathMain() + '/asset/get_categories'
 								},
 								paginator: {
-									limit: 50,
-									offsetParam: 'start'
+									end: -1,
+									offsetParam: 'start',
+									start: -1
 								}
 							}
 						).render(popup.entriesNode);

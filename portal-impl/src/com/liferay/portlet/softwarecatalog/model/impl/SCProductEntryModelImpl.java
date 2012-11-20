@@ -112,6 +112,10 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 	 * @return the normal model instance
 	 */
 	public static SCProductEntry toModel(SCProductEntrySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		SCProductEntry model = new SCProductEntryImpl();
 
 		model.setProductEntryId(soapModel.getProductEntryId());
@@ -141,6 +145,10 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 	 * @return the normal model instances
 	 */
 	public static List<SCProductEntry> toModels(SCProductEntrySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<SCProductEntry> models = new ArrayList<SCProductEntry>(soapModels.length);
 
 		for (SCProductEntrySoap soapModel : soapModels) {
@@ -582,17 +590,6 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 	}
 
 	@Override
-	public SCProductEntry toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (SCProductEntry)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			SCProductEntry.class.getName(), getPrimaryKey());
@@ -603,6 +600,16 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public SCProductEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (SCProductEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -939,7 +946,7 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 	}
 
 	private static ClassLoader _classLoader = SCProductEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			SCProductEntry.class
 		};
 	private long _productEntryId;
@@ -968,5 +975,5 @@ public class SCProductEntryModelImpl extends BaseModelImpl<SCProductEntry>
 	private String _repoArtifactId;
 	private String _originalRepoArtifactId;
 	private long _columnBitmask;
-	private SCProductEntry _escapedModelProxy;
+	private SCProductEntry _escapedModel;
 }

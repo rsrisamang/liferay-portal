@@ -46,6 +46,7 @@ import java.util.List;
 /**
  * @author Brian Wing Shun Chan
  * @author Julio Camarero
+ * @author Shuyang Zhou
  */
 public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 
@@ -152,18 +153,25 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 			imagePersistence.clearCache();
 		}
 		else {*/
-			Image image = null;
+			Image image = getImage(imageId);
 
-			try {
-				image = getImage(imageId);
-
-				imagePersistence.remove(imageId);
+			if (image != null) {
+				imagePersistence.remove(image);
 
 				Hook hook = HookFactory.getInstance();
 
-				hook.deleteImage(image);
-			}
-			catch (NoSuchImageException nsie) {
+				try {
+					hook.deleteImage(image);
+				}
+				catch (NoSuchImageException nsie) {
+
+					// DLHook throws NoSuchImageException if the file no longer
+					// exists. See LPS-30430. This exception can be ignored.
+
+					if (_log.isWarnEnabled()) {
+						_log.warn(nsie, nsie);
+					}
+				}
 			}
 
 			return image;
@@ -229,15 +237,16 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 
 	@Override
 	public Image getImage(long imageId) {
-		try {
-			if (imageId > 0) {
-				return imagePersistence.findByPrimaryKey(imageId);
+		if (imageId > 0) {
+			try {
+				return imagePersistence.fetchByPrimaryKey(imageId);
 			}
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to get image " + imageId + ": " + e.getMessage());
+			catch (Exception e) {
+				if (_log.isWarnEnabled()) {
+					_log.warn(
+						"Unable to get image " + imageId + ": " +
+							e.getMessage());
+				}
 			}
 		}
 
@@ -304,7 +313,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 
 		hook.updateImage(image, type, bytes);
 
-		imagePersistence.update(image, false);
+		imagePersistence.update(image);
 
 		WebServerServletTokenUtil.resetToken(imageId);
 

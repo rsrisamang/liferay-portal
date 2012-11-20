@@ -235,21 +235,6 @@ public class PortletPreferencesLocalServiceUtil {
 	}
 
 	/**
-	* Updates the portlet preferences in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param portletPreferences the portlet preferences
-	* @param merge whether to merge the portlet preferences with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the portlet preferences that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.PortletPreferences updatePortletPreferences(
-		com.liferay.portal.model.PortletPreferences portletPreferences,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updatePortletPreferences(portletPreferences, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -288,6 +273,11 @@ public class PortletPreferencesLocalServiceUtil {
 			com.liferay.portal.kernel.exception.SystemException {
 		getService()
 			.deletePortletPreferences(ownerId, ownerType, plid, portletId);
+	}
+
+	public static void deletePortletPreferencesByPlid(long plid)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		getService().deletePortletPreferencesByPlid(plid);
 	}
 
 	public static javax.portlet.PortletPreferences getDefaultPreferences(
@@ -339,6 +329,13 @@ public class PortletPreferencesLocalServiceUtil {
 	public static java.util.List<com.liferay.portal.model.PortletPreferences> getPortletPreferencesByPlid(
 		long plid) throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getPortletPreferencesByPlid(plid);
+	}
+
+	public static long getPortletPreferencesCount(int ownerType, long plid,
+		java.lang.String portletId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getPortletPreferencesCount(ownerType, plid, portletId);
 	}
 
 	public static javax.portlet.PortletPreferences getPreferences(

@@ -28,8 +28,9 @@ public class OA_PublishToLiveStagedPageOrganizationSiteTest extends BaseTestCase
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/selenium/home/");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//div[@class='staging-bar']"));
 				assertEquals(RuntimeVariables.replace("Live"),
@@ -42,78 +43,28 @@ public class OA_PublishToLiveStagedPageOrganizationSiteTest extends BaseTestCase
 				selenium.clickAt("//li[2]/span/a",
 					RuntimeVariables.replace("Staging"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"You are viewing the staged version of Selenium. You can make changes here and publish them to Live afterwards to make them public."),
 					selenium.getText("//span[@class='staging-live-help']"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Blogs Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Blogs Test Page",
 					RuntimeVariables.replace("Blogs Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isVisible("//section"));
 				Thread.sleep(5000);
 				selenium.clickAt("//strong/a",
 					RuntimeVariables.replace("Staging"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Publish to Live Now')]");
 				assertEquals(RuntimeVariables.replace("Publish to Live Now"),
 					selenium.getText(
-						"//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a"));
-				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li[1]/a",
+						"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Publish to Live Now')]"));
+				selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Publish to Live Now')]",
 					RuntimeVariables.replace("Publish to Live Now"));
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//div[2]/div[1]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForVisible("//div[2]/div[1]/a");
 
 				boolean blogsVisible = selenium.isVisible(
-						"_88_PORTLET_DATA_33Checkbox");
+						"//input[@id='_88_PORTLET_DATA_33Checkbox']");
 
 				if (blogsVisible) {
 					label = 2;
@@ -125,29 +76,12 @@ public class OA_PublishToLiveStagedPageOrganizationSiteTest extends BaseTestCase
 					RuntimeVariables.replace("Plus"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//input[@id='_88_rangeAll']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("//input[@id='_88_rangeAll']");
 				selenium.clickAt("//input[@id='_88_rangeAll']",
 					RuntimeVariables.replace("All"));
 
 				boolean blogsChecked = selenium.isChecked(
-						"_88_PORTLET_DATA_33Checkbox");
+						"//input[@id='_88_PORTLET_DATA_33Checkbox']");
 
 				if (blogsChecked) {
 					label = 3;
@@ -155,53 +89,18 @@ public class OA_PublishToLiveStagedPageOrganizationSiteTest extends BaseTestCase
 					continue;
 				}
 
-				assertFalse(selenium.isChecked(
-						"//input[@id='_88_PORTLET_DATA_33Checkbox']"));
 				selenium.clickAt("//input[@id='_88_PORTLET_DATA_33Checkbox']",
 					RuntimeVariables.replace("Blogs"));
-				assertTrue(selenium.isChecked(
-						"//input[@id='_88_PORTLET_DATA_33Checkbox']"));
 
 			case 3:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@value='Publish']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				assertTrue(selenium.isChecked(
+						"//input[@id='_88_PORTLET_DATA_33Checkbox']"));
+				selenium.waitForVisible("//input[@value='Publish']");
 				selenium.clickAt("//input[@value='Publish']",
 					RuntimeVariables.replace("Publish"));
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to publish these pages[\\s\\S]$"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='portlet-msg-success']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForConfirmation(
+					"Are you sure you want to publish these pages?");
+				selenium.waitForVisible("//div[@class='portlet-msg-success']");
 				assertEquals(RuntimeVariables.replace(
 						"Your request completed successfully."),
 					selenium.getText("//div[@class='portlet-msg-success']"));

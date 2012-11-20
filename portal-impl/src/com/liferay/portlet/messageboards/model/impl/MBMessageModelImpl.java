@@ -130,6 +130,10 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 	 * @return the normal model instance
 	 */
 	public static MBMessage toModel(MBMessageSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		MBMessage model = new MBMessageImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -169,6 +173,10 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 	 * @return the normal model instances
 	 */
 	public static List<MBMessage> toModels(MBMessageSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<MBMessage> models = new ArrayList<MBMessage>(soapModels.length);
 
 		for (MBMessageSoap soapModel : soapModels) {
@@ -864,9 +872,17 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 		}
 	}
 
+	public boolean isDenied() {
+		if (getStatus() == WorkflowConstants.STATUS_DENIED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public boolean isDraft() {
-		if ((getStatus() == WorkflowConstants.STATUS_DRAFT) ||
-				(getStatus() == WorkflowConstants.STATUS_DRAFT_FROM_APPROVED)) {
+		if (getStatus() == WorkflowConstants.STATUS_DRAFT) {
 			return true;
 		}
 		else {
@@ -876,6 +892,24 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 
 	public boolean isExpired() {
 		if (getStatus() == WorkflowConstants.STATUS_EXPIRED) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isInactive() {
+		if (getStatus() == WorkflowConstants.STATUS_INACTIVE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public boolean isIncomplete() {
+		if (getStatus() == WorkflowConstants.STATUS_INCOMPLETE) {
 			return true;
 		}
 		else {
@@ -901,19 +935,17 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 		}
 	}
 
-	public long getColumnBitmask() {
-		return _columnBitmask;
+	public boolean isScheduled() {
+		if (getStatus() == WorkflowConstants.STATUS_SCHEDULED) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	@Override
-	public MBMessage toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (MBMessage)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
+	public long getColumnBitmask() {
+		return _columnBitmask;
 	}
 
 	@Override
@@ -927,6 +959,16 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MBMessage toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MBMessage)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -1365,7 +1407,7 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 	}
 
 	private static ClassLoader _classLoader = MBMessage.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			MBMessage.class
 		};
 	private String _uuid;
@@ -1418,5 +1460,5 @@ public class MBMessageModelImpl extends BaseModelImpl<MBMessage>
 	private String _statusByUserName;
 	private Date _statusDate;
 	private long _columnBitmask;
-	private MBMessage _escapedModelProxy;
+	private MBMessage _escapedModel;
 }

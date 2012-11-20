@@ -22,88 +22,47 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ImportMBLARTest extends BaseTestCase {
 	public void testImportMBLAR() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//div[@id='dockbar']",
 			RuntimeVariables.replace("Dockbar"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent(
-							"//a[@title='Manage Site Content']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+		assertEquals(RuntimeVariables.replace("Manage"),
+			selenium.getText("//li[@id='_145_manageContent']/a/span"));
+		selenium.mouseOver("//li[@id='_145_manageContent']/a/span");
+		selenium.waitForVisible("//a[@title='Manage Site Content']");
+		assertEquals(RuntimeVariables.replace("Site Content"),
+			selenium.getText("//a[@title='Manage Site Content']"));
 		selenium.clickAt("//a[@title='Manage Site Content']",
 			RuntimeVariables.replace("Site Content"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//ul[@class='category-portlets']/li[6]/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//iframe[@id='manageContentDialog']");
+		selenium.selectFrame("//iframe[@id='manageContentDialog']");
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/transition/transition-min.js')]");
+		selenium.waitForVisible("//ul[@class='category-portlets']/li[6]/a");
 		assertEquals(RuntimeVariables.replace("Message Boards"),
 			selenium.getText("//ul[@class='category-portlets']/li[6]/a"));
 		selenium.clickAt("//ul[@class='category-portlets']/li[6]/a",
 			RuntimeVariables.replace("Message Boards"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Options"),
 			selenium.getText(
 				"//a[contains(@id,'_162_') and contains(@id,'menuButton')]"));
 		selenium.clickAt("//a[contains(@id,'_162_') and contains(@id,'menuButton')]",
 			RuntimeVariables.replace("Options"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//li[@class='portlet-export-import portlet-export-import-icon last']/a")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//li[@class='portlet-export-import portlet-export-import-icon last']/a");
 		assertEquals(RuntimeVariables.replace("Export / Import"),
 			selenium.getText(
 				"//li[@class='portlet-export-import portlet-export-import-icon last']/a"));
 		selenium.clickAt("//li[@class='portlet-export-import portlet-export-import-icon last']/a",
 			RuntimeVariables.replace("Export / Import"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.click(RuntimeVariables.replace("link=Import"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.type("//input[@id='_86_importFileName']",
+		selenium.uploadFile("//input[@id='_86_importFileName']",
 			RuntimeVariables.replace(
 				"L:\\portal\\build\\portal-web\\test\\com\\liferay\\portalweb\\portlet\\messageboards\\dependencies\\Message_Boards-Selenium.portlet.lar"));
 		assertFalse(selenium.isChecked(
@@ -120,9 +79,9 @@ public class ImportMBLARTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Import']",
 			RuntimeVariables.replace("Import"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
+		selenium.selectFrame("relative=top");
 	}
 }

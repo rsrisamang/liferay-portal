@@ -257,7 +257,14 @@ public class ReleasePersistenceImpl extends BasePersistenceImpl<Release>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, release);
+			if (!session.contains(release)) {
+				release = (Release)session.get(ReleaseImpl.class,
+						release.getPrimaryKeyObj());
+			}
+
+			if (release != null) {
+				session.delete(release);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -266,14 +273,16 @@ public class ReleasePersistenceImpl extends BasePersistenceImpl<Release>
 			closeSession(session);
 		}
 
-		clearCache(release);
+		if (release != null) {
+			clearCache(release);
+		}
 
 		return release;
 	}
 
 	@Override
-	public Release updateImpl(com.liferay.portal.model.Release release,
-		boolean merge) throws SystemException {
+	public Release updateImpl(com.liferay.portal.model.Release release)
+		throws SystemException {
 		release = toUnwrappedModel(release);
 
 		boolean isNew = release.isNew();
@@ -285,9 +294,14 @@ public class ReleasePersistenceImpl extends BasePersistenceImpl<Release>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, release, merge);
+			if (release.isNew()) {
+				session.save(release);
 
-			release.setNew(false);
+				release.setNew(false);
+			}
+			else {
+				session.merge(release);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -318,6 +332,7 @@ public class ReleasePersistenceImpl extends BasePersistenceImpl<Release>
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_SERVLETCONTEXTNAME,
 					args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_SERVLETCONTEXTNAME,
 					args);
 

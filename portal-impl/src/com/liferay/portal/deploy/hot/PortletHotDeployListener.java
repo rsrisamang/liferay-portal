@@ -27,13 +27,12 @@ import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletBag;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineUtil;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
 import com.liferay.portal.kernel.scheduler.SchedulerEntry;
 import com.liferay.portal.kernel.scheduler.StorageType;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.servlet.DirectServletRegistryUtil;
-import com.liferay.portal.kernel.servlet.FileTimestampUtil;
 import com.liferay.portal.kernel.servlet.PortletServlet;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.servlet.ServletContextProvider;
@@ -82,7 +81,6 @@ import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.social.service.SocialActivityInterpreterLocalServiceUtil;
 import com.liferay.portlet.social.service.SocialRequestInterpreterLocalServiceUtil;
 import com.liferay.util.bridges.php.PHPPortlet;
-import com.liferay.util.log4j.Log4JUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -217,7 +215,7 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 
 			if ((schedulerEntries != null) && !schedulerEntries.isEmpty()) {
 				for (SchedulerEntry schedulerEntry : schedulerEntries) {
-					SchedulerEngineUtil.unschedule(
+					SchedulerEngineHelperUtil.unschedule(
 						schedulerEntry, StorageType.MEMORY_CLUSTERED);
 				}
 			}
@@ -305,10 +303,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 			servletContextName, servletContext, xmls,
 			hotDeployEvent.getPluginPackage());
 
-		ClassLoader classLoader = hotDeployEvent.getContextClassLoader();
-
-		initLogger(classLoader);
-
 		boolean portletAppInitialized = false;
 
 		boolean phpPortlet = false;
@@ -316,7 +310,10 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 
 		PortletBagFactory portletBagFactory = new PortletBagFactory();
 
+		ClassLoader classLoader = hotDeployEvent.getContextClassLoader();
+
 		portletBagFactory.setClassLoader(classLoader);
+
 		portletBagFactory.setServletContext(servletContext);
 		portletBagFactory.setWARFile(true);
 
@@ -333,8 +330,8 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 			else {
 				if (!portletAppInitialized) {
 					initPortletApp(
-						portlet, servletContextName, servletContext,
-						classLoader);
+						servletContextName, servletContext, classLoader,
+						portlet);
 
 					portletAppInitialized = true;
 				}
@@ -440,7 +437,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		JavadocManagerUtil.load(servletContextName, classLoader);
 
 		DirectServletRegistryUtil.clearServlets();
-		FileTimestampUtil.reset();
 
 		_portlets.put(
 			servletContextName,
@@ -515,7 +511,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		JavadocManagerUtil.unload(servletContextName);
 
 		DirectServletRegistryUtil.clearServlets();
-		FileTimestampUtil.reset();
 
 		if (_log.isInfoEnabled()) {
 			if (portlets.size() == 1) {
@@ -531,11 +526,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		}
 	}
 
-	protected void initLogger(ClassLoader classLoader) {
-		Log4JUtil.configureLog4J(
-			classLoader.getResource("META-INF/portal-log4j.xml"));
-	}
-
 	protected PortletBag initPortlet(
 			Portlet portlet, PortletBagFactory portletBagFactory)
 		throws Exception {
@@ -544,8 +534,8 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 	}
 
 	protected void initPortletApp(
-			Portlet portlet, String servletContextName,
-			ServletContext servletContext, ClassLoader classLoader)
+			String servletContextName, ServletContext servletContext,
+			ClassLoader classLoader, Portlet portlet)
 		throws Exception {
 
 		PortletContextBag portletContextBag = new PortletContextBag(

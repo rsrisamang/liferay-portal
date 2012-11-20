@@ -15,11 +15,11 @@
 package com.liferay.portlet.documentlibrary.store;
 
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.TransactionalExecutionTestListener;
 
@@ -175,8 +175,9 @@ public class DBStoreTest {
 
 		directory = ServiceTestUtil.randomString();
 		fileName1 = directory + "/" + ServiceTestUtil.randomString();
-		fileName2 = directory + "/" + ServiceTestUtil.randomString() + "/" +
-			ServiceTestUtil.randomString();
+		fileName2 =
+			directory + "/" + ServiceTestUtil.randomString() + "/" +
+				ServiceTestUtil.randomString();
 
 		_store.addFile(companyId, repositoryId, fileName1, _DATA_VERSION_1);
 		_store.addFile(companyId, repositoryId, fileName2, _DATA_VERSION_1);

@@ -38,15 +38,6 @@ String redirect = ParamUtil.getString(request, "redirect");
 	}
 }*/
 
-String originalRedirect = ParamUtil.getString(request, "originalRedirect", StringPool.BLANK);
-
-if (originalRedirect.equals(StringPool.BLANK)) {
-	originalRedirect = redirect;
-}
-else {
-	redirect = originalRedirect;
-}
-
 String backURL = ParamUtil.getString(request, "backURL");
 
 String referringPortletResource = ParamUtil.getString(request, "referringPortletResource");
@@ -91,7 +82,16 @@ if (Validator.isNotNull(toLanguageId)) {
 }
 
 if ((article == null) && Validator.isNull(defaultLanguageId)) {
-	defaultLanguageId = languageId;
+	Locale[] availableLocales = LanguageUtil.getAvailableLocales();
+
+	Locale defaultContentLocale = LocaleUtil.fromLanguageId(languageId);
+
+	if (ArrayUtil.contains(availableLocales, defaultContentLocale)) {
+		defaultLanguageId = languageId;
+	}
+	else {
+		defaultLanguageId = LocaleUtil.toLanguageId(LocaleUtil.getDefault());
+	}
 }
 else {
 	if (Validator.isNull(defaultLanguageId)) {
@@ -106,6 +106,9 @@ if (Validator.isNotNull(toLanguageId)) {
 }
 else if ((article != null) && (article.getId() > 0)) {
 	mainSections = PropsValues.JOURNAL_ARTICLE_FORM_UPDATE;
+}
+else if (classNameId > JournalArticleConstants.CLASSNAME_ID_DEFAULT) {
+	mainSections = PropsValues.JOURNAL_ARTICLE_FORM_DEFAULT_VALUES;
 }
 
 String[][] categorySections = {mainSections};
@@ -146,7 +149,6 @@ request.setAttribute("edit_article.jsp-toLanguageId", toLanguageId);
 	<aui:input name="<%= Constants.CMD %>" type="hidden" />
 	<aui:input name="tabs2" type="hidden" value="<%= tabs2 %>" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-	<aui:input name="originalRedirect" type="hidden" value="<%= originalRedirect %>" />
 	<aui:input name="backURL" type="hidden" value="<%= backURL %>" />
 	<aui:input name="referringPortletResource" type="hidden" value="<%= referringPortletResource %>" />
 	<aui:input name="groupId" type="hidden" value="<%= groupId %>" />
@@ -154,13 +156,12 @@ request.setAttribute("edit_article.jsp-toLanguageId", toLanguageId);
 	<aui:input name="classNameId" type="hidden" value="<%= classNameId %>" />
 	<aui:input name="classPK" type="hidden" value="<%= classPK %>" />
 	<aui:input name="articleId" type="hidden" value="<%= articleId %>" />
+	<aui:input name="articleIds" type="hidden" value="<%= articleId + EditArticleAction.VERSION_SEPARATOR + version %>" />
 	<aui:input name="version" type="hidden" value="<%= ((article == null) || article.isNew()) ? version : article.getVersion() %>" />
 	<aui:input name="languageId" type="hidden" value="<%= languageId %>" />
 	<aui:input id="articleContent" name="content" type="hidden" />
 	<aui:input name="articleURL" type="hidden" value="<%= editArticleRenderURL %>" />
 	<aui:input name="workflowAction" type="hidden" value="<%= String.valueOf(WorkflowConstants.ACTION_SAVE_DRAFT) %>" />
-	<aui:input name="deleteArticleIds" type="hidden" value="<%= articleId + EditArticleAction.VERSION_SEPARATOR + version %>" />
-	<aui:input name="expireArticleIds" type="hidden" value="<%= articleId + EditArticleAction.VERSION_SEPARATOR + version %>" />
 
 	<liferay-ui:error exception="<%= ArticleContentSizeException.class %>" message="you-have-exceeded-the-maximum-article-content-size-allowed" />
 
@@ -244,7 +245,7 @@ request.setAttribute("edit_article.jsp-toLanguageId", toLanguageId);
 						publishButtonLabel = "submit-for-publication";
 					}
 
-					if (classNameId > 0) {
+					if (classNameId > JournalArticleConstants.CLASSNAME_ID_DEFAULT) {
 						publishButtonLabel = "save";
 					}
 					%>
@@ -252,7 +253,7 @@ request.setAttribute("edit_article.jsp-toLanguageId", toLanguageId);
 					<c:choose>
 						<c:when test="<%= Validator.isNull(toLanguageId) %>">
 							<c:if test="<%= hasSavePermission %>">
-								<c:if test="<%= classNameId == 0 %>">
+								<c:if test="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>">
 									<aui:button name="saveButton" value="<%= saveButtonLabel %>" />
 								</c:if>
 
@@ -387,8 +388,6 @@ request.setAttribute("edit_article.jsp-toLanguageId", toLanguageId);
 </aui:script>
 
 <%!
-private static String[] _CATEGORY_NAMES = {""};
-
 private String _getArticleImage(ThemeDisplay themeDisplay, JournalArticle article) {
 	String imageURL = null;
 
@@ -407,4 +406,6 @@ private String _getArticleImage(ThemeDisplay themeDisplay, JournalArticle articl
 private String _getSectionJsp(String name) {
 	return TextFormatter.format(name, TextFormatter.N);
 }
+
+private static final String[] _CATEGORY_NAMES = {""};
 %>

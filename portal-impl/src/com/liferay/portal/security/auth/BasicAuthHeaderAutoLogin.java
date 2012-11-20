@@ -16,11 +16,15 @@ package com.liferay.portal.security.auth;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.MapUtil;
+import com.liferay.portal.util.Portal;
 import com.liferay.portlet.login.util.LoginUtil;
 
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,8 +61,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Britt Courtney
  * @author Brian Wing Shun Chan
+ * @author Tomas Polesovsky
  */
-public class BasicAuthHeaderAutoLogin implements AutoLogin {
+public class BasicAuthHeaderAutoLogin implements AuthVerifier, AutoLogin {
+
+	public String getAuthType() {
+		return HttpServletRequest.BASIC_AUTH;
+	}
 
 	public String[] login(
 			HttpServletRequest request, HttpServletResponse response)
@@ -124,7 +133,7 @@ public class BasicAuthHeaderAutoLogin implements AutoLogin {
 			}
 			catch (Exception e) {
 				if (_log.isWarnEnabled()) {
-					_log.warn(login + " is not a valid login");
+					_log.warn(login + " is not a valid login", e);
 				}
 			}
 
@@ -134,6 +143,53 @@ public class BasicAuthHeaderAutoLogin implements AutoLogin {
 			throw new AutoLoginException(e);
 		}
 	}
+
+	public AuthVerifierResult verify(
+			AccessControlContext accessControlContext, Properties properties)
+		throws AuthException {
+
+		try {
+			AuthVerifierResult authVerifierResult = new AuthVerifierResult();
+
+			String[] credentials = login(
+				accessControlContext.getRequest(),
+				accessControlContext.getResponse());
+
+			if (credentials != null) {
+				authVerifierResult.setPassword(credentials[1]);
+				authVerifierResult.setState(AuthVerifierResult.State.SUCCESS);
+				authVerifierResult.setUserId(Long.valueOf(credentials[0]));
+			}
+			else {
+
+				// Deprecated
+
+				boolean forcedBasicAuth = MapUtil.getBoolean(
+					accessControlContext.getSettings(), "basic_auth");
+
+				if (forcedBasicAuth) {
+					HttpServletResponse response =
+						accessControlContext.getResponse();
+
+					response.setHeader(
+						HttpHeaders.WWW_AUTHENTICATE, _BASIC_REALM);
+
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+					authVerifierResult.setState(
+						AuthVerifierResult.State.INVALID_CREDENTIALS);
+				}
+			}
+
+			return authVerifierResult;
+		}
+		catch (AutoLoginException e) {
+			throw new AuthException(e);
+		}
+	}
+
+	private static final String _BASIC_REALM =
+		"Basic realm=\"" + Portal.PORTAL_REALM + "\"";
 
 	private static Log _log = LogFactoryUtil.getLog(
 		BasicAuthHeaderAutoLogin.class);

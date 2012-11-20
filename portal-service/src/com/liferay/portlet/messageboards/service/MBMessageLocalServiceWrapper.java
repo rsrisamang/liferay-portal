@@ -246,21 +246,6 @@ public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 	}
 
 	/**
-	* Updates the message-boards message in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param mbMessage the message-boards message
-	* @param merge whether to merge the message-boards message with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the message-boards message that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portlet.messageboards.model.MBMessage updateMBMessage(
-		com.liferay.portlet.messageboards.model.MBMessage mbMessage,
-		boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _mbMessageLocalService.updateMBMessage(mbMessage, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -387,6 +372,19 @@ public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return _mbMessageLocalService.deleteMessage(message);
+	}
+
+	public void deleteMessageAttachment(long messageId,
+		java.lang.String fileName)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_mbMessageLocalService.deleteMessageAttachment(messageId, fileName);
+	}
+
+	public void deleteMessageAttachments(long messageId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_mbMessageLocalService.deleteMessageAttachments(messageId);
 	}
 
 	public java.util.List<com.liferay.portlet.messageboards.model.MBMessage> getCategoryMessages(
@@ -625,6 +623,22 @@ public class MBMessageLocalServiceWrapper implements MBMessageLocalService,
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return _mbMessageLocalService.getUserDiscussionMessagesCount(userId,
 			className, classPK, status);
+	}
+
+	public void moveMessageAttachmentFromTrash(long messageId,
+		java.lang.String deletedFileName)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_mbMessageLocalService.moveMessageAttachmentFromTrash(messageId,
+			deletedFileName);
+	}
+
+	public java.lang.String moveMessageAttachmentToTrash(long messageId,
+		java.lang.String fileName)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _mbMessageLocalService.moveMessageAttachmentToTrash(messageId,
+			fileName);
 	}
 
 	public void subscribeMessage(long userId, long messageId)

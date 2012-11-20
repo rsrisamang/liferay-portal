@@ -28,6 +28,8 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.openWindow("http://www.gmail.com/",
 					RuntimeVariables.replace("gmail"));
 				selenium.waitForPopUp("gmail", RuntimeVariables.replace(""));
@@ -43,12 +45,12 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 				}
 
 				assertEquals(RuntimeVariables.replace("Sign out"),
-					selenium.getText("//td/a"));
-				selenium.clickAt("//td/a", RuntimeVariables.replace("Sign out"));
+					selenium.getText("//td[2]/a"));
+				selenium.clickAt("//td[2]/a",
+					RuntimeVariables.replace("Sign out"));
 				selenium.clickAt("//span/a",
 					RuntimeVariables.replace("Sign in to Gmail"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 
@@ -64,28 +66,23 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 				selenium.clickAt("link=Sign in as a different user",
 					RuntimeVariables.replace("Sign in as a different user"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 3:
+				selenium.waitForElementPresent("//input[@id='Email']");
 
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
+				boolean usernamePopulated = selenium.isElementPresent(
+						"//input[@value='liferay.qa.testing.trunk@gmail.com']");
 
-					try {
-						if (selenium.isVisible("//input[@id='Email']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
+				if (usernamePopulated) {
+					label = 4;
 
-					Thread.sleep(1000);
+					continue;
 				}
 
 				selenium.type("//input[@id='Email']",
 					RuntimeVariables.replace("liferay.qa.testing.trunk"));
+
+			case 4:
 				selenium.type("//input[@id='Passwd']",
 					RuntimeVariables.replace("loveispatient"));
 
@@ -93,7 +90,7 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 						"PersistentCookie");
 
 				if (staySignedInChecked) {
-					label = 4;
+					label = 5;
 
 					continue;
 				}
@@ -102,79 +99,27 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 						"//input[@id='PersistentCookie']"));
 				selenium.clickAt("//input[@id='PersistentCookie']",
 					RuntimeVariables.replace("Stay signed in"));
-
-			case 4:
 				assertTrue(selenium.isChecked("//input[@id='PersistentCookie']"));
+
+			case 5:
 				selenium.clickAt("//input[@id='signIn']",
 					RuntimeVariables.replace("Sign In"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Administrator")
-												.equals(selenium.getText(
-										"//span[@email='liferay.qa.server.trunk@gmail.com']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				assertEquals(RuntimeVariables.replace("Administrator"),
-					selenium.getText(
-						"//span[@email='liferay.qa.server.trunk@gmail.com']"));
+				selenium.waitForPartialText("//span[@email='liferay.qa.server.trunk@gmail.com']",
+					"Admin");
+				assertTrue(selenium.isPartialText(
+						"//span[@email='liferay.qa.server.trunk@gmail.com']",
+						"Admin"));
 				selenium.clickAt("//span[@email='liferay.qa.server.trunk@gmail.com']",
-					RuntimeVariables.replace("Administrator"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("MB Message Subject")
-												.equals(selenium.getText(
-										"//h1/span[1]"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				assertEquals(RuntimeVariables.replace("MB Message Subject"),
-					selenium.getText("//h1/span[1]"));
+					RuntimeVariables.replace("Admin"));
+				selenium.waitForPartialText("//h1/span[1]", "MB Message Subject");
+				assertTrue(selenium.isPartialText("//h1/span[1]",
+						"MB Message Subject"));
 				assertTrue(selenium.isPartialText(
 						"//div[contains(child::text(),'MB Message Body')]",
 						"MB Message Body"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//td[4]/div/img")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//td[4]/div/img");
 				selenium.clickAt("//td[4]/div/img",
 					RuntimeVariables.replace("Reply"));
 				Thread.sleep(5000);
@@ -192,16 +137,17 @@ public class Gmail_ReplyMBCategoryThreadMessageEmailTest extends BaseTestCase {
 				boolean signedIn2 = selenium.isElementPresent("link=Sign out");
 
 				if (!signedIn2) {
-					label = 5;
+					label = 6;
 
 					continue;
 				}
 
 				assertEquals(RuntimeVariables.replace("Sign out"),
-					selenium.getText("//td/a"));
-				selenium.clickAt("//td/a", RuntimeVariables.replace("Sign out"));
+					selenium.getText("//td[2]/a"));
+				selenium.clickAt("//td[2]/a",
+					RuntimeVariables.replace("Sign out"));
 
-			case 5:
+			case 6:
 				Thread.sleep(10000);
 				selenium.close();
 				selenium.selectWindow("null");

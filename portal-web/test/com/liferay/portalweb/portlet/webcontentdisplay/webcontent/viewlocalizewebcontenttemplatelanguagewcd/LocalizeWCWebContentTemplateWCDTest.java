@@ -27,51 +27,17 @@ public class LocalizeWCWebContentTemplateWCDTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"link=Web Content Display Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Web Content Display Test Page");
 				selenium.clickAt("link=Web Content Display Test Page",
 					RuntimeVariables.replace("Web Content Display Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//img[@alt='Edit Web Content']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//img[@alt='Edit Web Content']");
 				selenium.clickAt("//img[@alt='Edit Web Content']",
 					RuntimeVariables.replace("Edit Web Content"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"Hello World Localized Article"),
 					selenium.getText("//h1[@class='header-title']"));
@@ -121,7 +87,6 @@ public class LocalizeWCWebContentTemplateWCDTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Save as Draft']",
 					RuntimeVariables.replace("Save as Draft"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Status: Draft"),
 					selenium.getText("//span[@class='workflow-status']"));
 				assertEquals("Hello World Page Name",
@@ -132,64 +97,16 @@ public class LocalizeWCWebContentTemplateWCDTest extends BaseTestCase {
 					selenium.getText("//strong/a/span"));
 				selenium.clickAt("//strong/a/span",
 					RuntimeVariables.replace("Add Translation"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-component lfr-menu-list']/ul/li[6]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//div[@class='lfr-component lfr-menu-list']/ul/li[6]/a");
 				assertEquals(RuntimeVariables.replace("Chinese (China)"),
 					selenium.getText(
 						"//div[@class='lfr-component lfr-menu-list']/ul/li[6]/a"));
 				selenium.click(
 					"//div[@class='lfr-component lfr-menu-list']/ul/li[6]/a");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//iframe[@id='_15_zh_CN']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//iframe[@id='_15_zh_CN']");
 				selenium.selectFrame("//iframe[@id='_15_zh_CN']");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@id='page-name']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@id='page-name']");
 				selenium.type("//input[@id='page-name']",
 					RuntimeVariables.replace(
 						"\u4e16\u754c\u60a8\u597d Page Name"));
@@ -199,7 +116,6 @@ public class LocalizeWCWebContentTemplateWCDTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Save']",
 					RuntimeVariables.replace("Save"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.selectFrame("relative=top");
 				assertEquals(RuntimeVariables.replace("Chinese (China)"),
 					selenium.getText(
@@ -208,7 +124,6 @@ public class LocalizeWCWebContentTemplateWCDTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Publish']",
 					RuntimeVariables.replace("Publish"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Hello World Page Name"),
 					selenium.getText("//td[@class='page-name']"));
 				assertEquals(RuntimeVariables.replace(

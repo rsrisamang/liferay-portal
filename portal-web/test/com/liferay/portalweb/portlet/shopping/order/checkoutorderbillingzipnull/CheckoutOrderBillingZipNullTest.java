@@ -27,39 +27,34 @@ public class CheckoutOrderBillingZipNullTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Shopping Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Shopping Test Page",
 					RuntimeVariables.replace("Shopping Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Cart", RuntimeVariables.replace("Cart"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertEquals(RuntimeVariables.replace(
-						"Shopping Category Item Name\nShopping Category Item Description\n\nAvailability: In Stock\n\n\nPrice for 1 to 1 Items:$9.99"),
-					selenium.getText("//td[2]/a"));
+				assertTrue(selenium.isPartialText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]",
+						"Shopping Category Item Name"));
+				assertTrue(selenium.isPartialText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]",
+						"Shopping Category Item Description"));
+				assertTrue(selenium.isPartialText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]",
+						"Availability:"));
+				assertEquals(RuntimeVariables.replace("In Stock"),
+					selenium.getText("//div[@class='portlet-msg-success']"));
+				assertTrue(selenium.isPartialText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]",
+						"Price for 1 to 1 Items"));
+				assertTrue(selenium.isPartialText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]",
+						"9.99"));
 				selenium.clickAt("//input[@value='Checkout']",
 					RuntimeVariables.replace("Checkout"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.type("//input[@id='_34_billingStreet']",
 					RuntimeVariables.replace("1234 Sesame Street"));
 				selenium.type("//input[@id='_34_billingCity']",
@@ -99,7 +94,6 @@ public class CheckoutOrderBillingZipNullTest extends BaseTestCase {
 				selenium.clickAt("//input[@value='Continue']",
 					RuntimeVariables.replace("Continue"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"Your request failed to complete."),
 					selenium.getText(

@@ -23,29 +23,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class Member_AssertCannotAccessOptionsTest extends BaseTestCase {
 	public void testMember_AssertCannotAccessOptions()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Document Library Permissions Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Document Library Permissions Page");
 		selenium.clickAt("link=Document Library Permissions Page",
 			RuntimeVariables.replace("Document Library Permissions Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isElementPresent("//span[@title='Options']"));
+		assertTrue(selenium.isElementNotPresent("//span[@title='Options']"));
 	}
 }

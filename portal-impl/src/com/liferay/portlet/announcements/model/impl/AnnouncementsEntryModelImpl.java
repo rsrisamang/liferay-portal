@@ -115,6 +115,10 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 	 * @return the normal model instance
 	 */
 	public static AnnouncementsEntry toModel(AnnouncementsEntrySoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		AnnouncementsEntry model = new AnnouncementsEntryImpl();
 
 		model.setUuid(soapModel.getUuid());
@@ -146,6 +150,10 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 	 */
 	public static List<AnnouncementsEntry> toModels(
 		AnnouncementsEntrySoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<AnnouncementsEntry> models = new ArrayList<AnnouncementsEntry>(soapModels.length);
 
 		for (AnnouncementsEntrySoap soapModel : soapModels) {
@@ -605,17 +613,6 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 	}
 
 	@Override
-	public AnnouncementsEntry toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (AnnouncementsEntry)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			AnnouncementsEntry.class.getName(), getPrimaryKey());
@@ -626,6 +623,16 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public AnnouncementsEntry toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (AnnouncementsEntry)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -971,7 +978,7 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 	}
 
 	private static ClassLoader _classLoader = AnnouncementsEntry.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			AnnouncementsEntry.class
 		};
 	private String _uuid;
@@ -1004,5 +1011,5 @@ public class AnnouncementsEntryModelImpl extends BaseModelImpl<AnnouncementsEntr
 	private boolean _originalAlert;
 	private boolean _setOriginalAlert;
 	private long _columnBitmask;
-	private AnnouncementsEntry _escapedModelProxy;
+	private AnnouncementsEntry _escapedModel;
 }

@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.messageboards.util;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -33,6 +34,8 @@ import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.UserGroup;
+import com.liferay.portal.security.permission.ActionKeys;
+import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.OrganizationLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
@@ -41,8 +44,10 @@ import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
+import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBCategoryConstants;
@@ -52,6 +57,7 @@ import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBStatsUser;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMailingListLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.permission.MBMessagePermission;
 import com.liferay.util.ContentUtil;
 import com.liferay.util.mail.JavaMailUtil;
 
@@ -69,6 +75,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 
@@ -229,6 +236,42 @@ public class MBUtil {
 				}
 			}
 		}
+	}
+
+	public static String getAbsolutePath(
+			PortletRequest portletRequest, long mbCategoryId)
+		throws PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (mbCategoryId == MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID) {
+			return themeDisplay.translate("home");
+		}
+
+		MBCategory mbCategory = MBCategoryLocalServiceUtil.fetchMBCategory(
+			mbCategoryId);
+
+		List<MBCategory> categories = mbCategory.getAncestors();
+
+		StringBundler sb = new StringBundler((categories.size() * 3) + 6);
+
+		sb.append(themeDisplay.translate("home"));
+		sb.append(StringPool.SPACE);
+
+		for (int i = categories.size() - 1; i >= 0; i--) {
+			MBCategory curCategory = categories.get(i);
+
+			sb.append(StringPool.RAQUO);
+			sb.append(StringPool.SPACE);
+			sb.append(curCategory.getName());
+		}
+
+		sb.append(StringPool.RAQUO);
+		sb.append(StringPool.SPACE);
+		sb.append(mbCategory.getName());
+
+		return sb.toString();
 	}
 
 	public static long getCategoryId(
@@ -441,6 +484,24 @@ public class MBUtil {
 		sb.append(mx);
 
 		return sb.toString();
+	}
+
+	public static String getMBControlPanelLink(
+			PortletRequest portletRequest, long mbCategoryId)
+		throws PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			com.liferay.portal.kernel.util.WebKeys.THEME_DISPLAY);
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			portletRequest, PortletKeys.MESSAGE_BOARDS_ADMIN,
+			PortalUtil.getControlPanelPlid(themeDisplay.getCompanyId()),
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter("struts_action", "/message_boards_admin/view");
+		portletURL.setParameter("mbCategoryId", String.valueOf(mbCategoryId));
+
+		return portletURL.toString();
 	}
 
 	public static String getMessageFormat(PortletPreferences preferences) {
@@ -703,6 +764,59 @@ public class MBUtil {
 		return GetterUtil.getBoolean(
 			preferences.getValue("allowAnonymousPosting", null),
 			PropsValues.MESSAGE_BOARDS_ANONYMOUS_POSTING_ENABLED);
+	}
+
+	public static boolean isViewableMessage(
+			ThemeDisplay themeDisplay, MBMessage message)
+		throws Exception {
+
+		return isViewableMessage(themeDisplay, message, message);
+	}
+
+	public static boolean isViewableMessage(
+			ThemeDisplay themeDisplay, MBMessage message,
+			MBMessage parentMessage)
+		throws Exception {
+
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
+		if (!MBMessagePermission.contains(
+				permissionChecker, parentMessage, ActionKeys.VIEW)) {
+
+			return false;
+		}
+
+		if ((message.getMessageId() != parentMessage.getMessageId()) &&
+			!MBMessagePermission.contains(
+				permissionChecker, message, ActionKeys.VIEW)) {
+
+			return false;
+		}
+
+		if (!message.isApproved() &&
+			!Validator.equals(message.getUserId(), themeDisplay.getUserId()) &&
+			!permissionChecker.isGroupAdmin(themeDisplay.getScopeGroupId())) {
+
+			return false;
+		}
+
+		return true;
+	}
+
+	public static String replaceMessageBodyPaths(
+		ThemeDisplay themeDisplay, String messageBody) {
+
+		return StringUtil.replace(
+			messageBody,
+			new String[] {
+				"@theme_images_path@", "href=\"/", "src=\"/"
+			},
+			new String[] {
+				themeDisplay.getPathThemeImages(),
+				"href=\"" + themeDisplay.getURLPortal() + "/",
+				"src=\"" + themeDisplay.getURLPortal() + "/"
+			});
 	}
 
 	private static String[] _findThreadPriority(

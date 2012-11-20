@@ -19,16 +19,13 @@
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 
-String originalRedirect = ParamUtil.getString(request, "originalRedirect", StringPool.BLANK);
-
-if (originalRedirect.equals(StringPool.BLANK)) {
-	originalRedirect = redirect;
-}
-else {
-	redirect = originalRedirect;
-}
+String referringPortletResource = ParamUtil.getString(request, "referringPortletResource");
 
 JournalStructure structure = (JournalStructure)request.getAttribute(WebKeys.JOURNAL_STRUCTURE);
+
+long groupId = BeanParamUtil.getLong(structure, request, "groupId", scopeGroupId);
+
+Group group = GroupLocalServiceUtil.getGroup(groupId);
 
 long classNameId = PortalUtil.getClassNameId(JournalStructure.class.getName());
 
@@ -37,10 +34,6 @@ long classPK = 0;
 if (structure != null) {
 	classPK = structure.getId();
 }
-
-long groupId = BeanParamUtil.getLong(structure, request, "groupId", scopeGroupId);
-
-Group group = GroupLocalServiceUtil.getGroup(groupId);
 
 String structureId = BeanParamUtil.getString(structure, request, "structureId");
 String newStructureId = ParamUtil.getString(request, "newStructureId");
@@ -66,7 +59,7 @@ if (parentStructure != null) {
 String xsd = ParamUtil.getString(request, "xsd");
 
 try {
-	xsd = JournalUtil.processXMLAttributes(xsd);
+	xsd = JournalUtil.validateXSD(xsd);
 }
 catch (StructureXsdException sxe) {
 	xsd = "<root></root>";
@@ -97,7 +90,7 @@ int tabIndex = 1;
 	<input name="scroll" type="hidden" value="" />
 	<aui:input name="<%= Constants.CMD %>" type="hidden" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
-	<aui:input name="originalRedirect" type="hidden" value="<%= originalRedirect %>" />
+	<aui:input name="referringPortletResource" type="hidden" value="<%= referringPortletResource %>" />
 	<aui:input name="groupId" type="hidden" value="<%= groupId %>" />
 	<aui:input name="structureId" type="hidden" value="<%= structureId %>" />
 	<aui:input name="move_up" type="hidden" />
@@ -156,7 +149,7 @@ int tabIndex = 1;
 						<portlet:param name="parentStructureId" value="<%= parentStructureId %>" />
 					</portlet:renderURL>
 
-					<aui:a href="<%= parentStructureURL %>" id="parentStructureName" label="<%= parentStructureName %>" />
+					<aui:a href="<%= parentStructureURL %>" id="parentStructureName" label="<%= HtmlUtil.escape(parentStructureName) %>" />
 				</c:when>
 				<c:otherwise>
 					<aui:a href="" id="parentStructureName" />
@@ -175,7 +168,7 @@ int tabIndex = 1;
 
 			<c:if test="<%= portletDisplay.isWebDAVEnabled() %>">
 				<aui:field-wrapper label="webdav-url">
-					<liferay-ui:input-resource url='<%= themeDisplay.getPortalURL() + themeDisplay.getPathContext() + "/api/secure/webdav" + group.getFriendlyURL() + "/journal/Structures/" + structureId %>' />
+					<liferay-ui:input-resource url='<%= themeDisplay.getPortalURL() + themeDisplay.getPathContext() + "/webdav" + group.getFriendlyURL() + "/journal/Structures/" + structureId %>' />
 				</aui:field-wrapper>
 			</c:if>
 		</c:if>
@@ -192,7 +185,7 @@ int tabIndex = 1;
 			<aui:fieldset>
 				<liferay-ui:error exception="<%= StructureXsdException.class %>" message="please-enter-a-valid-xsd" />
 
-				<aui:input name="xsd" type="hidden" value="<%= JS.encodeURIComponent(xsd) %>" />
+				<aui:input name="xsd" type="hidden" value="<%= xsd %>" />
 
 				<%
 				String taglibEditElement = renderResponse.getNamespace() + "editElement('add', -1);";
@@ -286,8 +279,8 @@ int tabIndex = 1;
 
 			if ((elDepth != null) && (elName != null) && (elType != null)) {
 				var elDepthValue = elDepth.value;
-				var elNameValue = encodeURIComponent(elName.value);
-				var elTypeValue = encodeURIComponent(elType.value);
+				var elNameValue = (elName.value != null) ? elName.value : "";
+				var elTypeValue = (elType.value != null) ? elType.value : "";
 				var elIndexTypeValue = (elIndexType != null) ? elIndexType.value : "";
 				var elRepeatableValue = (elRepeatable != null) ? elRepeatable.checked : false;
 
@@ -296,14 +289,14 @@ int tabIndex = 1;
 						xsd += xmlIndent;
 					}
 
-					xsd += "<dynamic-element name='" + elNameValue + "' type='" + elTypeValue + "' index-type='" + elIndexTypeValue + "' repeatable='" + elRepeatableValue + "'>";
+					xsd += "<dynamic-element name='" + Liferay.Util.escapeHTML(elNameValue) + "' type='" + Liferay.Util.escapeHTML(elTypeValue) + "' index-type='" + Liferay.Util.escapeHTML(elIndexTypeValue) + "' repeatable='" + elRepeatableValue + "'>";
 
 					if ((cmd == "add") && (elCount == i)) {
 						xsd += "<dynamic-element name='' type='' repeatable='false'></dynamic-element>\n";
 					}
 					else {
 						if (elMetadataXML.value) {
-							var metadataXML = decodeURIComponent(elMetadataXML.value).replace(/[+]/g, ' ');
+							var metadataXML = elMetadataXML.value;
 
 							xsd += "\n";
 							xsd += xmlIndent;

@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -140,7 +140,7 @@ public class DLFileShortcutPersistenceTest {
 
 		newDLFileShortcut.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(newDLFileShortcut, false);
+		_persistence.update(newDLFileShortcut);
 
 		DLFileShortcut existingDLFileShortcut = _persistence.findByPrimaryKey(newDLFileShortcut.getPrimaryKey());
 
@@ -350,7 +350,7 @@ public class DLFileShortcutPersistenceTest {
 
 		dlFileShortcut.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(dlFileShortcut, false);
+		_persistence.update(dlFileShortcut);
 
 		return dlFileShortcut;
 	}

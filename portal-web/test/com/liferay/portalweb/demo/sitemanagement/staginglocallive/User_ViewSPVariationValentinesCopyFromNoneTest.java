@@ -28,32 +28,16 @@ public class User_ViewSPVariationValentinesCopyFromNoneTest extends BaseTestCase
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'local-staging')]"));
 				assertEquals(RuntimeVariables.replace("Staging"),
 					selenium.getText(
@@ -61,10 +45,9 @@ public class User_ViewSPVariationValentinesCopyFromNoneTest extends BaseTestCase
 				selenium.clickAt("//div[@class='staging-bar']/ul/li[2]/span/a",
 					RuntimeVariables.replace("Staging"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'local-staging')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'live-view')]"));
 				assertEquals(RuntimeVariables.replace(
 						"Christmas 2 Site Pages Variation of Site Name"),
@@ -83,7 +66,6 @@ public class User_ViewSPVariationValentinesCopyFromNoneTest extends BaseTestCase
 				selenium.clickAt("link=Christmas 2",
 					RuntimeVariables.replace("Christmas 2"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 2:
 				assertEquals(RuntimeVariables.replace("Christmas 2"),
@@ -93,17 +75,16 @@ public class User_ViewSPVariationValentinesCopyFromNoneTest extends BaseTestCase
 				selenium.clickAt("//li[4]/span/span/a",
 					RuntimeVariables.replace("Valentines"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Valentines"),
 					selenium.getText("//li[4]/span/span/span[1]"));
 				assertEquals(RuntimeVariables.replace(
 						"The page Home is not enabled in Valentines, but is available for other pages variations."),
 					selenium.getText(
 						"//div[@id='_170_layoutRevisionDetails']/div"));
-				assertFalse(selenium.isElementPresent("//nav/ul/li[1]/a/span"));
-				assertFalse(selenium.isElementPresent("//nav/ul/li[2]/a/span"));
-				assertFalse(selenium.isElementPresent("//nav/ul/li[3]/a/span"));
-				assertFalse(selenium.isElementPresent("//nav/ul/li[4]/a/span"));
+				assertTrue(selenium.isElementNotPresent("//nav/ul/li[1]/a/span"));
+				assertTrue(selenium.isElementNotPresent("//nav/ul/li[2]/a/span"));
+				assertTrue(selenium.isElementNotPresent("//nav/ul/li[3]/a/span"));
+				assertTrue(selenium.isElementNotPresent("//nav/ul/li[4]/a/span"));
 
 			case 100:
 				label = -1;

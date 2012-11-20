@@ -268,7 +268,7 @@ public class EditExpandoAction extends PortletAction {
 
 			value = PortalUtil.getDate(
 				valueDateMonth, valueDateDay, valueDateYear, valueDateHour,
-				valueDateMinute, user.getTimeZone(), new ValueDataException());
+				valueDateMinute, user.getTimeZone(), ValueDataException.class);
 		}
 		else if (type == ExpandoColumnConstants.DATE_ARRAY) {
 		}
@@ -410,7 +410,7 @@ public class EditExpandoAction extends PortletAction {
 		while (enu.hasMoreElements()) {
 			String param = enu.nextElement();
 
-			if (param.indexOf("PropertyName--") != -1) {
+			if (param.contains("PropertyName--")) {
 				String propertyName = ParamUtil.getString(actionRequest, param);
 
 				propertyNames.add(propertyName);

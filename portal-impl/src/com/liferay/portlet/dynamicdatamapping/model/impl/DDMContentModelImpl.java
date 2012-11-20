@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatamapping.model.impl;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSON;
@@ -441,17 +442,6 @@ public class DDMContentModelImpl extends BaseModelImpl<DDMContent>
 	}
 
 	@Override
-	public DDMContent toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (DDMContent)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			DDMContent.class.getName(), getPrimaryKey());
@@ -462,6 +452,23 @@ public class DDMContentModelImpl extends BaseModelImpl<DDMContent>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@SuppressWarnings("unused")
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException {
+		setName(getName(defaultImportLocale), defaultImportLocale,
+			defaultImportLocale);
+	}
+
+	@Override
+	public DDMContent toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (DDMContent)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -708,7 +715,7 @@ public class DDMContentModelImpl extends BaseModelImpl<DDMContent>
 	}
 
 	private static ClassLoader _classLoader = DDMContent.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			DDMContent.class
 		};
 	private String _uuid;
@@ -730,5 +737,5 @@ public class DDMContentModelImpl extends BaseModelImpl<DDMContent>
 	private String _description;
 	private String _xml;
 	private long _columnBitmask;
-	private DDMContent _escapedModelProxy;
+	private DDMContent _escapedModel;
 }

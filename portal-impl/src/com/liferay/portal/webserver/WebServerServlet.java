@@ -33,6 +33,8 @@ import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateContextType;
 import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.template.TemplateResource;
+import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
@@ -48,6 +50,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.Validator_IW;
 import com.liferay.portal.kernel.webdav.WebDAVUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Image;
@@ -58,6 +61,7 @@ import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileVersion;
 import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
@@ -69,6 +73,7 @@ import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.Portal;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 import com.liferay.portlet.documentlibrary.NoSuchFileEntryException;
@@ -76,6 +81,7 @@ import com.liferay.portlet.documentlibrary.NoSuchFolderException;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata;
 import com.liferay.portlet.documentlibrary.model.DLFileShortcut;
+import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLAppServiceUtil;
@@ -102,6 +108,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.net.URL;
 
 import java.text.Format;
 
@@ -186,6 +194,17 @@ public class WebServerServlet extends HttpServlet {
 
 		_lastModified = GetterUtil.getBoolean(
 			servletConfig.getInitParameter("last_modified"), true);
+
+		Class<?> clazz = getClass();
+
+		ClassLoader classLoader = clazz.getClassLoader();
+
+		String templateId =
+			"com/liferay/portal/webserver/dependencies/template.ftl";
+
+		URL url = classLoader.getResource(templateId);
+
+		_templateResource = new URLTemplateResource(templateId, url);
 	}
 
 	@Override
@@ -356,8 +375,7 @@ public class WebServerServlet extends HttpServlet {
 		else if (pathArray.length == 3) {
 			long groupId = GetterUtil.getLong(pathArray[0]);
 			long folderId = GetterUtil.getLong(pathArray[1]);
-
-			String fileName = pathArray[2];
+			String fileName = HttpUtil.decodeURL(pathArray[2]);
 
 			if (fileName.contains(StringPool.QUESTION)) {
 				fileName = fileName.substring(
@@ -579,8 +597,10 @@ public class WebServerServlet extends HttpServlet {
 			return null;
 		}
 
-		if ((image.getHeight() > PropsValues.USERS_IMAGE_MAX_HEIGHT) ||
-			(image.getWidth() > PropsValues.USERS_IMAGE_MAX_WIDTH)) {
+		if (((PropsValues.USERS_IMAGE_MAX_HEIGHT > 0) &&
+			 (image.getHeight() > PropsValues.USERS_IMAGE_MAX_HEIGHT)) ||
+			((PropsValues.USERS_IMAGE_MAX_WIDTH > 0) &&
+			 (image.getWidth() > PropsValues.USERS_IMAGE_MAX_WIDTH))) {
 
 			User user = UserLocalServiceUtil.getUserByPortraitId(imageId);
 
@@ -649,14 +669,6 @@ public class WebServerServlet extends HttpServlet {
 			Throwable t, User user, HttpServletRequest request,
 			HttpServletResponse response)
 		throws IOException, ServletException {
-
-		if (!PropsValues.WEB_SERVER_SERVLET_HTTP_STATUS_CODE_STRICT) {
-			PortalUtil.sendError(
-				HttpServletResponse.SC_NOT_FOUND,
-				new NoSuchFileEntryException(t), request, response);
-
-			return;
-		}
 
 		if (!user.isDefaultUser()) {
 			PortalUtil.sendError(
@@ -806,16 +818,9 @@ public class WebServerServlet extends HttpServlet {
 
 		// Retrieve file details
 
-		FileEntry fileEntry = null;
+		FileEntry fileEntry = getFileEntry(pathArray);
 
-		try {
-			fileEntry = getFileEntry(pathArray);
-		}
-		catch (NoSuchFileEntryException nsfee) {
-			if (user.isDefaultUser()) {
-				throw new PrincipalException();
-			}
-
+		if (fileEntry == null) {
 			throw new NoSuchFileEntryException();
 		}
 
@@ -831,6 +836,45 @@ public class WebServerServlet extends HttpServlet {
 			fileEntry.getFileEntryId(), version);
 
 		FileVersion fileVersion = fileEntry.getFileVersion(version);
+
+		if (fileVersion.getModel() instanceof DLFileVersion) {
+			LiferayFileVersion liferayFileVersion =
+				(LiferayFileVersion)fileVersion;
+
+			if (liferayFileVersion.isInTrash() ||
+				liferayFileVersion.isInTrashFolder()) {
+
+				int status = ParamUtil.getInteger(
+					request, "status", WorkflowConstants.STATUS_APPROVED);
+
+				if (status != WorkflowConstants.STATUS_IN_TRASH) {
+					throw new NoSuchFileEntryException();
+				}
+
+				PermissionChecker permissionChecker =
+					PermissionThreadLocal.getPermissionChecker();
+
+				if (!permissionChecker.hasPermission(
+						fileEntry.getGroupId(), PortletKeys.TRASH,
+						PortletKeys.TRASH,
+						ActionKeys.ACCESS_IN_CONTROL_PANEL)) {
+
+					throw new PrincipalException();
+				}
+			}
+		}
+
+		if ((ParamUtil.getInteger(request, "height") > 0) ||
+			(ParamUtil.getInteger(request, "width") > 0)) {
+
+			InputStream inputStream = fileVersion.getContentStream(true);
+
+			Image image = ImageLocalServiceUtil.getImage(inputStream);
+
+			writeImage(image, request, response);
+
+			return;
+		}
 
 		String fileName = fileVersion.getTitle();
 
@@ -1006,7 +1050,7 @@ public class WebServerServlet extends HttpServlet {
 
 		InputStream inputStream = fileEntry.getContentStream();
 
-		ServletResponseUtil.write(response, inputStream);
+		ServletResponseUtil.write(response, inputStream, fileEntry.getSize());
 	}
 
 	protected void sendFileWithRangeHeader(
@@ -1093,7 +1137,7 @@ public class WebServerServlet extends HttpServlet {
 		throws Exception {
 
 		Template template = TemplateManagerUtil.getTemplate(
-			TemplateManager.FREEMARKER, _TEMPLATE_FTL,
+			TemplateManager.FREEMARKER, _templateResource,
 			TemplateContextType.RESTRICTED);
 
 		template.put("dateFormat", _dateFormat);
@@ -1186,7 +1230,7 @@ public class WebServerServlet extends HttpServlet {
 		else if (pathArray.length == 3) {
 			long groupId = GetterUtil.getLong(pathArray[0]);
 			long folderId = GetterUtil.getLong(pathArray[1]);
-			String fileName = pathArray[2];
+			String fileName = HttpUtil.decodeURL(pathArray[2]);
 
 			try {
 				DLAppLocalServiceUtil.getFileEntry(groupId, folderId, fileName);
@@ -1263,9 +1307,6 @@ public class WebServerServlet extends HttpServlet {
 
 	private static final String _PATH_DDM = "ddm";
 
-	private static final String _TEMPLATE_FTL =
-		"com/liferay/portal/webserver/dependencies/template.ftl";
-
 	private static final boolean _WEB_SERVER_SERVLET_VERSION_VERBOSITY_DEFAULT =
 		PropsValues.WEB_SERVER_SERVLET_VERSION_VERBOSITY.equalsIgnoreCase(
 			ReleaseInfo.getName());
@@ -1283,5 +1324,6 @@ public class WebServerServlet extends HttpServlet {
 		FastDateFormatFactoryUtil.getSimpleDateFormat(_DATE_FORMAT_PATTERN);
 
 	private boolean _lastModified = true;
+	private TemplateResource _templateResource;
 
 }

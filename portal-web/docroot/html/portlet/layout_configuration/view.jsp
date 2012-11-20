@@ -33,10 +33,8 @@
 				<aui:input name="refresh" type="hidden" value="<%= true %>" />
 
 				<c:if test="<%= layout.isTypePortlet() %>">
-					<div class="portal-add-content-search">
-						<span id="portal_add_content_title"><liferay-ui:message key="search-applications-searches-as-you-type" /></span>
-
-						<aui:input cssClass="lfr-auto-focus" id="layout_configuration_content" label="" name="layout_configuration_content" onKeyPress="if (event.keyCode == 13) { return false; }" />
+					<div class="portal-add-content-search" id="portal_add_content_title">
+						<aui:input cssClass="lfr-add-content-search lfr-auto-focus" id="layout_configuration_content" label="search-applications-searches-as-you-type" name="layout_configuration_content" onKeyPress="if (event.keyCode == 13) { return false; }" />
 					</div>
 				</c:if>
 
@@ -77,21 +75,16 @@
 					</div>
 				</c:if>
 
-				<c:if test="<%= !layout.isTypePanel() && permissionChecker.isOmniadmin() %>">
+				<c:if test="<%= !layout.isTypePanel() && permissionChecker.isOmniadmin() && PortletLocalServiceUtil.hasPortlet(themeDisplay.getCompanyId(), PortletKeys.MARKETPLACE_STORE) %>">
 
 					<%
-					Group controlPanelGroup = GroupLocalServiceUtil.getGroup(company.getCompanyId(), GroupConstants.CONTROL_PANEL);
+					long controlPanelPlid = PortalUtil.getControlPanelPlid(company.getCompanyId());
 
-					long controlPanelPlid = LayoutLocalServiceUtil.getDefaultPlid(controlPanelGroup.getGroupId(), true);
-
-					PortletURLImpl pluginsURL = new PortletURLImpl(request, PortletKeys.PLUGIN_INSTALLER, controlPanelPlid, PortletRequest.RENDER_PHASE);
-
-					pluginsURL.setPortletMode(PortletMode.VIEW);
-					pluginsURL.setRefererPlid(plid);
+					PortletURLImpl marketplaceURL = new PortletURLImpl(request, PortletKeys.MARKETPLACE_STORE, controlPanelPlid, PortletRequest.RENDER_PHASE);
 					%>
 
 					<p class="lfr-install-more">
-						<aui:a href="<%= pluginsURL.toString() %>" label="install-more-applications" />
+						<aui:a href='<%= HttpUtil.removeParameter(marketplaceURL.toString(), "controlPanelCategory") %>' label="install-more-applications" />
 					</p>
 				</c:if>
 			</aui:form>

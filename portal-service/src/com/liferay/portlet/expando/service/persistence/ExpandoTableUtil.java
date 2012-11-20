@@ -95,19 +95,19 @@ public class ExpandoTableUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
-	public static ExpandoTable update(ExpandoTable expandoTable, boolean merge)
+	public static ExpandoTable update(ExpandoTable expandoTable)
 		throws SystemException {
-		return getPersistence().update(expandoTable, merge);
+		return getPersistence().update(expandoTable);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
-	public static ExpandoTable update(ExpandoTable expandoTable, boolean merge,
+	public static ExpandoTable update(ExpandoTable expandoTable,
 		ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(expandoTable, merge, serviceContext);
+		return getPersistence().update(expandoTable, serviceContext);
 	}
 
 	/**
@@ -157,10 +157,9 @@ public class ExpandoTableUtil {
 	}
 
 	public static com.liferay.portlet.expando.model.ExpandoTable updateImpl(
-		com.liferay.portlet.expando.model.ExpandoTable expandoTable,
-		boolean merge)
+		com.liferay.portlet.expando.model.ExpandoTable expandoTable)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(expandoTable, merge);
+		return getPersistence().updateImpl(expandoTable);
 	}
 
 	/**
@@ -252,10 +251,6 @@ public class ExpandoTableUtil {
 	/**
 	* Returns the first expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -273,11 +268,24 @@ public class ExpandoTableUtil {
 	}
 
 	/**
-	* Returns the last expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
+	* Returns the first expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param companyId the company ID
+	* @param classNameId the class name ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching expando table, or <code>null</code> if a matching expando table could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.expando.model.ExpandoTable fetchByC_C_First(
+		long companyId, long classNameId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByC_C_First(companyId, classNameId, orderByComparator);
+	}
+
+	/**
+	* Returns the last expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
 	*
 	* @param companyId the company ID
 	* @param classNameId the class name ID
@@ -296,11 +304,24 @@ public class ExpandoTableUtil {
 	}
 
 	/**
-	* Returns the expando tables before and after the current expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
+	* Returns the last expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param companyId the company ID
+	* @param classNameId the class name ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching expando table, or <code>null</code> if a matching expando table could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.expando.model.ExpandoTable fetchByC_C_Last(
+		long companyId, long classNameId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByC_C_Last(companyId, classNameId, orderByComparator);
+	}
+
+	/**
+	* Returns the expando tables before and after the current expando table in the ordered set where companyId = &#63; and classNameId = &#63;.
 	*
 	* @param tableId the primary key of the current expando table
 	* @param companyId the company ID

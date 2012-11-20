@@ -16,6 +16,7 @@ package com.liferay.portal.service;
 
 import com.liferay.portal.NoSuchRoleException;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -33,7 +34,6 @@ import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.test.TransactionalCallbackAwareExecutionTestListener;
 import com.liferay.portal.util.TestPropsValues;
@@ -151,6 +151,7 @@ public class GroupServiceTest {
 		Group scope = GroupLocalServiceUtil.addGroup(
 			TestPropsValues.getUserId(), GroupConstants.DEFAULT_PARENT_GROUP_ID,
 			Layout.class.getName(), layout.getPlid(),
+			GroupConstants.DEFAULT_LIVE_GROUP_ID,
 			layout.getName(LocaleUtil.getDefault()), null, 0, null, false, true,
 			null);
 
@@ -276,8 +277,8 @@ public class GroupServiceTest {
 		}
 
 		return GroupServiceUtil.addGroup(
-			parentGroupId, name, description, type, friendlyURL, site, active,
-			serviceContext);
+			parentGroupId, GroupConstants.DEFAULT_LIVE_GROUP_ID, name,
+			description, type, friendlyURL, site, active, serviceContext);
 	}
 
 	private void _givePermissionToManageSubsites(User user, Group group)
@@ -291,8 +292,8 @@ public class GroupServiceTest {
 		}
 		catch (NoSuchRoleException nsre) {
 			role = RoleLocalServiceUtil.addRole(
-				TestPropsValues.getUserId(), TestPropsValues.getCompanyId(),
-				"Subsites Admin", null, null, RoleConstants.TYPE_SITE);
+				TestPropsValues.getUserId(), null, 0, "Subsites Admin", null,
+				null, RoleConstants.TYPE_SITE, null);
 		}
 
 		ResourcePermissionLocalServiceUtil.addResourcePermission(

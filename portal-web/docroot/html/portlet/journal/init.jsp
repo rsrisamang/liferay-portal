@@ -16,7 +16,8 @@
 
 <%@ include file="/html/portlet/init.jsp" %>
 
-<%@ page import="com.liferay.portal.NoSuchLayoutException" %><%@
+<%@ page import="com.liferay.portal.LocaleException" %><%@
+page import="com.liferay.portal.NoSuchLayoutException" %><%@
 page import="com.liferay.portal.kernel.editor.EditorUtil" %><%@
 page import="com.liferay.portal.kernel.xml.Document" %><%@
 page import="com.liferay.portal.kernel.xml.Element" %><%@
@@ -77,6 +78,7 @@ page import="com.liferay.portlet.journal.model.JournalFeed" %><%@
 page import="com.liferay.portlet.journal.model.JournalFeedConstants" %><%@
 page import="com.liferay.portlet.journal.model.JournalFolder" %><%@
 page import="com.liferay.portlet.journal.model.JournalFolderConstants" %><%@
+page import="com.liferay.portlet.journal.model.JournalSearchConstants" %><%@
 page import="com.liferay.portlet.journal.model.JournalStructure" %><%@
 page import="com.liferay.portlet.journal.model.JournalTemplate" %><%@
 page import="com.liferay.portlet.journal.model.JournalTemplateConstants" %><%@
@@ -84,6 +86,7 @@ page import="com.liferay.portlet.journal.model.impl.JournalArticleImpl" %><%@
 page import="com.liferay.portlet.journal.search.ArticleDisplayTerms" %><%@
 page import="com.liferay.portlet.journal.search.ArticleSearch" %><%@
 page import="com.liferay.portlet.journal.search.ArticleSearchTerms" %><%@
+page import="com.liferay.portlet.journal.search.EntriesChecker" %><%@
 page import="com.liferay.portlet.journal.search.FeedDisplayTerms" %><%@
 page import="com.liferay.portlet.journal.search.FeedSearch" %><%@
 page import="com.liferay.portlet.journal.search.FeedSearchTerms" %><%@
@@ -111,12 +114,19 @@ page import="com.liferay.portlet.journal.service.permission.JournalStructurePerm
 page import="com.liferay.portlet.journal.service.permission.JournalTemplatePermission" %><%@
 page import="com.liferay.portlet.journal.util.JournalUtil" %><%@
 page import="com.liferay.portlet.journalcontent.util.JournalContentUtil" %><%@
+page import="com.liferay.portlet.layoutconfiguration.util.RuntimePageUtil" %><%@
 page import="com.liferay.util.RSSUtil" %>
 
 <%@ page import="java.net.URLDecoder" %>
 
+<%@ page import="java.util.regex.Pattern" %>
+
 <%
-PortalPreferences portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(request);
+PortalPreferences portalPreferences = PortletPreferencesFactoryUtil.getPortalPreferences(liferayPortletRequest);
+
+PortletPreferences preferences = liferayPortletRequest.getPreferences();
+
+String[] displayViews = StringUtil.split(PrefsParamUtil.getString(preferences, liferayPortletRequest, "displayViews", StringUtil.merge(PropsValues.JOURNAL_DISPLAY_VIEWS)));
 
 Format dateFormatDate = FastDateFormatFactoryUtil.getDate(locale, timeZone);
 Format dateFormatDateTime = FastDateFormatFactoryUtil.getDateTime(locale, timeZone);

@@ -14,6 +14,7 @@
 
 package com.liferay.portal.freemarker;
 
+import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.templateparser.TemplateContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -27,8 +28,6 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebKeys;
 
 import freemarker.ext.beans.BeansWrapper;
-
-import freemarker.template.utility.ObjectConstructor;
 
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +51,7 @@ public class FreeMarkerTemplateContextHelper extends TemplateContextHelper {
 
 		// Object util
 
-		helperUtilities.put("objectUtil", new ObjectConstructor());
+		helperUtilities.put("objectUtil", new LiferayObjectConstructor());
 
 		// Portlet preferences
 
@@ -108,7 +107,7 @@ public class FreeMarkerTemplateContextHelper extends TemplateContextHelper {
 			templateContext.put(
 				"init",
 				StringPool.SLASH + themeDisplay.getPathContext() +
-					FreeMarkerTemplateLoader.SERVLET_SEPARATOR +
+					TemplateResource.SERVLET_SEPARATOR +
 						"/html/themes/_unstyled/templates/init.ftl");
 		}
 

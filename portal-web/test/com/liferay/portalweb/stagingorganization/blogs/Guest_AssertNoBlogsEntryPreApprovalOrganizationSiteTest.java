@@ -24,29 +24,12 @@ public class Guest_AssertNoBlogsEntryPreApprovalOrganizationSiteTest
 	extends BaseTestCase {
 	public void testGuest_AssertNoBlogsEntryPreApprovalOrganizationSite()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/selenium/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Blogs Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Blogs Test Page",
 			RuntimeVariables.replace("Blogs Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isVisible("//section"));
 		assertFalse(selenium.isTextPresent("Pending Approval"));
 		assertFalse(selenium.isTextPresent("Blogs Entry Title"));

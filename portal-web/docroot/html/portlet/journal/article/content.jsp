@@ -178,6 +178,15 @@ if (Validator.isNotNull(content)) {
 		<liferay-ui:error exception="<%= ArticleVersionException.class %>" message="another-user-has-made-changes-since-you-started-editing-please-copy-your-changes-and-try-again" />
 		<liferay-ui:error exception="<%= DuplicateArticleIdException.class %>" message="please-enter-a-unique-id" />
 
+		<liferay-ui:error exception="<%= LocaleException.class %>">
+
+			<%
+			LocaleException le = (LocaleException)errorException;
+			%>
+
+			<liferay-ui:message arguments="<%= new String[] {StringUtil.merge(le.getSourceAvailableLocales(), StringPool.COMMA_AND_SPACE), StringUtil.merge(le.getTargetAvailableLocales(), StringPool.COMMA_AND_SPACE)} %>" key="the-default-language-x-does-not-match-the-portal's-available-languages-x" />
+		</liferay-ui:error>
+
 		<table class="lfr-table journal-article-header-edit" id="<portlet:namespace />articleHeaderEdit">
 		<tr>
 			<td>
@@ -216,13 +225,13 @@ if (Validator.isNotNull(content)) {
 									<aui:input name="structureId" type="hidden" value="<%= structureId %>" />
 									<aui:input name="structureName" type="hidden" value="<%= structureName %>" />
 									<aui:input name="structureDescription" type="hidden" value="<%= structureDescription %>" />
-									<aui:input name="structureXSD" type="hidden" value="<%= JS.encodeURIComponent(structureXSD) %>" />
+									<aui:input name="structureXSD" type="hidden" value="<%= structureXSD %>" />
 
 									<span class="structure-name-label" id="<portlet:namespace />structureNameLabel">
 										<%= HtmlUtil.escape(structureName) %>
 									</span>
 
-									<c:if test="<%= classNameId == 0 %>">
+									<c:if test="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>">
 										<c:if test="<%= (structure == null) || JournalStructurePermission.contains(permissionChecker, structure, ActionKeys.UPDATE) %>">
 											<liferay-ui:icon id="editStructureLink" image="edit" url="javascript:;" />
 										</c:if>
@@ -377,7 +386,7 @@ if (Validator.isNotNull(content)) {
 								</aui:select>
 							</span>
 
-							<c:if test="<%= Validator.isNotNull(articleId) %>">
+							<c:if test="<%= article != null %>">
 								<span class="lfr-translation-manager-add-menu">
 									<liferay-ui:icon-menu
 										align="left"
@@ -421,7 +430,7 @@ if (Validator.isNotNull(content)) {
 					</c:choose>
 				</div>
 
-				<c:if test="<%= Validator.isNotNull(articleId) %>">
+				<c:if test="<%= article != null %>">
 
 					<%
 					String[] translations = article.getAvailableLocales();
@@ -446,7 +455,7 @@ if (Validator.isNotNull(content)) {
 
 										<%
 										for (int i = 0; i < translations.length; i++) {
-											if (translations[i].equals(defaultLanguageId)){
+											if (translations[i].equals(defaultLanguageId)) {
 												continue;
 											}
 
@@ -474,7 +483,7 @@ if (Validator.isNotNull(content)) {
 
 		<div class="journal-article-general-fields">
 			<aui:input defaultLanguageId="<%= Validator.isNotNull(toLanguageId) ? toLanguageId : defaultLanguageId %>" languageId="<%= Validator.isNotNull(toLanguageId) ? toLanguageId : defaultLanguageId %>" name="title">
-				<c:if test="<%= classNameId == 0 %>">
+				<c:if test="<%= classNameId == JournalArticleConstants.CLASSNAME_ID_DEFAULT %>">
 					<aui:validator name="required" />
 				</c:if>
 			</aui:input>
@@ -590,7 +599,7 @@ if (Validator.isNotNull(content)) {
 	Liferay.provide(
 		window,
 		'<portlet:namespace />postProcessTranslation',
-		function(formDate, cmd, newVersion, newLanguageId, newLanguage) {
+		function(formDate, cmd, newVersion, newLanguageId, newLanguage, newStatusMessage) {
 			var A = AUI();
 
 			document.<portlet:namespace />fm1.<portlet:namespace />formDate.value = formDate;
@@ -603,6 +612,9 @@ if (Validator.isNotNull(content)) {
 
 			var taglibWorkflowStatus = A.one('#<portlet:namespace />journalArticleWrapper .taglib-workflow-status');
 			var statusNode = taglibWorkflowStatus.one('.workflow-status strong');
+
+			statusNode.html(newStatusMessage);
+
 			var versionNode = taglibWorkflowStatus.one('.workflow-version strong');
 
 			document.<portlet:namespace />fm1.<portlet:namespace />version.value = newVersion;
@@ -751,12 +763,12 @@ if (Validator.isNotNull(content)) {
 	Liferay.Portlet.Journal.PROXY = {};
 	Liferay.Portlet.Journal.PROXY.doAsUserId = '<%= HttpUtil.encodeURL(doAsUserId) %>';
 	Liferay.Portlet.Journal.PROXY.editorImpl = '<%= EditorUtil.getEditorValue(request, EDITOR_WYSIWYG_IMPL_KEY) %>';
-	Liferay.Portlet.Journal.PROXY.editorURL = '<%= editorURL %>';
+	Liferay.Portlet.Journal.PROXY.editorURL = '<%= HtmlUtil.escapeJS(editorURL) %>';
 	Liferay.Portlet.Journal.PROXY.instanceIdKey = '<%= instanceIdKey %>';
 	Liferay.Portlet.Journal.PROXY.pathThemeCss = '<%= HttpUtil.encodeURL(themeDisplay.getPathThemeCss()) %>';
 	Liferay.Portlet.Journal.PROXY.portletNamespace = '<portlet:namespace />';
 
-	new Liferay.Portlet.Journal(Liferay.Portlet.Journal.PROXY.portletNamespace, '<%= HtmlUtil.escape(articleId) %>');
+	new Liferay.Portlet.Journal(Liferay.Portlet.Journal.PROXY.portletNamespace, '<%= (article != null) ? HtmlUtil.escape(articleId) : StringPool.BLANK %>');
 
 	var defaultLocaleSelector = A.one('#<portlet:namespace/>defaultLocale');
 

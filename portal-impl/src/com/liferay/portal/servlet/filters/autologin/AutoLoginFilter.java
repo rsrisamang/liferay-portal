@@ -23,11 +23,9 @@ import com.liferay.portal.kernel.util.InstancePool;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.User;
-import com.liferay.portal.model.UserTracker;
 import com.liferay.portal.security.auth.AutoLogin;
 import com.liferay.portal.security.pwd.PwdEncryptor;
 import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.service.UserTrackerLocalServiceUtil;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
 import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PortalUtil;
@@ -91,18 +89,6 @@ public class AutoLoginFilter extends BasePortalFilter {
 				if (user.isLockout()) {
 					return null;
 				}
-				else if (PropsValues.LIVE_USERS_ENABLED) {
-					UserTracker userTracker =
-						UserTrackerLocalServiceUtil.fetchUserTracker(userId);
-
-					if ((userTracker == null) &&
-						(session.getAttribute(WebKeys.USER) == null)) {
-
-						session.invalidate();
-
-						return null;
-					}
-				}
 			}
 			else {
 				return null;
@@ -164,7 +150,7 @@ public class AutoLoginFilter extends BasePortalFilter {
 		String path = request.getRequestURI().toLowerCase();
 
 		if (!contextPath.equals(StringPool.SLASH) &&
-			(path.indexOf(contextPath) != -1)) {
+			path.contains(contextPath)) {
 
 			path = path.substring(contextPath.length());
 		}
@@ -182,6 +168,12 @@ public class AutoLoginFilter extends BasePortalFilter {
 
 		String remoteUser = request.getRemoteUser();
 		String jUserName = (String)session.getAttribute("j_username");
+
+		// PLACEHOLDER 01
+		// PLACEHOLDER 02
+		// PLACEHOLDER 03
+		// PLACEHOLDER 04
+		// PLACEHOLDER 05
 
 		if (!PropsValues.AUTH_LOGIN_DISABLED &&
 			(remoteUser == null) && (jUserName == null)) {

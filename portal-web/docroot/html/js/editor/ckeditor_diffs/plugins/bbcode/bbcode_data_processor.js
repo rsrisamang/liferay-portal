@@ -45,6 +45,8 @@
 
 	var NEW_LINE = '\n';
 
+	var NEW_THREAD_URL = CKEDITOR.config.newThreadURL;
+
 	var REGEX_COLOR_RGB = /^rgb\s*\(\s*([01]?\d\d?|2[0-4]\d|25[0-5])\,\s*([01]?\d\d?|2[0-4]\d|25[0-5])\,\s*([01]?\d\d?|2[0-4]\d|25[0-5])\s*\)$/;
 
 	var REGEX_EM = /em$/i;
@@ -440,9 +442,12 @@
 					data = data.replace(REGEX_NEWLINE, '');
 				}
 				else if (instance._checkParentElement(element, TAG_LINK) &&
-					data.indexOf(STR_MAILTO) == 0) {
+					data.indexOf(STR_MAILTO) === 0) {
 
 					data = data.substring(STR_MAILTO.length);
+				}
+				else if (instance._checkParentElement(element, TAG_CITE)) {
+					data = Liferay.BBCodeUtil.escape(data);
 				}
 
 				instance._endResult.push(data);
@@ -540,8 +545,8 @@
 
 			var decodedLink = decodeURIComponent(hrefAttribute);
 
-			if (CKEDITOR.config.newThreadURL === decodedLink) {
-				hrefAttribute = decodedLink;
+			if (decodedLink.indexOf(NEW_THREAD_URL) >= 0) {
+				hrefAttribute = NEW_THREAD_URL;
 			}
 
 			var linkHandler = MAP_LINK_HANDLERS[hrefAttribute.indexOf(STR_MAILTO)] || 'url';

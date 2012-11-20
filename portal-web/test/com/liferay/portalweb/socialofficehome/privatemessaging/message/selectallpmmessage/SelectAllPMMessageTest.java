@@ -27,30 +27,14 @@ public class SelectAllPMMessageTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
-				selenium.open("/user/joebloggs/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Messages')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
+				selenium.open("/user/joebloggs/so/dashboard/");
+				selenium.waitForVisible(
+					"//nav/ul/li[contains(.,'Messages')]/a/span");
 				selenium.clickAt("//nav/ul/li[contains(.,'Messages')]/a/span",
 					RuntimeVariables.replace("Messages"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Private Messaging"),
 					selenium.getText("//span[@class='portlet-title-default']"));
 				assertEquals("Mark as Unread",
@@ -139,9 +123,9 @@ public class SelectAllPMMessageTest extends BaseTestCase {
 						"//tr[4]/td[1]/span/span/span/input[2]"));
 				assertFalse(selenium.isChecked(
 						"//tr[5]/td[1]/span/span/span/input[2]"));
-				assertEquals(RuntimeVariables.replace("All"),
-					selenium.getText("//span[@class='select-all']"));
-				selenium.clickAt("//span[@class='select-all']",
+				selenium.waitForVisible(
+					"//input[@id='_1_WAR_privatemessagingportlet_checkAll']");
+				selenium.clickAt("//input[@id='_1_WAR_privatemessagingportlet_checkAll']",
 					RuntimeVariables.replace("All"));
 				assertTrue(selenium.isChecked("//td[1]/span/span/span/input[2]"));
 				assertTrue(selenium.isChecked(

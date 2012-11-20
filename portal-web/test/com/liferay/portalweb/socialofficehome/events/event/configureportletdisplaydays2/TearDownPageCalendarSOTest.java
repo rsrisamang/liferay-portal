@@ -27,98 +27,63 @@ public class TearDownPageCalendarSOTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/joebloggs/so/dashboard/");
-				loadRequiredJavaScriptModules();
+				selenium.click("//div[@id='dockbar']");
+				selenium.waitForVisible("//li[@id='_145_toggleControls']");
+				selenium.clickAt("//li[@id='_145_toggleControls']",
+					RuntimeVariables.replace("Edit Controls"));
+
+				boolean EditControlOff = selenium.isElementPresent(
+						"//body[@class='normal yui3-skin-sam signed-in private-page user-site user-group dockbar-ready controls-hidden']");
+
+				if (!EditControlOff) {
+					label = 2;
+
+					continue;
+				}
+
+				assertEquals(RuntimeVariables.replace("Edit Controls"),
+					selenium.getText("//li[@id='_145_toggleControls']"));
+				selenium.clickAt("//li[@id='_145_toggleControls']",
+					RuntimeVariables.replace("Edit Controls"));
+
+			case 2:
 				selenium.clickAt("//nav[@id='navigation']",
 					RuntimeVariables.replace("Navigation"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Calendar Test Page')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForVisible(
+					"//nav/ul/li[contains(.,'Calendar Test Page')]/a/span");
 
 				boolean calendarPagePresent = selenium.isElementPresent(
 						"//nav/ul/li[contains(.,'Calendar Test Page')]/a/span");
 
 				if (!calendarPagePresent) {
-					label = 2;
+					label = 3;
 
 					continue;
 				}
 
 				selenium.mouseOver(
 					"//nav/ul/li[contains(.,'Calendar Test Page')]/a/span");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']");
 				assertEquals(RuntimeVariables.replace("X"),
 					selenium.getText(
 						"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']"));
 				selenium.click(
 					"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']");
+				selenium.waitForConfirmation(
+					"Are you sure you want to delete this page?");
+				selenium.waitForElementNotPresent(
+					"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']");
 
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
+			case 3:
+				assertEquals(RuntimeVariables.replace("Edit Controls"),
+					selenium.getText("//li[@id='_145_toggleControls']"));
+				selenium.clickAt("//li[@id='_145_toggleControls']",
+					RuntimeVariables.replace("Edit Controls"));
 
-					try {
-						if ("Are you sure you want to delete this page?".equals(
-									selenium.getConfirmation())) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (!selenium.isElementPresent(
-									"//nav/ul/li[contains(.,'Calendar Test Page')]/span[@class='delete-tab']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-			case 2:
 			case 100:
 				label = -1;
 			}

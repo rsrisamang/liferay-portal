@@ -27,6 +27,8 @@ public class Gmail_ViewCPEmailTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.openWindow("http://www.gmail.com/",
 					RuntimeVariables.replace("gmail"));
 				selenium.waitForPopUp("gmail", RuntimeVariables.replace(""));
@@ -71,7 +73,6 @@ public class Gmail_ViewCPEmailTest extends BaseTestCase {
 				selenium.clickAt("//a[@id='button']",
 					RuntimeVariables.replace("Sign in to Gmail"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 3:
 			case 4:
@@ -92,26 +93,9 @@ public class Gmail_ViewCPEmailTest extends BaseTestCase {
 					RuntimeVariables.replace(
 						"Sign out and sign in as a different user"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 			case 5:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@id='Email']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@id='Email']");
 				selenium.type("//input[@id='Email']",
 					RuntimeVariables.replace("liferay.qa.server.trunk2"));
 				selenium.type("//input[@id='Passwd']",
@@ -136,7 +120,6 @@ public class Gmail_ViewCPEmailTest extends BaseTestCase {
 				selenium.clickAt("//input[@id='signIn']",
 					RuntimeVariables.replace("Sign In"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				Thread.sleep(5000);
 				assertEquals(RuntimeVariables.replace(
 						"http://localhost:8080: Your New Account"),
@@ -144,24 +127,7 @@ public class Gmail_ViewCPEmailTest extends BaseTestCase {
 				selenium.clickAt("//td[6]/div/div/div/span[1]",
 					RuntimeVariables.replace(
 						"http://localhost:8080: Your New Account"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//td[1]/table/tbody/tr/td/div/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//td[1]/table/tbody/tr/td/div/span");
 				assertEquals(RuntimeVariables.replace("Joe Bloggs"),
 					selenium.getText("//td[1]/table/tbody/tr/td/div/span"));
 				assertTrue(selenium.isPartialText("//div[3]/div[5]/div",

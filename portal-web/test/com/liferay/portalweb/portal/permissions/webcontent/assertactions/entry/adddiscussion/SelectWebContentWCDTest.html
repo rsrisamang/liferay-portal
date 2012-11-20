@@ -14,44 +14,54 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForVisible</td>
-	<td>link=Web Content Display Permissions Page</td>
-	<td>Web Content Display Permissions Page</td>
-</tr>
-<tr>
 	<td>clickAtAndWait</td>
-	<td>link=Web Content Display Permissions Page</td>
-	<td>Web Content Display Permissions Page</td>
-</tr>
-<tr>
-	<td>clickAt</td>
-	<td>//span[@class='portlet-configuration']/a</td>
-	<td>Select Web Content</td>
-</tr>
-<tr>
-	<td>pause</td>
-	<td>5000</td>
-	<td></td>
-</tr>
-<tr>
-	<td>waitForVisible</td>
-	<td>link=Web Content Name</td>
-	<td>Web Content Name</td>
-</tr>
-<tr>
-	<td>clickAt</td>
-	<td>link=Web Content Name</td>
-	<td>Web Content Name</td>
-</tr>
-<tr>
-	<td>waitForVisible</td>
-	<td>//span[@class='displaying-article-id-holder']</td>
-	<td>Displaying Content: Web Content Name (Modified)</td>
+	<td>link=Web Content Display Test Page</td>
+	<td>Web Content Display Test Page</td>
 </tr>
 <tr>
 	<td>assertText</td>
-	<td>//span[@class='displaying-article-id-holder']</td>
-	<td>Displaying Content: Web Content Name (Modified)</td>
+	<td>//span[@class='icon-action icon-action-configuration']/a/span</td>
+	<td>Select Web Content</td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//span[@class='icon-action icon-action-configuration']/a/span</td>
+	<td>Select Web Content</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//iframe[contains(@id,'configurationIframeDialog')]</td>
+	<td>Web Content Display - Configuration</td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>//iframe[contains(@id,'configurationIframeDialog')]</td>
+	<td>Web Content Display - Configuration</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//script[contains(@src,'/liferay/navigation_interaction.js')]</td>
+	<td>Navigation Interaction</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>link=WC WebContent Title</td>
+	<td>WC WebContent Title</td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>link=WC WebContent Title</td>
+	<td>WC WebContent Title</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//span[@class='displaying-article-id-holder ']</td>
+	<td>Displaying Content: WC WebContent Title (Modified)</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//span[@class='displaying-article-id-holder ']</td>
+	<td>Displaying Content: WC WebContent Title (Modified)</td>
 </tr>
 <tr>
 	<td>clickAtAndWait</td>
@@ -59,14 +69,14 @@
 	<td>Save</td>
 </tr>
 <tr>
-	<td>waitForVisible</td>
+	<td>assertText</td>
 	<td>//div[@class='portlet-msg-success']</td>
 	<td>You have successfully updated the setup.</td>
 </tr>
 <tr>
-	<td>assertText</td>
-	<td>//div[@class='portlet-msg-success']</td>
-	<td>You have successfully updated the setup.</td>
+	<td>selectFrame</td>
+	<td>relative=top</td>
+	<td>top</td>
 </tr>
 </tbody></table>
 </body>

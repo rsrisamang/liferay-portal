@@ -23,28 +23,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewActivityMBCategoryThreadMessageTest extends BaseTestCase {
 	public void testViewActivityMBCategoryThreadMessage()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/joebloggs/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Activities Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Activities Page", RuntimeVariables.replace(""));
+		selenium.clickAt("link=Activities Page",
+			RuntimeVariables.replace("Activities Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Joe wrote a new message board post, MB Category Thread Message Subject, in Liferay."),
 			selenium.getText("xPath=(//div[@class='activity-title'])[1]"));

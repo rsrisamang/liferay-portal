@@ -250,20 +250,6 @@ public class WikiNodeLocalServiceUtil {
 	}
 
 	/**
-	* Updates the wiki node in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param wikiNode the wiki node
-	* @param merge whether to merge the wiki node with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the wiki node that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portlet.wiki.model.WikiNode updateWikiNode(
-		com.liferay.portlet.wiki.model.WikiNode wikiNode, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateWikiNode(wikiNode, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -346,15 +332,32 @@ public class WikiNodeLocalServiceUtil {
 		getService().deleteNodes(groupId);
 	}
 
+	public static com.liferay.portlet.wiki.model.WikiNode fetchWikiNode(
+		long groupId, java.lang.String name)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().fetchWikiNode(groupId, name);
+	}
+
 	public static java.util.List<com.liferay.portlet.wiki.model.WikiNode> getCompanyNodes(
 		long companyId, int start, int end)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getCompanyNodes(companyId, start, end);
 	}
 
+	public static java.util.List<com.liferay.portlet.wiki.model.WikiNode> getCompanyNodes(
+		long companyId, int status, int start, int end)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getCompanyNodes(companyId, status, start, end);
+	}
+
 	public static int getCompanyNodesCount(long companyId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getCompanyNodesCount(companyId);
+	}
+
+	public static int getCompanyNodesCount(long companyId, int status)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getCompanyNodesCount(companyId, status);
 	}
 
 	public static com.liferay.portlet.wiki.model.WikiNode getNode(long nodeId)
@@ -378,15 +381,34 @@ public class WikiNodeLocalServiceUtil {
 	}
 
 	public static java.util.List<com.liferay.portlet.wiki.model.WikiNode> getNodes(
+		long groupId, int status)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().getNodes(groupId, status);
+	}
+
+	public static java.util.List<com.liferay.portlet.wiki.model.WikiNode> getNodes(
 		long groupId, int start, int end)
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService().getNodes(groupId, start, end);
 	}
 
+	public static java.util.List<com.liferay.portlet.wiki.model.WikiNode> getNodes(
+		long groupId, int status, int start, int end)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().getNodes(groupId, status, start, end);
+	}
+
 	public static int getNodesCount(long groupId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getNodesCount(groupId);
+	}
+
+	public static int getNodesCount(long groupId, int status)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService().getNodesCount(groupId, status);
 	}
 
 	public static void importPages(long userId, long nodeId,
@@ -395,6 +417,27 @@ public class WikiNodeLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		getService().importPages(userId, nodeId, importer, inputStreams, options);
+	}
+
+	public static com.liferay.portlet.wiki.model.WikiNode moveNodeToTrash(
+		long userId, long nodeId)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().moveNodeToTrash(userId, nodeId);
+	}
+
+	public static com.liferay.portlet.wiki.model.WikiNode moveNodeToTrash(
+		long userId, com.liferay.portlet.wiki.model.WikiNode node)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().moveNodeToTrash(userId, node);
+	}
+
+	public static void restoreNodeFromTrash(long userId,
+		com.liferay.portlet.wiki.model.WikiNode node)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		getService().restoreNodeFromTrash(userId, node);
 	}
 
 	public static void subscribeNode(long userId, long nodeId)
@@ -415,6 +458,14 @@ public class WikiNodeLocalServiceUtil {
 		throws com.liferay.portal.kernel.exception.PortalException,
 			com.liferay.portal.kernel.exception.SystemException {
 		return getService().updateNode(nodeId, name, description, serviceContext);
+	}
+
+	public static com.liferay.portlet.wiki.model.WikiNode updateStatus(
+		long userId, com.liferay.portlet.wiki.model.WikiNode node, int status,
+		com.liferay.portal.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService().updateStatus(userId, node, status, serviceContext);
 	}
 
 	public static WikiNodeLocalService getService() {

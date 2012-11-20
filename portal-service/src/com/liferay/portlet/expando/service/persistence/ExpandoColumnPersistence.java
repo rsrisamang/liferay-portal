@@ -74,8 +74,7 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 			com.liferay.portlet.expando.NoSuchColumnException;
 
 	public com.liferay.portlet.expando.model.ExpandoColumn updateImpl(
-		com.liferay.portlet.expando.model.ExpandoColumn expandoColumn,
-		boolean merge)
+		com.liferay.portlet.expando.model.ExpandoColumn expandoColumn)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
@@ -152,10 +151,6 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 	/**
 	* Returns the first expando column in the ordered set where tableId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param tableId the table ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching expando column
@@ -169,11 +164,20 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 			com.liferay.portlet.expando.NoSuchColumnException;
 
 	/**
-	* Returns the last expando column in the ordered set where tableId = &#63;.
+	* Returns the first expando column in the ordered set where tableId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tableId the table ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching expando column, or <code>null</code> if a matching expando column could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portlet.expando.model.ExpandoColumn fetchByTableId_First(
+		long tableId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the last expando column in the ordered set where tableId = &#63;.
 	*
 	* @param tableId the table ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -188,11 +192,20 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 			com.liferay.portlet.expando.NoSuchColumnException;
 
 	/**
-	* Returns the expando columns before and after the current expando column in the ordered set where tableId = &#63;.
+	* Returns the last expando column in the ordered set where tableId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tableId the table ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching expando column, or <code>null</code> if a matching expando column could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portlet.expando.model.ExpandoColumn fetchByTableId_Last(
+		long tableId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the expando columns before and after the current expando column in the ordered set where tableId = &#63;.
 	*
 	* @param columnId the primary key of the current expando column
 	* @param tableId the table ID
@@ -323,10 +336,6 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 	/**
 	* Returns the first expando column in the ordered set where tableId = &#63; and name = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param tableId the table ID
 	* @param name the name
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -341,11 +350,21 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 			com.liferay.portlet.expando.NoSuchColumnException;
 
 	/**
-	* Returns the last expando column in the ordered set where tableId = &#63; and name = &#63;.
+	* Returns the first expando column in the ordered set where tableId = &#63; and name = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tableId the table ID
+	* @param name the name
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching expando column, or <code>null</code> if a matching expando column could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portlet.expando.model.ExpandoColumn fetchByT_N_First(
+		long tableId, java.lang.String name,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the last expando column in the ordered set where tableId = &#63; and name = &#63;.
 	*
 	* @param tableId the table ID
 	* @param name the name
@@ -361,11 +380,21 @@ public interface ExpandoColumnPersistence extends BasePersistence<ExpandoColumn>
 			com.liferay.portlet.expando.NoSuchColumnException;
 
 	/**
-	* Returns the expando columns before and after the current expando column in the ordered set where tableId = &#63; and name = &#63;.
+	* Returns the last expando column in the ordered set where tableId = &#63; and name = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tableId the table ID
+	* @param name the name
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching expando column, or <code>null</code> if a matching expando column could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portlet.expando.model.ExpandoColumn fetchByT_N_Last(
+		long tableId, java.lang.String name,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the expando columns before and after the current expando column in the ordered set where tableId = &#63; and name = &#63;.
 	*
 	* @param columnId the primary key of the current expando column
 	* @param tableId the table ID

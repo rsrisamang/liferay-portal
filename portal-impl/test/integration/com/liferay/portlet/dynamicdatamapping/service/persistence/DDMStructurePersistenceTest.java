@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -124,6 +124,8 @@ public class DDMStructurePersistenceTest {
 
 		newDDMStructure.setModifiedDate(ServiceTestUtil.nextDate());
 
+		newDDMStructure.setParentStructureId(ServiceTestUtil.nextLong());
+
 		newDDMStructure.setClassNameId(ServiceTestUtil.nextLong());
 
 		newDDMStructure.setStructureKey(ServiceTestUtil.randomString());
@@ -138,7 +140,7 @@ public class DDMStructurePersistenceTest {
 
 		newDDMStructure.setType(ServiceTestUtil.nextInt());
 
-		_persistence.update(newDDMStructure, false);
+		_persistence.update(newDDMStructure);
 
 		DDMStructure existingDDMStructure = _persistence.findByPrimaryKey(newDDMStructure.getPrimaryKey());
 
@@ -160,6 +162,8 @@ public class DDMStructurePersistenceTest {
 		Assert.assertEquals(Time.getShortTimestamp(
 				existingDDMStructure.getModifiedDate()),
 			Time.getShortTimestamp(newDDMStructure.getModifiedDate()));
+		Assert.assertEquals(existingDDMStructure.getParentStructureId(),
+			newDDMStructure.getParentStructureId());
 		Assert.assertEquals(existingDDMStructure.getClassNameId(),
 			newDDMStructure.getClassNameId());
 		Assert.assertEquals(existingDDMStructure.getStructureKey(),
@@ -332,6 +336,8 @@ public class DDMStructurePersistenceTest {
 
 		ddmStructure.setModifiedDate(ServiceTestUtil.nextDate());
 
+		ddmStructure.setParentStructureId(ServiceTestUtil.nextLong());
+
 		ddmStructure.setClassNameId(ServiceTestUtil.nextLong());
 
 		ddmStructure.setStructureKey(ServiceTestUtil.randomString());
@@ -346,7 +352,7 @@ public class DDMStructurePersistenceTest {
 
 		ddmStructure.setType(ServiceTestUtil.nextInt());
 
-		_persistence.update(ddmStructure, false);
+		_persistence.update(ddmStructure);
 
 		return ddmStructure;
 	}

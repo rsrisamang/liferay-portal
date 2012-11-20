@@ -104,7 +104,7 @@ addPortletURLs = getAddPortletURLs(liferayPortletRequest, liferayPortletResponse
 		%>
 
 			<liferay-ui:icon
-				message="<%= message %>"
+				message="<%= HtmlUtil.escape(message) %>"
 				src="<%= assetRendererFactory.getIconPath(renderRequest) %>"
 				url="<%= taglibEditURL %>"
 			/>
@@ -134,15 +134,12 @@ public PortletURL getAddPortletURL(LiferayPortletRequest liferayPortletRequest, 
 		return null;
 	}
 
-	addPortletURL.setWindowState(LiferayWindowState.POP_UP);
+	PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
 
-	addPortletURL.setPortletMode(PortletMode.VIEW);
-
-	PortletURL redirectURL = liferayPortletResponse.createRenderURL();
-
-	redirectURL.setWindowState(LiferayWindowState.POP_UP);
+	PortletURL redirectURL = liferayPortletResponse.createLiferayPortletURL(themeDisplay.getPlid(), portletDisplay.getId(), PortletRequest.RENDER_PHASE, false);
 
 	redirectURL.setParameter("struts_action", "/asset_publisher/add_asset_redirect");
+	redirectURL.setWindowState(LiferayWindowState.POP_UP);
 
 	addPortletURL.setParameter("redirect", redirectURL.toString());
 
@@ -152,8 +149,6 @@ public PortletURL getAddPortletURL(LiferayPortletRequest liferayPortletRequest, 
 		addPortletURL.setParameter("referringPortletResource", referringPortletResource);
 	}
 	else {
-		PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
-
 		addPortletURL.setParameter("referringPortletResource", portletDisplay.getId());
 
 		Map<Long, String> assetVocabularyAssetCategoryIds = new HashMap<Long, String>();
@@ -199,6 +194,9 @@ public PortletURL getAddPortletURL(LiferayPortletRequest liferayPortletRequest, 
 		}
 	}
 
+	addPortletURL.setPortletMode(PortletMode.VIEW);
+	addPortletURL.setWindowState(LiferayWindowState.POP_UP);
+
 	return addPortletURL;
 }
 
@@ -211,6 +209,12 @@ public Map<String, PortletURL> getAddPortletURLs(LiferayPortletRequest liferayPo
 		String className = PortalUtil.getClassName(classNameId);
 
 		AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
+
+		Portlet portlet = PortletLocalServiceUtil.getPortletById(themeDisplay.getCompanyId(), assetRendererFactory.getPortletId());
+
+		if (!portlet.isActive()) {
+			continue;
+		}
 
 		Map<Long, String> classTypes = assetRendererFactory.getClassTypes(new long[] {themeDisplay.getCompanyGroupId(), themeDisplay.getScopeGroupId()}, themeDisplay.getLocale());
 

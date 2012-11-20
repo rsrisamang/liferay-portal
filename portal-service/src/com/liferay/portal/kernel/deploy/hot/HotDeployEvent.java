@@ -32,6 +32,8 @@ import javax.servlet.ServletContext;
 /**
  * @author Ivica Cardic
  * @author Brian Wing Shun Chan
+ * @author Raymond Augé
+ * @author Miguel Pastor
  */
 public class HotDeployEvent {
 
@@ -74,10 +76,12 @@ public class HotDeployEvent {
 	}
 
 	protected void initDependentServletContextNames() throws IOException {
+		if (!DependencyManagementThreadLocal.isEnabled()) {
+			return;
+		}
+
 		InputStream is = _servletContext.getResourceAsStream(
 			"/WEB-INF/liferay-plugin-package.properties");
-
-		_dependentServletContextNames = new HashSet<String>();
 
 		if (is != null) {
 			String propertiesString = StringUtil.read(is);
@@ -110,7 +114,7 @@ public class HotDeployEvent {
 	private static Log _log = LogFactoryUtil.getLog(HotDeployEvent.class);
 
 	private ClassLoader _contextClassLoader;
-	private Set<String> _dependentServletContextNames;
+	private Set<String> _dependentServletContextNames = new HashSet<String>();
 	private PluginPackage _pluginPackage;
 	private ServletContext _servletContext;
 

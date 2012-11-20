@@ -233,20 +233,6 @@ public class RoleLocalServiceUtil {
 	}
 
 	/**
-	* Updates the role in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param role the role
-	* @param merge whether to merge the role with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the role that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public static com.liferay.portal.model.Role updateRole(
-		com.liferay.portal.model.Role role, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return getService().updateRole(role, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -276,10 +262,12 @@ public class RoleLocalServiceUtil {
 	<code>null</code>)
 	* @param type the role's type (optionally <code>0</code>)
 	* @return the role
-	* @throws PortalException if the class name or the role name were invalid,
-	if the role is a duplicate, or if a user with the primary key
-	could not be found
+	* @throws PortalException if the class name or the role name were
+	invalid, if the role is a duplicate, or if a user with the
+	primary key could not be found
 	* @throws SystemException if a system exception occurred
+	* @deprecated {@link #addRole(long, String, long, String, Map, Map, int,
+	String)}
 	*/
 	public static com.liferay.portal.model.Role addRole(long userId,
 		long companyId, java.lang.String name,
@@ -310,10 +298,12 @@ public class RoleLocalServiceUtil {
 	* @param classPK the primary key of the class for which the role is
 	created (optionally <code>0</code>)
 	* @return the role
-	* @throws PortalException if the class name or the role name were invalid,
-	if the role is a duplicate, or if a user with the primary key
-	could not be found
+	* @throws PortalException if the class name or the role name were
+	invalid, if the role is a duplicate, or if a user with the
+	primary key could not be found
 	* @throws SystemException if a system exception occurred
+	* @deprecated {@link #addRole(long, String, long, String, Map, Map, int,
+	String)}
 	*/
 	public static com.liferay.portal.model.Role addRole(long userId,
 		long companyId, java.lang.String name,
@@ -325,6 +315,39 @@ public class RoleLocalServiceUtil {
 		return getService()
 				   .addRole(userId, companyId, name, titleMap, descriptionMap,
 			type, className, classPK);
+	}
+
+	/**
+	* Adds a role with additional parameters. The user is reindexed after role
+	* is added.
+	*
+	* @param userId the primary key of the user
+	* @param className the name of the class for which the role is created
+	(optionally <code>null</code>)
+	* @param classPK the primary key of the class for which the role is
+	created (optionally <code>0</code>)
+	* @param name the role's name
+	* @param titleMap the role's localized titles (optionally
+	<code>null</code>)
+	* @param descriptionMap the role's localized descriptions (optionally
+	<code>null</code>)
+	* @param type the role's type (optionally <code>0</code>)
+	* @return the role
+	* @throws PortalException if the class name or the role name were invalid,
+	if the role is a duplicate, or if a user with the primary key
+	could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.Role addRole(long userId,
+		java.lang.String className, long classPK, java.lang.String name,
+		java.util.Map<java.util.Locale, java.lang.String> titleMap,
+		java.util.Map<java.util.Locale, java.lang.String> descriptionMap,
+		int type, java.lang.String subType)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .addRole(userId, className, classPK, name, titleMap,
+			descriptionMap, type, subType);
 	}
 
 	/**
@@ -431,6 +454,14 @@ public class RoleLocalServiceUtil {
 		long groupId)
 		throws com.liferay.portal.kernel.exception.SystemException {
 		return getService().getGroupRoles(groupId);
+	}
+
+	public static java.util.List<com.liferay.portal.model.Role> getResourceBlockRoles(
+		long resourceBlockId, java.lang.String className,
+		java.lang.String actionId)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getService()
+				   .getResourceBlockRoles(resourceBlockId, className, actionId);
 	}
 
 	/**

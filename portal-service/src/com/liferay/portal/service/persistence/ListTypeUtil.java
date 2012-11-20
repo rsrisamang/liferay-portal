@@ -94,19 +94,18 @@ public class ListTypeUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
-	public static ListType update(ListType listType, boolean merge)
-		throws SystemException {
-		return getPersistence().update(listType, merge);
+	public static ListType update(ListType listType) throws SystemException {
+		return getPersistence().update(listType);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
-	public static ListType update(ListType listType, boolean merge,
+	public static ListType update(ListType listType,
 		ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(listType, merge, serviceContext);
+		return getPersistence().update(listType, serviceContext);
 	}
 
 	/**
@@ -153,9 +152,9 @@ public class ListTypeUtil {
 	}
 
 	public static com.liferay.portal.model.ListType updateImpl(
-		com.liferay.portal.model.ListType listType, boolean merge)
+		com.liferay.portal.model.ListType listType)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(listType, merge);
+		return getPersistence().updateImpl(listType);
 	}
 
 	/**
@@ -242,10 +241,6 @@ public class ListTypeUtil {
 	/**
 	* Returns the first list type in the ordered set where type = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param type the type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching list type
@@ -261,11 +256,22 @@ public class ListTypeUtil {
 	}
 
 	/**
-	* Returns the last list type in the ordered set where type = &#63;.
+	* Returns the first list type in the ordered set where type = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching list type, or <code>null</code> if a matching list type could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.ListType fetchByType_First(
+		java.lang.String type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByType_First(type, orderByComparator);
+	}
+
+	/**
+	* Returns the last list type in the ordered set where type = &#63;.
 	*
 	* @param type the type
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -282,11 +288,22 @@ public class ListTypeUtil {
 	}
 
 	/**
-	* Returns the list types before and after the current list type in the ordered set where type = &#63;.
+	* Returns the last list type in the ordered set where type = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param type the type
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching list type, or <code>null</code> if a matching list type could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.ListType fetchByType_Last(
+		java.lang.String type,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByType_Last(type, orderByComparator);
+	}
+
+	/**
+	* Returns the list types before and after the current list type in the ordered set where type = &#63;.
 	*
 	* @param listTypeId the primary key of the current list type
 	* @param type the type

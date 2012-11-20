@@ -22,114 +22,49 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class EditBlogsEntryCommentBodyCPTest extends BaseTestCase {
 	public void testEditBlogsEntryCommentBodyCP() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Blogs", RuntimeVariables.replace("Blogs"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Blogs Entry Title"),
-			selenium.getText("//td[2]/a"));
-		selenium.clickAt("//td[2]/a",
+			selenium.getText("//tr[contains(.,'Blogs Entry Title')]/td[2]/a"));
+		selenium.clickAt("//tr[contains(.,'Blogs Entry Title')]/td[2]/a",
 			RuntimeVariables.replace("Blogs Entry Title"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("1 Comment"),
 			selenium.getText("//span[@class='comments']"));
 		assertEquals(RuntimeVariables.replace("Blogs Entry Comment Body"),
-			selenium.getText("//form/div/div/div/div[3]/div/div[1]"));
+			selenium.getText("//div[@class='lfr-discussion-message']"));
+		selenium.mouseOver("//li[@class='lfr-discussion-delete-reply']/span/a");
 		assertEquals(RuntimeVariables.replace("Edit"),
-			selenium.getText("//li[3]/span/a/span"));
-		selenium.clickAt("//li[3]/span/a/span", RuntimeVariables.replace("Edit"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//textarea[@name='_161_editReplyBody1']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+			selenium.getText(
+				"//li[@class='lfr-discussion-delete-reply']/span/a"));
+		selenium.clickAt("//li[@class='lfr-discussion-delete-reply']/span/a",
+			RuntimeVariables.replace("Edit"));
+		selenium.waitForVisible("//textarea[@name='_161_editReplyBody1']");
 		selenium.type("//textarea[@name='_161_editReplyBody1']",
 			RuntimeVariables.replace("Blogs Entry Comment Body Edited"));
-		selenium.keyPress("//textarea[@name='_161_editReplyBody1']",
-			RuntimeVariables.replace("\\48"));
-		selenium.keyPress("//textarea[@name='_161_editReplyBody1']",
-			RuntimeVariables.replace("\\8"));
 		selenium.clickAt("//input[@value='Publish']",
 			RuntimeVariables.replace("Publish"));
 		Thread.sleep(5000);
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//span[@class='comments']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//span[@class='comments']");
 		assertEquals(RuntimeVariables.replace("1 Comment"),
 			selenium.getText("//span[@class='comments']"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Blogs Entry Comment Body Edited")
-										.equals(selenium.getText(
-								"//form/div/div/div/div[3]/div/div[1]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//div[@class='lfr-discussion-message']",
+			"Blogs Entry Comment Body Edited");
 		assertEquals(RuntimeVariables.replace("Blogs Entry Comment Body Edited"),
-			selenium.getText("//form/div/div/div/div[3]/div/div[1]"));
+			selenium.getText("//div[@class='lfr-discussion-message']"));
 	}
 }

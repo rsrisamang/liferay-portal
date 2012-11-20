@@ -23,32 +23,17 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class IgnoreNotificationsAddConnnectionTest extends BaseTestCase {
 	public void testIgnoreNotificationsAddConnnection()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isElementPresent(
 				"//li[@id='_145_notificationsMenu']"));
 		assertEquals(RuntimeVariables.replace("1"),
 			selenium.getText("//span[@class='notification-count']"));
 		selenium.mouseOver("//li[@id='_145_notificationsMenu']");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div[@class='title']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[@class='title']");
 		assertEquals(RuntimeVariables.replace(
-				"Social01 would like to add you as a connection."),
+				"Social01 Office01 User01 would like to add you as a connection."),
 			selenium.getText("//div[@class='title']"));
 		assertEquals(RuntimeVariables.replace("Ignore"),
 			selenium.getText(
@@ -61,6 +46,6 @@ public class IgnoreNotificationsAddConnnectionTest extends BaseTestCase {
 			selenium.getText("//span[@class='notification-count']"));
 		selenium.mouseOver("//li[@id='_145_notificationsMenu']");
 		assertFalse(selenium.isTextPresent(
-				"Social01 would like to add you as a connection."));
+				"Social01 Office01 User01 would like to add you as a connection."));
 	}
 }

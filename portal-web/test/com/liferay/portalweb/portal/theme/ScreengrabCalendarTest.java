@@ -24,25 +24,11 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ScreengrabCalendarTest extends BaseTestCase {
 	public void testScreengrabCalendar() throws Exception {
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Test Page 2")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
+		selenium.waitForElementPresent("link=Test Page 2");
 		selenium.click(RuntimeVariables.replace("link=Test Page 2"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		FileUtil.mkdirs(RuntimeVariables.replace(
 				"L:\\portal\\build\\portal-web\\test-output\\brochure\\"));
 		selenium.captureEntirePageScreenshot(RuntimeVariables.replace(
@@ -50,7 +36,6 @@ public class ScreengrabCalendarTest extends BaseTestCase {
 			"");
 		selenium.click(RuntimeVariables.replace("link=Month"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		FileUtil.mkdirs(RuntimeVariables.replace(
 				"L:\\portal\\build\\portal-web\\test-output\\brochure\\"));
 		selenium.captureEntirePageScreenshot(RuntimeVariables.replace(

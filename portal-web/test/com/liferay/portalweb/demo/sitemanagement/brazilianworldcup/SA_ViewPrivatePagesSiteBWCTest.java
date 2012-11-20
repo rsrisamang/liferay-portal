@@ -27,6 +27,8 @@ public class SA_ViewPrivatePagesSiteBWCTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.openWindow("http://www.baker.com:8080",
 					RuntimeVariables.replace("home"));
 				selenium.waitForPopUp("home", RuntimeVariables.replace(""));
@@ -35,38 +37,20 @@ public class SA_ViewPrivatePagesSiteBWCTest extends BaseTestCase {
 				Thread.sleep(5000);
 				assertTrue(selenium.isPartialText(
 						"//a[@class='user-fullname use-dialog']", "Bruno Admin"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//a[@class='logo default-logo']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//a[@class='logo default-logo']");
 				assertTrue(selenium.isVisible("//a[@class='logo default-logo']"));
 				assertTrue(selenium.isElementPresent("//img[@height='156']"));
 				assertTrue(selenium.isElementPresent("//img[@width='320']"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//a[@class='logo custom-logo']"));
 				assertTrue(selenium.isElementPresent(
 						"//body[@class='blue yui3-skin-sam controls-visible signed-in private-page site dockbar-ready']"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[@class='green yui3-skin-sam controls-visible signed-in private-page site dockbar-ready']"));
 				assertTrue(selenium.isVisible("link=Accommodations"));
 				selenium.clickAt("link=Accommodations",
 					RuntimeVariables.replace("Accommodations"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Accommodations"),
 					selenium.getText("//nav/ul/li[3]/span/a"));
 				assertEquals(RuntimeVariables.replace("Powered By Liferay"),
@@ -74,205 +58,55 @@ public class SA_ViewPrivatePagesSiteBWCTest extends BaseTestCase {
 				assertTrue(selenium.isVisible("link=Maps"));
 				selenium.clickAt("link=Maps", RuntimeVariables.replace("Maps"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("Maps"),
 					selenium.getText("//nav/ul/li[3]/span/a"));
 				assertEquals(RuntimeVariables.replace("Powered By Liferay"),
 					selenium.getText("//footer[@id='footer']"));
-				assertFalse(selenium.isElementPresent("link=Home"));
-				assertFalse(selenium.isElementPresent("link=Arenas"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Control Panel")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				assertTrue(selenium.isElementNotPresent("link=Home"));
+				assertTrue(selenium.isElementNotPresent("link=Arenas"));
+				selenium.waitForElementPresent("link=Control Panel");
 				selenium.clickAt("link=Control Panel",
 					RuntimeVariables.replace("Control Panel"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("World Cup - Brazil 2014"),
 					selenium.getText("//strong/a/span"));
 				assertEquals(RuntimeVariables.replace("Site Settings"),
 					selenium.getText("link=Site Settings"));
 				selenium.open("http://www.baker.com:8080");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("//nav[@id='navigation']",
 					RuntimeVariables.replace("Navigation"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("//a[@id='addPage']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("//a[@id='addPage']");
 				selenium.clickAt("//a[@id='addPage']",
 					RuntimeVariables.replace("Add Page"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@type='text']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@type='text']");
 				selenium.type("//input[@type='text']",
 					RuntimeVariables.replace("Web Content Display Test Page"));
-				selenium.clickAt("//button[@id='save']",
+				selenium.clickAt("//button[contains(@id,'Save')]",
 					RuntimeVariables.replace("Save"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"link=Web Content Display Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Web Content Display Test Page");
 				selenium.clickAt("link=Web Content Display Test Page",
 					RuntimeVariables.replace("Web Content Display Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isPartialText(
 						"//a[@id='_145_addApplication']", "More"));
 				selenium.clickAt("//a[@id='_145_addApplication']",
 					RuntimeVariables.replace("More"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//div[@title='Web Content Display']/p/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent(
+					"//div[@title='Web Content Display']/p/a");
 				selenium.clickAt("//div[@title='Web Content Display']/p/a",
 					RuntimeVariables.replace("Add"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//section")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//section");
 				assertTrue(selenium.isVisible("//section"));
 				selenium.clickAt("//div[@id='dockbar']",
 					RuntimeVariables.replace("Dockbar"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent(
-									"//li[contains(@class,'manage-page')]/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent(
+					"//li[contains(@class,'manage-page')]/a");
 				selenium.clickAt("//li[contains(@class,'manage-page')]/a",
 					RuntimeVariables.replace("Manage Pages"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//iframe[@id='manageContentDialog']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//iframe[@id='manageContentDialog']");
 				selenium.selectFrame("//iframe[@id='manageContentDialog']");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Private Pages")
-												.equals(selenium.getText(
-										"//a[@class='layout-tree']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForText("//a[@class='layout-tree']",
+					"Private Pages");
 
 				boolean tree1Collapsed = selenium.isElementPresent(
 						"//li[@id='layoutsTree_layoutId_0_plid_0']/div[contains(@class,'aui-tree-collapsed')]");
@@ -287,24 +121,8 @@ public class SA_ViewPrivatePagesSiteBWCTest extends BaseTestCase {
 					RuntimeVariables.replace("Drop Down Arrow"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Accommodations")
-												.equals(selenium.getText(
-										"//li/ul/li[1]/div/div[3]/a"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForText("//li/ul/li[1]/div/div[3]/a",
+					"Accommodations");
 
 				boolean page1Present = selenium.isElementPresent(
 						"//li[3]/div/div[3]/a");
@@ -321,28 +139,11 @@ public class SA_ViewPrivatePagesSiteBWCTest extends BaseTestCase {
 				selenium.clickAt("//li[3]/div/div[3]/a",
 					RuntimeVariables.replace("Web Content Display Test Page"));
 				Thread.sleep(5000);
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//button[3]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//button[3]");
 				assertEquals(RuntimeVariables.replace("Delete"),
 					selenium.getText("//button[3]"));
 				selenium.click(RuntimeVariables.replace("//button[3]"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to delete the selected page[\\s\\S]$"));
 				assertEquals(RuntimeVariables.replace(

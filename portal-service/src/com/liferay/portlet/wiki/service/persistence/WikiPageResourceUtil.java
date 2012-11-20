@@ -95,19 +95,19 @@ public class WikiPageResourceUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
-	public static WikiPageResource update(WikiPageResource wikiPageResource,
-		boolean merge) throws SystemException {
-		return getPersistence().update(wikiPageResource, merge);
+	public static WikiPageResource update(WikiPageResource wikiPageResource)
+		throws SystemException {
+		return getPersistence().update(wikiPageResource);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static WikiPageResource update(WikiPageResource wikiPageResource,
-		boolean merge, ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(wikiPageResource, merge, serviceContext);
+		ServiceContext serviceContext) throws SystemException {
+		return getPersistence().update(wikiPageResource, serviceContext);
 	}
 
 	/**
@@ -157,10 +157,9 @@ public class WikiPageResourceUtil {
 	}
 
 	public static com.liferay.portlet.wiki.model.WikiPageResource updateImpl(
-		com.liferay.portlet.wiki.model.WikiPageResource wikiPageResource,
-		boolean merge)
+		com.liferay.portlet.wiki.model.WikiPageResource wikiPageResource)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(wikiPageResource, merge);
+		return getPersistence().updateImpl(wikiPageResource);
 	}
 
 	/**
@@ -247,10 +246,6 @@ public class WikiPageResourceUtil {
 	/**
 	* Returns the first wiki page resource in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching wiki page resource
@@ -266,11 +261,22 @@ public class WikiPageResourceUtil {
 	}
 
 	/**
-	* Returns the last wiki page resource in the ordered set where uuid = &#63;.
+	* Returns the first wiki page resource in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching wiki page resource, or <code>null</code> if a matching wiki page resource could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.wiki.model.WikiPageResource fetchByUuid_First(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUuid_First(uuid, orderByComparator);
+	}
+
+	/**
+	* Returns the last wiki page resource in the ordered set where uuid = &#63;.
 	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -287,11 +293,22 @@ public class WikiPageResourceUtil {
 	}
 
 	/**
-	* Returns the wiki page resources before and after the current wiki page resource in the ordered set where uuid = &#63;.
+	* Returns the last wiki page resource in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching wiki page resource, or <code>null</code> if a matching wiki page resource could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.wiki.model.WikiPageResource fetchByUuid_Last(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByUuid_Last(uuid, orderByComparator);
+	}
+
+	/**
+	* Returns the wiki page resources before and after the current wiki page resource in the ordered set where uuid = &#63;.
 	*
 	* @param resourcePrimKey the primary key of the current wiki page resource
 	* @param uuid the uuid

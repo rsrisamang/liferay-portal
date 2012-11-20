@@ -281,17 +281,6 @@ public class WebDAVPropsModelImpl extends BaseModelImpl<WebDAVProps>
 	}
 
 	@Override
-	public WebDAVProps toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (WebDAVProps)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			WebDAVProps.class.getName(), getPrimaryKey());
@@ -302,6 +291,16 @@ public class WebDAVPropsModelImpl extends BaseModelImpl<WebDAVProps>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public WebDAVProps toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (WebDAVProps)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -486,7 +485,7 @@ public class WebDAVPropsModelImpl extends BaseModelImpl<WebDAVProps>
 	}
 
 	private static ClassLoader _classLoader = WebDAVProps.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			WebDAVProps.class
 		};
 	private long _webDavPropsId;
@@ -501,5 +500,5 @@ public class WebDAVPropsModelImpl extends BaseModelImpl<WebDAVProps>
 	private boolean _setOriginalClassPK;
 	private String _props;
 	private long _columnBitmask;
-	private WebDAVProps _escapedModelProxy;
+	private WebDAVProps _escapedModel;
 }

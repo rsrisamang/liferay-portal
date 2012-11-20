@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -122,7 +122,7 @@ public class ExpandoValuePersistenceTest {
 
 		newExpandoValue.setData(ServiceTestUtil.randomString());
 
-		_persistence.update(newExpandoValue, false);
+		_persistence.update(newExpandoValue);
 
 		ExpandoValue existingExpandoValue = _persistence.findByPrimaryKey(newExpandoValue.getPrimaryKey());
 
@@ -300,7 +300,7 @@ public class ExpandoValuePersistenceTest {
 
 		expandoValue.setData(ServiceTestUtil.randomString());
 
-		_persistence.update(expandoValue, false);
+		_persistence.update(expandoValue);
 
 		return expandoValue;
 	}

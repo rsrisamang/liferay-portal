@@ -29,32 +29,16 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isElementPresent("link=Site Name")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForElementPresent("link=Site Name");
 				selenium.clickAt("link=Site Name",
 					RuntimeVariables.replace("Site Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//body[contains(@class,'live-view')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//body[contains(@class,'local-staging')]"));
 				assertTrue(selenium.isPartialText(
 						"//span[@class='last-publication-branch']",
@@ -71,7 +55,6 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 				selenium.clickAt("//td[1]/a/strong",
 					RuntimeVariables.replace("MB Category Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("MB Category Name"),
 					selenium.getText("//h1[@class='header-title']/span"));
 
@@ -97,7 +80,6 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 					RuntimeVariables.replace(
 						"MB Category Thread Message2 Subject"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"MB Category Thread Message2 Subject"),
 					selenium.getText("//div[@class='subject']/a/strong"));
@@ -107,7 +89,6 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 				selenium.clickAt("//a[@id='_19_TabsBack']",
 					RuntimeVariables.replace("Back to MB Category Name"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean thread2Visible = selenium.isVisible("//td[1]/a");
 
@@ -131,7 +112,6 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 					RuntimeVariables.replace(
 						"MB Category Thread Message1 Subject"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"MB Category Thread Message1 Subject"),
 					selenium.getText("//div[@class='subject']/a/strong"));
@@ -150,26 +130,8 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 				selenium.clickAt("//a[contains(@class,'document-link')]/span[@class='entry-title']",
 					RuntimeVariables.replace("DL Image Title"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("DL Image Title")
-												.equals(selenium.getText(
-										"//h2[@class='document-title']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//h2[@class='document-title']",
+					"DL Image Title");
 				assertEquals(RuntimeVariables.replace("DL Image Title"),
 					selenium.getText("//h2[@class='document-title']"));
 				assertTrue(selenium.isVisible(
@@ -183,91 +145,40 @@ public class User_ViewPublishToLiveNowSPVariationChristmasTest
 				assertEquals(RuntimeVariables.replace("Content Type image/jpeg"),
 					selenium.getText(
 						"//div[@id='documentLibraryAssetMetadataPanel']/div[2]/div"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//div[@id='column-2']/div/div[contains(@class,'portlet-journal-content')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//div[@id='column-2']/div/div[contains(@class,'portlet-message-boards')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//div[@id='column-2']/div/div[contains(@class,'portlet-user-statistics')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//div[@id='column-2']/div/div[contains(@class,'portlet-search')]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"//div[@id='column-2']/div/div[contains(@class,'portlet-document-library')]"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Calendar")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Calendar");
 				selenium.clickAt("link=Calendar",
 					RuntimeVariables.replace("Calendar"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isPartialText(
 						"//span[@class='last-publication-branch']",
 						"Page Calendar was last published from Christmas."));
 				assertTrue(selenium.isVisible(
 						"//div[@id='column-1']/div/div[contains(@class,'portlet-calendar')]"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//nav/ul/li[3]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//nav/ul/li[3]/a/span");
 				assertEquals(RuntimeVariables.replace("Wiki"),
 					selenium.getText("//nav/ul/li[3]/a/span"));
 				selenium.clickAt("//nav/ul/li[3]/a/span",
 					RuntimeVariables.replace("Wiki"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isPartialText(
 						"//span[@class='last-publication-branch']",
 						"Page Wiki was last published from Christmas."));
 				assertTrue(selenium.isVisible(
 						"//div[@id='column-1']/div/div[contains(@class,'portlet-wiki')]"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=White Elephant")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=White Elephant");
 				selenium.clickAt("link=White Elephant",
 					RuntimeVariables.replace("White Elephant"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isPartialText(
 						"//span[@class='last-publication-branch']",
 						"Page White Elephant was last published from Christmas"));

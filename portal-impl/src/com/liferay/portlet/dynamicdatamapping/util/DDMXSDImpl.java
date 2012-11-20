@@ -23,6 +23,8 @@ import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateContextType;
 import com.liferay.portal.kernel.template.TemplateManager;
 import com.liferay.portal.kernel.template.TemplateManagerUtil;
+import com.liferay.portal.kernel.template.TemplateResource;
+import com.liferay.portal.kernel.template.URLTemplateResource;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -53,6 +55,8 @@ import freemarker.template.TemplateHashModel;
 import java.io.IOException;
 import java.io.Writer;
 
+import java.net.URL;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -73,6 +77,22 @@ import javax.servlet.jsp.PageContext;
  * @author Brian Wing Shun Chan
  */
 public class DDMXSDImpl implements DDMXSD {
+
+	public DDMXSDImpl() {
+		String defaultTemplateId = _TPL_PATH + "alloy/text.ftl";
+
+		URL defaultTemplateURL = getResource(defaultTemplateId);
+
+		_defaultTemplateResource = new URLTemplateResource(
+			defaultTemplateId, defaultTemplateURL);
+
+		String defaultReadOnlyTemplateId = _TPL_PATH + "readonly/default.ftl";
+
+		URL defaultReadOnlyTemplateURL = getResource(defaultReadOnlyTemplateId);
+
+		_defaultReadOnlyTemplateResource = new URLTemplateResource(
+			defaultReadOnlyTemplateId, defaultReadOnlyTemplateURL);
+	}
 
 	public String getHTML(
 			PageContext pageContext, DDMStructure ddmStructure, Fields fields,
@@ -144,7 +164,7 @@ public class DDMXSDImpl implements DDMXSD {
 			String fieldNamespace = dynamicElementElement.attributeValue(
 				"fieldNamespace", _DEFAULT_NAMESPACE);
 
-			String defaultResourcePath = _TPL_DEFAULT_PATH;
+			TemplateResource templateResource = _defaultTemplateResource;
 
 			boolean fieldReadOnly = GetterUtil.getBoolean(
 				field.get("readOnly"));
@@ -155,7 +175,7 @@ public class DDMXSDImpl implements DDMXSD {
 
 				fieldNamespace = _DEFAULT_READ_ONLY_NAMESPACE;
 
-				defaultResourcePath = _TPL_DEFAULT_READ_ONLY_PATH;
+				templateResource = _defaultReadOnlyTemplateResource;
 			}
 
 			String type = dynamicElementElement.attributeValue("type");
@@ -173,14 +193,19 @@ public class DDMXSDImpl implements DDMXSD {
 
 			String resource = resourcePath.toString();
 
-			if (!TemplateManagerUtil.hasTemplate(
-					TemplateManager.FREEMARKER, resource)) {
+			URL url = getResource(resource);
 
-				resource = defaultResourcePath;
+			if (url != null) {
+				templateResource = new URLTemplateResource(resource, url);
+			}
+
+			if (templateResource == null) {
+				throw new Exception(
+					"Unable to load template resource " + resource);
 			}
 
 			Template template = TemplateManagerUtil.getTemplate(
-				TemplateManager.FREEMARKER, resource,
+				TemplateManager.FREEMARKER, templateResource,
 				TemplateContextType.STANDARD);
 
 			for (Map.Entry<String, Object> entry :
@@ -402,6 +427,14 @@ public class DDMXSDImpl implements DDMXSD {
 		return freeMarkerContext;
 	}
 
+	protected URL getResource(String name) {
+		Class<?> clazz = getClass();
+
+		ClassLoader classLoader = clazz.getClassLoader();
+
+		return classLoader.getResource(name);
+	}
+
 	/**
 	 * @see com.liferay.taglib.util.ThemeUtil#includeFTL
 	 */
@@ -446,7 +479,7 @@ public class DDMXSDImpl implements DDMXSD {
 				public void service(
 						ServletRequest servletRequest,
 						ServletResponse servletResponse)
-					throws ServletException, IOException {
+					throws IOException, ServletException {
 
 					servlet.service(servletRequest, servletResponse);
 				}
@@ -501,16 +534,12 @@ public class DDMXSDImpl implements DDMXSD {
 
 	private static final String _DEFAULT_READ_ONLY_NAMESPACE = "readonly";
 
-	private static final String _TPL_DEFAULT_PATH =
-		"com/liferay/portlet/dynamicdatamapping/dependencies/alloy/text.ftl";
-
-	private static final String _TPL_DEFAULT_READ_ONLY_PATH =
-		"com/liferay/portlet/dynamicdatamapping/dependencies/readonly/" +
-			"default.ftl";
-
 	private static final String _TPL_EXT = ".ftl";
 
 	private static final String _TPL_PATH =
 		"com/liferay/portlet/dynamicdatamapping/dependencies/";
+
+	private TemplateResource _defaultReadOnlyTemplateResource;
+	private TemplateResource _defaultTemplateResource;
 
 }

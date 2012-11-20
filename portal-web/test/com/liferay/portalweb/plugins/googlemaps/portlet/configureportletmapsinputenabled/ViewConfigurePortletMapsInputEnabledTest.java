@@ -23,12 +23,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewConfigurePortletMapsInputEnabledTest extends BaseTestCase {
 	public void testViewConfigurePortletMapsInputEnabled()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Google Maps Test Page",
 			RuntimeVariables.replace("Google Maps Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		Thread.sleep(5000);
 		assertEquals("1220 Brea Canyon Road, Diamond Bar, CA, 91789",
 			selenium.getValue("//input[contains(@name,'_mapAddress')]"));

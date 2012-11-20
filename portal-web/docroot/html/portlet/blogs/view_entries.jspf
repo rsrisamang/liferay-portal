@@ -60,38 +60,49 @@ showSearch = showSearch && !results.isEmpty();
 />
 
 <%
-for (Object result : results) {
-	BlogsEntry entry = null;
+long portletDisplayDDMTemplateId = PortletDisplayTemplateUtil.getPortletDisplayTemplateDDMTemplateId(themeDisplay, pageDisplayStyle);
 
-	AssetEntry assetEntry = null;
+if (portletDisplayDDMTemplateId > 0) {
+%>
 
-	if (result instanceof AssetEntry) {
-		assetEntry = (AssetEntry)result;
+	<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, results) %>
 
-		entry = BlogsEntryLocalServiceUtil.getEntry(assetEntry.getClassPK());
+<%
+}
+else {
+	for (Object result : results) {
+		BlogsEntry entry = null;
 
-		AssetUtil.addLayoutTags(request, assetEntry.getTags());
-	}
-	else {
-		entry = (BlogsEntry)result;
-	}
+		AssetEntry assetEntry = null;
 
-	if (((entry.getStatus() == WorkflowConstants.STATUS_DRAFT) || (entry.getDisplayDate().after(new Date()))) && (entry.getUserId() != user.getUserId()) && !permissionChecker.isGroupAdmin(scopeGroupId)) {
-		searchContainer.setTotal(searchContainer.getTotal() - 1);
+		if (result instanceof AssetEntry) {
+			assetEntry = (AssetEntry)result;
 
-		continue;
-	}
+			entry = BlogsEntryLocalServiceUtil.getEntry(assetEntry.getClassPK());
 
-	request.setAttribute("view_entry_content.jsp-searchContainer", searchContainer);
+			AssetUtil.addLayoutTags(request, assetEntry.getTags());
+		}
+		else {
+			entry = (BlogsEntry)result;
+		}
 
-	request.setAttribute("view_entry_content.jsp-entry", entry);
+		if (((entry.getStatus() == WorkflowConstants.STATUS_DRAFT) || (entry.getDisplayDate().after(new Date()))) && (entry.getUserId() != user.getUserId()) && !permissionChecker.isGroupAdmin(scopeGroupId)) {
+			searchContainer.setTotal(searchContainer.getTotal() - 1);
 
-	request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
+			continue;
+		}
+
+		request.setAttribute("view_entry_content.jsp-searchContainer", searchContainer);
+
+		request.setAttribute("view_entry_content.jsp-entry", entry);
+
+		request.setAttribute("view_entry_content.jsp-assetEntry", assetEntry);
 %>
 
 	<liferay-util:include page="/html/portlet/blogs/view_entry_content.jsp" />
 
 <%
+	}
 }
 
 ResourceURL rssURL = liferayPortletResponse.createResourceURL();
@@ -99,12 +110,12 @@ ResourceURL rssURL = liferayPortletResponse.createResourceURL();
 rssURL.setCacheability(ResourceURL.FULL);
 rssURL.setParameter("struts_action", "/blogs/rss");
 
-if ((rssDelta != SearchContainer.DEFAULT_DELTA) || !rssFormatType.equals(RSSUtil.TYPE_DEFAULT) || (rssFormatVersion != RSSUtil.VERSION_DEFAULT) || !rssDisplayStyle.equals(RSSUtil.DISPLAY_STYLE_FULL_CONTENT)) {
+if ((rssDelta != SearchContainer.DEFAULT_DELTA) || !rssFormatType.equals(RSSUtil.FORMAT_DEFAULT) || (rssFormatVersion != RSSUtil.VERSION_DEFAULT) || !rssDisplayStyle.equals(RSSUtil.DISPLAY_STYLE_FULL_CONTENT)) {
 	if (rssDelta != SearchContainer.DEFAULT_DELTA) {
 		rssURL.setParameter("max", String.valueOf(rssDelta));
 	}
 
-	if (!rssFormatType.equals(RSSUtil.TYPE_DEFAULT)) {
+	if (!rssFormatType.equals(RSSUtil.FORMAT_DEFAULT)) {
 		rssURL.setParameter("type", rssFormatType);
 	}
 
@@ -119,13 +130,15 @@ if ((rssDelta != SearchContainer.DEFAULT_DELTA) || !rssFormatType.equals(RSSUtil
 %>
 
 <div class="subscribe">
-	<liferay-ui:icon
-		image="rss"
-		label="<%= true %>"
-		method="get"
-		target="_blank"
-		url="<%= rssURL.toString() %>"
-	/>
+	<c:if test="<%= PortalUtil.isRSSFeedsEnabled() %>">
+		<liferay-ui:icon
+			image="rss"
+			label="<%= true %>"
+			method="get"
+			target="_blank"
+			url="<%= rssURL.toString() %>"
+		/>
+	</c:if>
 
 	<c:if test="<%= showSubscribeButton %>">
 		<c:choose>

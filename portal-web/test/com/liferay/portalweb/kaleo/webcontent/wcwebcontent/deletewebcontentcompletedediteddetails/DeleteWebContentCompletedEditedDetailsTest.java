@@ -23,33 +23,16 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class DeleteWebContentCompletedEditedDetailsTest extends BaseTestCase {
 	public void testDeleteWebContentCompletedEditedDetails()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Web Content",
 			RuntimeVariables.replace("Web Content"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Web Content Name Edited"),
 			selenium.getText("//td[3]/a"));
 		assertEquals(RuntimeVariables.replace("Pending"),
@@ -61,7 +44,6 @@ public class DeleteWebContentCompletedEditedDetailsTest extends BaseTestCase {
 		selenium.clickAt("//td[3]/a",
 			RuntimeVariables.replace("Web Content Name Edited"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		Thread.sleep(5000);
 		assertEquals(RuntimeVariables.replace(
 				"There is a publication workflow in process. Some actions may be disabled depending on the status and your role through this process."),
@@ -71,7 +53,6 @@ public class DeleteWebContentCompletedEditedDetailsTest extends BaseTestCase {
 		assertTrue(selenium.isElementPresent("//button[2]"));
 		selenium.click(RuntimeVariables.replace("//button[3]"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.getConfirmation()
 						   .matches("^Are you sure you want to delete this article version[\\s\\S]$"));
 		assertEquals(RuntimeVariables.replace(

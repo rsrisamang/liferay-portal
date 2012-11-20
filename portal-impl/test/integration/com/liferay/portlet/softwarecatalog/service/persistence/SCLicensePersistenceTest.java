@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -116,7 +116,7 @@ public class SCLicensePersistenceTest {
 
 		newSCLicense.setRecommended(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(newSCLicense, false);
+		_persistence.update(newSCLicense);
 
 		SCLicense existingSCLicense = _persistence.findByPrimaryKey(newSCLicense.getPrimaryKey());
 
@@ -259,7 +259,7 @@ public class SCLicensePersistenceTest {
 
 		scLicense.setRecommended(ServiceTestUtil.randomBoolean());
 
-		_persistence.update(scLicense, false);
+		_persistence.update(scLicense);
 
 		return scLicense;
 	}

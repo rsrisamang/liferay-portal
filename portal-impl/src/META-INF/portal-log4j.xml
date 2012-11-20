@@ -4,7 +4,7 @@
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}:%L] %m%n" />
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%t][%c{1}:%L] %m%n" />
 		</layout>
 	</appender>
 
@@ -14,7 +14,7 @@
 		</rollingPolicy>
 
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}:%L] %m%n" />
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%t][%c{1}:%L] %m%n" />
 		</layout>
 	</appender>
 
@@ -302,7 +302,19 @@
 		<priority value="INFO" />
 	</category>
 
+	<category name="com.liferay.portal.kernel.lar">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.kernel.portlet.RestrictPortletServletRequest">
+		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.kernel.process">
+		<priority value="INFO" />
+	</category>
+
+	<category name="com.liferay.portal.kernel.process.LoggingOutputProcessor">
 		<priority value="ERROR" />
 	</category>
 
@@ -363,6 +375,10 @@
 	</category>
 
 	<category name="com.liferay.portal.kernel.servlet.ServletResponseUtil">
+		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.kernel.test.plugins.PluginIntegrationTestHotDeployListener">
 		<priority value="INFO" />
 	</category>
 
@@ -402,6 +418,10 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.liferay.portal.scripting.ruby.RubyExecutor">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.search.IndexerRegistryImpl">
 		<priority value="WARN" />
 	</category>
@@ -419,6 +439,14 @@
 	</category>
 
 	<category name="com.liferay.portal.search.lucene.LuceneIndexWriterImpl">
+		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.security.auth.EmailAddressGeneratorFactory">
+		<priority value="ERROR" />
+	</category>
+
+	<category name="com.liferay.portal.security.auth.EmailAddressValidatorFactory">
 		<priority value="ERROR" />
 	</category>
 
@@ -590,6 +618,10 @@
 		<priority value="INFO" />
 	</category>
 
+	<category name="com.liferay.portal.service.impl.RepositoryLocalServiceImpl">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.service.impl.ResourceLocalServiceImpl">
 		<priority value="ERROR" />
 	</category>
@@ -714,6 +746,10 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.liferay.portal.sharepoint">
+		<priority value="ERROR" />
+	</category>
+
 	<category name="com.liferay.portal.spring">
 		<priority value="ERROR" />
 	</category>
@@ -818,6 +854,10 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.liferay.portal.util.ExtRegistry">
+		<priority value="INFO" />
+	</category>
+
 	<category name="com.liferay.portal.util.FileImpl">
 		<priority value="WARN" />
 	</category>
@@ -854,15 +894,7 @@
 		<priority value="ERROR" />
 	</category>
 
-	<category name="com.liferay.portal.velocity.ClassLoaderVelocityResourceListener">
-		<priority value="ERROR" />
-	</category>
-
 	<category name="com.liferay.portal.velocity.LiferayResourceLoader">
-		<priority value="ERROR" />
-	</category>
-
-	<category name="com.liferay.portal.velocity.ServletVelocityResourceListener">
 		<priority value="ERROR" />
 	</category>
 
@@ -927,6 +959,10 @@
 	</category>
 
 	<category name="com.liferay.portlet.documentlibrary.lar">
+		<priority value="WARN" />
+	</category>
+
+	<category name="com.liferay.portlet.documentlibrary.sharepoint">
 		<priority value="WARN" />
 	</category>
 
@@ -1068,14 +1104,6 @@
 
 	<category name="com.liferay.util.portlet.PortletRequestUtil">
 		<priority value="INFO" />
-	</category>
-
-	<category name="com.liferay.util.servlet.ServletRequestUtil">
-		<priority value="INFO" />
-	</category>
-
-	<category name="com.liferay.util.servlet.ServletResponseUtil">
-		<priority value="ERROR" />
 	</category>
 
 	<category name="com.mchange">

@@ -242,17 +242,6 @@ public class ShardModelImpl extends BaseModelImpl<Shard> implements ShardModel {
 	}
 
 	@Override
-	public Shard toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Shard)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
 			Shard.class.getName(), getPrimaryKey());
@@ -263,6 +252,16 @@ public class ShardModelImpl extends BaseModelImpl<Shard> implements ShardModel {
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Shard toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Shard)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -408,9 +407,7 @@ public class ShardModelImpl extends BaseModelImpl<Shard> implements ShardModel {
 	}
 
 	private static ClassLoader _classLoader = Shard.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
-			Shard.class
-		};
+	private static Class<?>[] _escapedModelInterfaces = new Class[] { Shard.class };
 	private long _shardId;
 	private long _classNameId;
 	private long _originalClassNameId;
@@ -421,5 +418,5 @@ public class ShardModelImpl extends BaseModelImpl<Shard> implements ShardModel {
 	private String _name;
 	private String _originalName;
 	private long _columnBitmask;
-	private Shard _escapedModelProxy;
+	private Shard _escapedModel;
 }

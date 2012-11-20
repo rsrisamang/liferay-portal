@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -132,7 +132,7 @@ public class AssetVocabularyPersistenceTest {
 
 		newAssetVocabulary.setSettings(ServiceTestUtil.randomString());
 
-		_persistence.update(newAssetVocabulary, false);
+		_persistence.update(newAssetVocabulary);
 
 		AssetVocabulary existingAssetVocabulary = _persistence.findByPrimaryKey(newAssetVocabulary.getPrimaryKey());
 
@@ -331,7 +331,7 @@ public class AssetVocabularyPersistenceTest {
 
 		assetVocabulary.setSettings(ServiceTestUtil.randomString());
 
-		_persistence.update(assetVocabulary, false);
+		_persistence.update(assetVocabulary);
 
 		return assetVocabulary;
 	}

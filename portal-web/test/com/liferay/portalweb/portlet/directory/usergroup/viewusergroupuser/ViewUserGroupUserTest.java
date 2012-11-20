@@ -22,33 +22,16 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewUserGroupUserTest extends BaseTestCase {
 	public void testViewUserGroupUser() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Directory Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Directory Test Page");
 		selenium.clickAt("link=Directory Test Page",
 			RuntimeVariables.replace("Directory Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=User Groups",
 			RuntimeVariables.replace("User Groups"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("User Group Name"),
 			selenium.getText("//tr[3]/td[1]"));
 		assertEquals(RuntimeVariables.replace("User Group Description"),
@@ -57,7 +40,6 @@ public class ViewUserGroupUserTest extends BaseTestCase {
 			selenium.getText("//span/a/span"));
 		selenium.clickAt("//span/a/span", RuntimeVariables.replace("View Users"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("userfn"),
 			selenium.getText("//td[1]/a"));
 		assertEquals(RuntimeVariables.replace("userln"),
@@ -68,7 +50,6 @@ public class ViewUserGroupUserTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace(""), selenium.getText("//td[5]/a"));
 		selenium.clickAt("//td[1]/a", RuntimeVariables.replace("userfn"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("userfn usermn userln"),
 			selenium.getText("//div[@class='user-information']/div[1]/h2"));
 		assertEquals(RuntimeVariables.replace("Email Address"),

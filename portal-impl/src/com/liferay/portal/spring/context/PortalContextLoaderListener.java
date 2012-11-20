@@ -21,8 +21,10 @@ import com.liferay.portal.kernel.cache.CacheRegistryUtil;
 import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.cache.SingleVMPoolUtil;
 import com.liferay.portal.kernel.cache.ThreadLocalCacheManager;
+import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
 import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
+import com.liferay.portal.kernel.deploy.DeployManagerUtil;
 import com.liferay.portal.kernel.deploy.hot.HotDeployUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -30,22 +32,25 @@ import com.liferay.portal.kernel.portlet.PortletBagPool;
 import com.liferay.portal.kernel.process.ClassPathUtil;
 import com.liferay.portal.kernel.servlet.DirectServletRegistryUtil;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
+import com.liferay.portal.kernel.template.TemplateResourceLoaderUtil;
 import com.liferay.portal.kernel.util.CharBufferPool;
 import com.liferay.portal.kernel.util.ClearThreadLocalUtil;
 import com.liferay.portal.kernel.util.ClearTimerThreadUtil;
 import com.liferay.portal.kernel.util.InstancePool;
 import com.liferay.portal.kernel.util.MethodCache;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.PortalLifecycleUtil;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
 import com.liferay.portal.kernel.util.ReflectionUtil;
 import com.liferay.portal.kernel.webcache.WebCachePoolUtil;
-import com.liferay.portal.osgi.service.OSGiServiceUtil;
+import com.liferay.portal.module.framework.ModuleFrameworkUtil;
+import com.liferay.portal.security.lang.PortalSecurityManagerThreadLocal;
+import com.liferay.portal.security.pacl.PACLClassLoaderUtil;
 import com.liferay.portal.security.permission.PermissionCacheUtil;
 import com.liferay.portal.servlet.filters.cache.CacheUtil;
+import com.liferay.portal.spring.bean.BeanReferenceRefreshUtil;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portal.util.WebAppPool;
-import com.liferay.portal.velocity.LiferayResourceCacheUtil;
 import com.liferay.portlet.PortletContextBagPool;
 import com.liferay.portlet.wiki.util.WikiCacheUtil;
 
@@ -114,7 +119,7 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		}
 
 		try {
-			OSGiServiceUtil.stopRuntime();
+			ModuleFrameworkUtil.stopRuntime();
 		}
 		catch (Exception e) {
 			_log.error(e, e);
@@ -124,7 +129,7 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 			super.contextDestroyed(servletContextEvent);
 
 			try {
-				OSGiServiceUtil.stopFramework();
+				ModuleFrameworkUtil.stopFramework();
 			}
 			catch (Exception e) {
 				_log.error(e, e);
@@ -137,8 +142,14 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
+		PortalSecurityManagerThreadLocal.setEnabled(false);
+
+		DBFactoryUtil.reset();
+		DeployManagerUtil.reset();
 		InstancePool.reset();
 		MethodCache.reset();
+		PortalBeanLocatorUtil.reset();
+		PortalLifecycleUtil.reset();
 		PortletBagPool.reset();
 
 		ReferenceRegistry.releaseReferences();
@@ -154,9 +165,9 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		PortletContextBagPool.clear();
 		WebAppPool.clear();
 
-		if (PropsValues.OSGI_ENABLED) {
+		if (PropsValues.MODULE_FRAMEWORK_ENABLED) {
 			try {
-				OSGiServiceUtil.init();
+				ModuleFrameworkUtil.startFramework();
 			}
 			catch (Exception e) {
 				_log.error(e, e);
@@ -170,15 +181,27 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		}
 		finally {
 			PortalContextLoaderLifecycleThreadLocal.setInitializing(false);
+
+			PortalSecurityManagerThreadLocal.setEnabled(true);
+		}
+
+		ApplicationContext applicationContext =
+			ContextLoader.getCurrentWebApplicationContext();
+
+		try {
+			BeanReferenceRefreshUtil.refresh(applicationContext);
+		}
+		catch (Exception e) {
+			_log.error(e, e);
 		}
 
 		FinderCacheUtil.clearCache();
 		FinderCacheUtil.clearLocalCache();
 		EntityCacheUtil.clearCache();
 		EntityCacheUtil.clearLocalCache();
-		LiferayResourceCacheUtil.clear();
 		PermissionCacheUtil.clearCache();
 		PermissionCacheUtil.clearLocalCache();
+		TemplateResourceLoaderUtil.clearCache();
 		WikiCacheUtil.clearCache(0);
 
 		ServletContextPool.clear();
@@ -188,10 +211,8 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		SingleVMPoolUtil.clear();
 		WebCachePoolUtil.clear();
 
-		ApplicationContext applicationContext =
-			ContextLoader.getCurrentWebApplicationContext();
-
-		ClassLoader portalClassLoader = PortalClassLoaderUtil.getClassLoader();
+		ClassLoader portalClassLoader =
+			PACLClassLoaderUtil.getPortalClassLoader();
 
 		BeanLocatorImpl beanLocatorImpl = new BeanLocatorImpl(
 			portalClassLoader, applicationContext);
@@ -213,12 +234,12 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 
 		clearFilteredPropertyDescriptorsCache(autowireCapableBeanFactory);
 
-		if (PropsValues.OSGI_ENABLED) {
+		if (PropsValues.MODULE_FRAMEWORK_ENABLED) {
 			try {
-				OSGiServiceUtil.registerContext(servletContext);
-				OSGiServiceUtil.registerContext(applicationContext);
+				ModuleFrameworkUtil.registerContext(applicationContext);
+				ModuleFrameworkUtil.registerContext(servletContext);
 
-				OSGiServiceUtil.start();
+				ModuleFrameworkUtil.startRuntime();
 			}
 			catch (Exception e) {
 				_log.error(e, e);

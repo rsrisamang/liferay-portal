@@ -28,53 +28,20 @@ public class AddTasksTaskAssignedToMeTagPortalTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Tasks Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Tasks Test Page",
 					RuntimeVariables.replace("Tasks Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("No tasks were found."),
 					selenium.getText("//div[@class='portlet-msg-info']"));
 				assertEquals(RuntimeVariables.replace("Add Task"),
 					selenium.getText("link=Add Task"));
 				selenium.clickAt("link=Add Task",
 					RuntimeVariables.replace("Add Task"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//input[@id='_1_WAR_tasksportlet_title']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible(
+					"//input[@id='_1_WAR_tasksportlet_title']");
 				selenium.type("//input[@id='_1_WAR_tasksportlet_title']",
 					RuntimeVariables.replace("Portal Task Description"));
 				selenium.select("//select[@name='_1_WAR_tasksportlet_assigneeUserId']",
@@ -98,68 +65,19 @@ public class AddTasksTaskAssignedToMeTagPortalTest extends BaseTestCase {
 			case 2:
 				assertTrue(selenium.isChecked(
 						"//input[@id='_1_WAR_tasksportlet_neverDueCheckbox']"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("//input[@title='Add Tags']")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//input[@title='Add Tags']");
 				selenium.type("//input[@title='Add Tags']",
 					RuntimeVariables.replace("PortalTag1"));
+				selenium.waitForVisible("//button[@id='add']");
 				selenium.clickAt("//button[@id='add']",
 					RuntimeVariables.replace("Add"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//li[contains(.,'Tag1')]/span/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//li[contains(.,'Tag1')]/span/span");
 				assertEquals(RuntimeVariables.replace("PortalTag1"),
 					selenium.getText("//li[contains(.,'Tag1')]/span/span"));
 				selenium.clickAt("//input[@value='Save']",
 					RuntimeVariables.replace("Save"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (RuntimeVariables.replace("Portal Task Description")
-												.equals(selenium.getText(
-										"//h1[@class='header-title']"))) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForText("//h1[@class='header-title']",
+					"Portal Task Description");
 				assertEquals(RuntimeVariables.replace("Portal Task Description"),
 					selenium.getText("//h1[@class='header-title']"));
 				assertEquals(RuntimeVariables.replace("Assigned to Joe Bloggs"),

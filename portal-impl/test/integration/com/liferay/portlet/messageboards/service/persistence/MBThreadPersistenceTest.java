@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
 import com.liferay.portal.test.AssertUtils;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -140,7 +140,7 @@ public class MBThreadPersistenceTest {
 
 		newMBThread.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(newMBThread, false);
+		_persistence.update(newMBThread);
 
 		MBThread existingMBThread = _persistence.findByPrimaryKey(newMBThread.getPrimaryKey());
 
@@ -343,7 +343,7 @@ public class MBThreadPersistenceTest {
 
 		mbThread.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(mbThread, false);
+		_persistence.update(mbThread);
 
 		return mbThread;
 	}

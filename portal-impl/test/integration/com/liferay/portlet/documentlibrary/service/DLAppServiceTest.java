@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.search.QueryConfig;
 import com.liferay.portal.kernel.search.SearchContext;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -36,7 +37,6 @@ import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.AssertUtils;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
 import com.liferay.portal.util.TestPropsValues;
 import com.liferay.portlet.asset.model.AssetEntry;
@@ -70,10 +70,10 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 		_userIds = new long[ServiceTestUtil.THREAD_COUNT];
 
-		for (int i = 0 ; i < ServiceTestUtil.THREAD_COUNT; i++) {
+		for (int i = 0; i < ServiceTestUtil.THREAD_COUNT; i++) {
 			User user = ServiceTestUtil.addUser(
 				"DLAppServiceTest" + (i + 1), false,
-				new long[] {TestPropsValues.getGroupId()});
+				new long[] {group.getGroupId()});
 
 			_userIds[i] = user.getUserId();
 		}
@@ -174,13 +174,14 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setScopeGroupId(group.getGroupId());
 
 		try {
 			String name = "InvalidMime.txt";
 			byte[] bytes = CONTENT.getBytes();
 
 			FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-				TestPropsValues.getGroupId(), folderId, name,
+				group.getGroupId(), folderId, name,
 				ContentTypes.APPLICATION_OCTET_STREAM, name, description,
 				changeLog, bytes, serviceContext);
 
@@ -213,15 +214,15 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setScopeGroupId(group.getGroupId());
 
 		try {
 			String name = "Bytes-null.txt";
 			byte[] bytes = null;
 
 			FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-				TestPropsValues.getGroupId(), folderId, name,
-				ContentTypes.TEXT_PLAIN, name, description, changeLog, bytes,
-				serviceContext);
+				group.getGroupId(), folderId, name, ContentTypes.TEXT_PLAIN,
+				name, description, changeLog, bytes, serviceContext);
 
 			DLAppServiceUtil.updateFileEntry(
 				fileEntry.getFileEntryId(), name, ContentTypes.TEXT_PLAIN, name,
@@ -246,9 +247,8 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 			File file = null;
 
 			FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-				TestPropsValues.getGroupId(), folderId, name,
-				ContentTypes.TEXT_PLAIN, name, description, changeLog, file,
-				serviceContext);
+				group.getGroupId(), folderId, name, ContentTypes.TEXT_PLAIN,
+				name, description, changeLog, file, serviceContext);
 
 			DLAppServiceUtil.updateFileEntry(
 				fileEntry.getFileEntryId(), name, ContentTypes.TEXT_PLAIN, name,
@@ -278,9 +278,8 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 			InputStream is = null;
 
 			FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-				TestPropsValues.getGroupId(), folderId, name,
-				ContentTypes.TEXT_PLAIN, name, description, changeLog, is, 0,
-				serviceContext);
+				group.getGroupId(), folderId, name, ContentTypes.TEXT_PLAIN,
+				name, description, changeLog, is, 0, serviceContext);
 
 			DLAppServiceUtil.updateFileEntry(
 				fileEntry.getFileEntryId(), name, ContentTypes.TEXT_PLAIN, name,
@@ -321,15 +320,15 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 		serviceContext.setAddGroupPermissions(true);
 		serviceContext.setAddGuestPermissions(true);
+		serviceContext.setScopeGroupId(group.getGroupId());
 
 		String[] assetTagNames = new String[] {"hello", "world"};
 
 		serviceContext.setAssetTagNames(assetTagNames);
 
 		FileEntry fileEntry = DLAppServiceUtil.addFileEntry(
-			TestPropsValues.getGroupId(), folderId, name,
-			ContentTypes.TEXT_PLAIN, name, description, changeLog, bytes,
-			serviceContext);
+			group.getGroupId(), folderId, name, ContentTypes.TEXT_PLAIN, name,
+			description, changeLog, bytes, serviceContext);
 
 		AssetEntry assetEntry = AssetEntryLocalServiceUtil.fetchEntry(
 			DLFileEntryConstants.getClassName(), fileEntry.getFileEntryId());
@@ -372,12 +371,12 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 	@Test
 	public void testSearchFileInRootFolder() throws Exception {
-		testSearchFile(true);
+		searchFile(true);
 	}
 
 	@Test
 	public void testSearchFileInSubFolder() throws Exception {
-		testSearchFile(false);
+		searchFile(false);
 	}
 
 	@Test
@@ -415,6 +414,7 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 
 		SearchContext searchContext = new SearchContext();
 
+		searchContext.setAttribute("paginationType", "regular");
 		searchContext.setCompanyId(_fileEntry.getCompanyId());
 		searchContext.setFolderIds(new long[] {_fileEntry.getFolderId()});
 		searchContext.setGroupIds(new long[] {_fileEntry.getRepositoryId()});
@@ -466,7 +466,7 @@ public class DLAppServiceTest extends BaseDLAppTestCase {
 		}
 	}
 
-	protected void testSearchFile(boolean rootFolder) throws Exception {
+	protected void searchFile(boolean rootFolder) throws Exception {
 		addFileEntry(rootFolder);
 
 		Thread.sleep(1000 * TestPropsValues.JUNIT_DELAY_FACTOR);

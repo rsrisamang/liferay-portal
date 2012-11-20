@@ -77,6 +77,7 @@
 
 		<!-- Other fields -->
 
+		<column name="parentStructureId" type="long" />
 		<column name="classNameId" type="long" />
 		<column name="structureKey" type="String" />
 		<column name="name" type="String" localized="true" />
@@ -96,6 +97,10 @@
 		<finder name="G_S" return-type="DDMStructure" unique="true">
 			<finder-column name="groupId" />
 			<finder-column name="structureKey" />
+		</finder>
+		<finder name="C_C" return-type="Collection">
+			<finder-column name="companyId" />
+			<finder-column name="classNameId" />
 		</finder>
 		<finder name="G_N_D" return-type="Collection" db-index="false">
 			<finder-column name="groupId" />
@@ -160,6 +165,10 @@
 		<column name="mode" type="String" />
 		<column name="language" type="String" />
 		<column name="script" type="String" />
+		<column name="cacheable" type="boolean" />
+		<column name="smallImage" type="boolean" />
+		<column name="smallImageId" type="long" />
+		<column name="smallImageURL" type="String" />
 
 		<!-- Finder methods -->
 
@@ -199,6 +208,10 @@
 			<finder-column name="type" />
 			<finder-column name="mode" />
 		</finder>
+
+		<!-- References -->
+
+		<reference package-path="com.liferay.portal" entity="Image" />
 	</entity>
 	<exceptions>
 		<exception>Content</exception>
@@ -216,5 +229,7 @@
 		<exception>TemplateDuplicateTemplateKey</exception>
 		<exception>TemplateName</exception>
 		<exception>TemplateScript</exception>
+		<exception>TemplateSmallImageName</exception>
+		<exception>TemplateSmallImageSize</exception>
 	</exceptions>
 </service-builder>

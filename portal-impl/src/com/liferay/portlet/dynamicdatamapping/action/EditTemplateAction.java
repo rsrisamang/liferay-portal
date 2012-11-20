@@ -33,10 +33,13 @@ import com.liferay.portlet.PortletURLImpl;
 import com.liferay.portlet.dynamicdatamapping.NoSuchTemplateException;
 import com.liferay.portlet.dynamicdatamapping.TemplateNameException;
 import com.liferay.portlet.dynamicdatamapping.TemplateScriptException;
+import com.liferay.portlet.dynamicdatamapping.TemplateSmallImageNameException;
+import com.liferay.portlet.dynamicdatamapping.TemplateSmallImageSizeException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplate;
 import com.liferay.portlet.dynamicdatamapping.model.DDMTemplateConstants;
 import com.liferay.portlet.dynamicdatamapping.service.DDMTemplateServiceUtil;
-import com.liferay.util.JS;
+
+import java.io.File;
 
 import java.util.Locale;
 import java.util.Map;
@@ -102,7 +105,9 @@ public class EditTemplateAction extends PortletAction {
 				setForward(actionRequest, "portlet.dynamic_data_mapping.error");
 			}
 			else if (e instanceof TemplateNameException ||
-					 e instanceof TemplateScriptException) {
+					 e instanceof TemplateScriptException ||
+					 e instanceof TemplateSmallImageNameException ||
+					 e instanceof TemplateSmallImageSizeException) {
 
 				SessionErrors.add(actionRequest, e.getClass(), e);
 			}
@@ -223,12 +228,20 @@ public class EditTemplateAction extends PortletAction {
 			DDMTemplateConstants.LANG_TYPE_VM);
 
 		String script = ParamUtil.getString(uploadPortletRequest, "script");
-		String scriptContent = JS.decodeURIComponent(
-			ParamUtil.getString(uploadPortletRequest, "scriptContent"));
+		String scriptContent = ParamUtil.getString(
+			uploadPortletRequest, "scriptContent");
 
 		if (Validator.isNull(script)) {
 			script = scriptContent;
 		}
+
+		boolean cacheable = ParamUtil.getBoolean(
+			uploadPortletRequest, "cacheable");
+		boolean smallImage = ParamUtil.getBoolean(
+			uploadPortletRequest, "smallImage");
+		String smallImageURL = ParamUtil.getString(
+			uploadPortletRequest, "smallImageURL");
+		File smallImageFile = uploadPortletRequest.getFile("smallImageFile");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DDMTemplate.class.getName(), actionRequest);
@@ -238,12 +251,14 @@ public class EditTemplateAction extends PortletAction {
 		if (templateId <= 0) {
 			template = DDMTemplateServiceUtil.addTemplate(
 				groupId, classNameId, classPK, null, nameMap, descriptionMap,
-				type, mode, language, script, serviceContext);
+				type, mode, language, script, cacheable, smallImage,
+				smallImageURL, smallImageFile, serviceContext);
 		}
 		else {
 			template = DDMTemplateServiceUtil.updateTemplate(
 				templateId, nameMap, descriptionMap, type, mode, language,
-				script, serviceContext);
+				script, cacheable, smallImage, smallImageURL, smallImageFile,
+				serviceContext);
 		}
 
 		String portletResource = ParamUtil.getString(
@@ -254,14 +269,14 @@ public class EditTemplateAction extends PortletAction {
 				PortletPreferencesFactoryUtil.getPortletSetup(
 					actionRequest, portletResource);
 
-			if (type.equals(DDMTemplateConstants.TEMPLATE_TYPE_DETAIL)) {
+			if (type.equals(DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY)) {
 				preferences.setValue(
-					"detailDDMTemplateId",
+					"displayDDMTemplateId",
 					String.valueOf(template.getTemplateId()));
 			}
 			else {
 				preferences.setValue(
-					"listDDMTemplateId",
+					"formDDMTemplateId",
 					String.valueOf(template.getTemplateId()));
 			}
 

@@ -22,48 +22,30 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class SearchTest extends BaseTestCase {
 	public void testSearch() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Tags", RuntimeVariables.replace("Tags"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_99_tagsAdminSearchInput']",
 			RuntimeVariables.replace("blue"));
 		Thread.sleep(5000);
 		assertTrue(selenium.isVisible("link=blue"));
 		assertTrue(selenium.isVisible("link=blue car"));
 		assertTrue(selenium.isVisible("link=blue green"));
-		assertFalse(selenium.isElementPresent("link=green"));
-		assertFalse(selenium.isElementPresent("link=green tree"));
+		assertTrue(selenium.isElementNotPresent("link=green"));
+		assertTrue(selenium.isElementNotPresent("link=green tree"));
 		selenium.clickAt("link=Tags", RuntimeVariables.replace("Tags"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_99_tagsAdminSearchInput']",
 			RuntimeVariables.replace("green"));
 		Thread.sleep(5000);
-		assertFalse(selenium.isElementPresent("link=blue"));
-		assertFalse(selenium.isElementPresent("link=blue car"));
+		assertTrue(selenium.isElementNotPresent("link=blue"));
+		assertTrue(selenium.isElementNotPresent("link=blue car"));
 		assertTrue(selenium.isVisible("link=blue green"));
 		assertTrue(selenium.isVisible("link=green"));
 		assertTrue(selenium.isVisible("link=green tree"));

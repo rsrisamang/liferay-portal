@@ -22,53 +22,60 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddCouponNameSpaceTest extends BaseTestCase {
 	public void testAddCouponNameSpace() throws Exception {
-		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		int label = 1;
 
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
+		while (label >= 1) {
+			switch (label) {
+			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
+				selenium.open("/web/guest/home/");
+				selenium.clickAt("link=Shopping Test Page",
+					RuntimeVariables.replace("Shopping Test Page"));
+				selenium.waitForPageToLoad("30000");
+				selenium.clickAt("link=Coupons",
+					RuntimeVariables.replace("Coupons"));
+				selenium.waitForPageToLoad("30000");
+				selenium.clickAt("//input[@value='Add Coupon']",
+					RuntimeVariables.replace("Add Coupon"));
+				selenium.waitForPageToLoad("30000");
 
-			try {
-				if (selenium.isVisible("link=Shopping Test Page")) {
-					break;
+				boolean autogenerateCodeChecked = selenium.isChecked(
+						"//input[@id='_34_autoCodeCheckbox']");
+
+				if (autogenerateCodeChecked) {
+					label = 2;
+
+					continue;
 				}
-			}
-			catch (Exception e) {
-			}
 
-			Thread.sleep(1000);
+				selenium.clickAt("//input[@id='_34_autoCodeCheckbox']",
+					RuntimeVariables.replace("Autogenerate Code"));
+
+			case 2:
+				assertTrue(selenium.isChecked(
+						"//input[@id='_34_autoCodeCheckbox']"));
+				selenium.type("//input[@id='_34_name']",
+					RuntimeVariables.replace(" "));
+				selenium.type("//textarea[@id='_34_description']",
+					RuntimeVariables.replace("Shopping Coupon Description"));
+				selenium.type("//input[@id='_34_discount']",
+					RuntimeVariables.replace("0.50"));
+				selenium.clickAt("//input[@value='Save']",
+					RuntimeVariables.replace("Save"));
+				selenium.waitForPageToLoad("30000");
+				assertEquals(RuntimeVariables.replace(
+						"Your request failed to complete."),
+					selenium.getText(
+						"xPath=(//div[@class='portlet-msg-error'])[1]"));
+				assertEquals(RuntimeVariables.replace(
+						"Please enter a valid name."),
+					selenium.getText(
+						"xPath=(//div[@class='portlet-msg-error'])[2]"));
+
+			case 100:
+				label = -1;
+			}
 		}
-
-		selenium.clickAt("link=Shopping Test Page",
-			RuntimeVariables.replace("Shopping Test Page"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Coupons", RuntimeVariables.replace("Coupons"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("//input[@value='Add Coupon']",
-			RuntimeVariables.replace("Add Coupon"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isChecked("//input[@id='_34_autoCodeCheckbox']"));
-		selenium.clickAt("//input[@id='_34_autoCodeCheckbox']",
-			RuntimeVariables.replace("Autogenerate Code"));
-		assertTrue(selenium.isChecked("//input[@id='_34_autoCodeCheckbox']"));
-		selenium.type("//input[@id='_34_name']", RuntimeVariables.replace(" "));
-		selenium.type("//textarea[@id='_34_description']",
-			RuntimeVariables.replace("Shopping Coupon Description"));
-		selenium.type("//input[@id='_34_discount']",
-			RuntimeVariables.replace("0.50"));
-		selenium.clickAt("//input[@value='Save']",
-			RuntimeVariables.replace("Save"));
-		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace(
-				"Your request failed to complete."),
-			selenium.getText("xPath=(//div[@class='portlet-msg-error'])[1]"));
-		assertEquals(RuntimeVariables.replace("Please enter a valid name."),
-			selenium.getText("xPath=(//div[@class='portlet-msg-error'])[2]"));
 	}
 }

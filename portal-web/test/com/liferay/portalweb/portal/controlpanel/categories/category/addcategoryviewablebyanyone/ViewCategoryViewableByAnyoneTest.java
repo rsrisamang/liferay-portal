@@ -22,75 +22,29 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewCategoryViewableByAnyoneTest extends BaseTestCase {
 	public void testViewCategoryViewableByAnyone() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Categories",
 			RuntimeVariables.replace("Categories"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//li/div/div[4]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//li/div/div[4]");
 		assertEquals(RuntimeVariables.replace("Category Name"),
 			selenium.getText("//li/div/div[4]"));
 		selenium.clickAt("//li/div/div[4]",
 			RuntimeVariables.replace("Category Name"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@class='view-category']/div/h1/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//div[@class='view-category']/div/h1/span");
 		assertEquals(RuntimeVariables.replace("Category Name"),
 			selenium.getText("//div[@class='view-category']/div/h1/span"));
 		assertEquals(RuntimeVariables.replace(
@@ -98,27 +52,16 @@ public class ViewCategoryViewableByAnyoneTest extends BaseTestCase {
 			selenium.getText("//div[@class='view-category']/div[2]"));
 		selenium.clickAt("//input[@id='updateCategoryPermissions']",
 			RuntimeVariables.replace("Permissions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//tr[3]/td[6]/input")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//iframe");
+		selenium.selectFrame("//iframe");
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/liferay/search_container.js')]");
+		selenium.waitForVisible("//tr[3]/td[6]/input");
 		assertTrue(selenium.isChecked("//tr[3]/td[6]/input"));
 		assertTrue(selenium.isChecked("//tr[4]/td[6]/input"));
 		assertFalse(selenium.isChecked("//tr[5]/td[6]/input"));
 		assertFalse(selenium.isChecked("//tr[6]/td[6]/input"));
 		assertTrue(selenium.isChecked("//tr[7]/td[6]/input"));
+		selenium.selectFrame("relative=top");
 	}
 }

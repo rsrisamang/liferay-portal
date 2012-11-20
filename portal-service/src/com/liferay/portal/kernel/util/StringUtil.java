@@ -245,7 +245,8 @@ public class StringUtil {
 	 *
 	 * <pre>
 	 * <code>
-	 * contains("application", "app") returns true
+	 * contains("one,two,three", "two") returns true
+	 * contains("one,two,three", "thr") returns false
 	 * </code>
 	 * </pre>
 	 *
@@ -563,6 +564,27 @@ public class StringUtil {
 		}
 	}
 
+	public static String extractLeadingDigits(String s) {
+		if (s == null) {
+			return StringPool.BLANK;
+		}
+
+		StringBundler sb = new StringBundler();
+
+		char[] chars = s.toCharArray();
+
+		for (char c : chars) {
+			if (Validator.isDigit(c)) {
+				sb.append(c);
+			}
+			else {
+				return sb.toString();
+			}
+		}
+
+		return sb.toString();
+	}
+
 	/**
 	 * @deprecated
 	 */
@@ -664,6 +686,14 @@ public class StringUtil {
 		}
 		else {
 			return s.toLowerCase();
+		}
+	}
+
+	public static void lowerCase(String... array) {
+		if (array != null) {
+			for (int i = 0; i < array.length; i++) {
+				array[i] = array[i].toLowerCase();
+			}
 		}
 	}
 
@@ -1297,9 +1327,9 @@ public class StringUtil {
 	 *
 	 * <pre>
 	 * <code>
-	 * remove("red;blue;green;yellow", "blue") returns "red,green,yellow;"
-	 * remove("blue", "blue") returns ""
-	 * remove("blue;", "blue") returns ""
+	 * remove("red;blue;green;yellow", "blue", ";") returns "red;green;yellow;"
+	 * remove("blue", "blue", ";") returns ""
+	 * remove("blue;", "blue", ";") returns ""
 	 * </code>
 	 * </pre>
 	 *
@@ -1925,7 +1955,7 @@ public class StringUtil {
 
 	/**
 	 * Returns a string representing the original string appended with suffix
-	 *  "..." and then shortened to 20 characters.
+	 * "..." and then shortened to 20 characters.
 	 *
 	 * <p>
 	 * The suffix is only added if the original string exceeds 20 characters. If

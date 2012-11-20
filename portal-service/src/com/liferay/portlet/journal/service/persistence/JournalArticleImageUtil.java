@@ -95,22 +95,20 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
 	public static JournalArticleImage update(
-		JournalArticleImage journalArticleImage, boolean merge)
-		throws SystemException {
-		return getPersistence().update(journalArticleImage, merge);
+		JournalArticleImage journalArticleImage) throws SystemException {
+		return getPersistence().update(journalArticleImage);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static JournalArticleImage update(
-		JournalArticleImage journalArticleImage, boolean merge,
-		ServiceContext serviceContext) throws SystemException {
-		return getPersistence()
-				   .update(journalArticleImage, merge, serviceContext);
+		JournalArticleImage journalArticleImage, ServiceContext serviceContext)
+		throws SystemException {
+		return getPersistence().update(journalArticleImage, serviceContext);
 	}
 
 	/**
@@ -160,10 +158,9 @@ public class JournalArticleImageUtil {
 	}
 
 	public static com.liferay.portlet.journal.model.JournalArticleImage updateImpl(
-		com.liferay.portlet.journal.model.JournalArticleImage journalArticleImage,
-		boolean merge)
+		com.liferay.portlet.journal.model.JournalArticleImage journalArticleImage)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(journalArticleImage, merge);
+		return getPersistence().updateImpl(journalArticleImage);
 	}
 
 	/**
@@ -251,10 +248,6 @@ public class JournalArticleImageUtil {
 	/**
 	* Returns the first journal article image in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param groupId the group ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching journal article image
@@ -270,11 +263,22 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the last journal article image in the ordered set where groupId = &#63;.
+	* Returns the first journal article image in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByGroupId_First(
+		long groupId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByGroupId_First(groupId, orderByComparator);
+	}
+
+	/**
+	* Returns the last journal article image in the ordered set where groupId = &#63;.
 	*
 	* @param groupId the group ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -291,11 +295,22 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63;.
+	* Returns the last journal article image in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByGroupId_Last(
+		long groupId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByGroupId_Last(groupId, orderByComparator);
+	}
+
+	/**
+	* Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63;.
 	*
 	* @param articleImageId the primary key of the current journal article image
 	* @param groupId the group ID
@@ -371,10 +386,6 @@ public class JournalArticleImageUtil {
 	/**
 	* Returns the first journal article image in the ordered set where tempImage = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param tempImage the temp image
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching journal article image
@@ -391,11 +402,23 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the last journal article image in the ordered set where tempImage = &#63;.
+	* Returns the first journal article image in the ordered set where tempImage = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tempImage the temp image
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByTempImage_First(
+		boolean tempImage,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByTempImage_First(tempImage, orderByComparator);
+	}
+
+	/**
+	* Returns the last journal article image in the ordered set where tempImage = &#63;.
 	*
 	* @param tempImage the temp image
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -413,11 +436,23 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the journal article images before and after the current journal article image in the ordered set where tempImage = &#63;.
+	* Returns the last journal article image in the ordered set where tempImage = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param tempImage the temp image
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByTempImage_Last(
+		boolean tempImage,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByTempImage_Last(tempImage, orderByComparator);
+	}
+
+	/**
+	* Returns the journal article images before and after the current journal article image in the ordered set where tempImage = &#63;.
 	*
 	* @param articleImageId the primary key of the current journal article image
 	* @param tempImage the temp image
@@ -502,10 +537,6 @@ public class JournalArticleImageUtil {
 	/**
 	* Returns the first journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param groupId the group ID
 	* @param articleId the article ID
 	* @param version the version
@@ -525,11 +556,26 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the last journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
+	* Returns the first journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param articleId the article ID
+	* @param version the version
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByG_A_V_First(
+		long groupId, java.lang.String articleId, double version,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByG_A_V_First(groupId, articleId, version,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the last journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	*
 	* @param groupId the group ID
 	* @param articleId the article ID
@@ -550,11 +596,26 @@ public class JournalArticleImageUtil {
 	}
 
 	/**
-	* Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
+	* Returns the last journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param articleId the article ID
+	* @param version the version
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching journal article image, or <code>null</code> if a matching journal article image could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.journal.model.JournalArticleImage fetchByG_A_V_Last(
+		long groupId, java.lang.String articleId, double version,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByG_A_V_Last(groupId, articleId, version,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the journal article images before and after the current journal article image in the ordered set where groupId = &#63; and articleId = &#63; and version = &#63;.
 	*
 	* @param articleImageId the primary key of the current journal article image
 	* @param groupId the group ID

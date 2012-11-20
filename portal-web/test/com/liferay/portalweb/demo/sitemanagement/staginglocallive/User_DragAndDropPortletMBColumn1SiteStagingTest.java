@@ -24,41 +24,24 @@ public class User_DragAndDropPortletMBColumn1SiteStagingTest
 	extends BaseTestCase {
 	public void testUser_DragAndDropPortletMBColumn1SiteStaging()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Site Name")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Site Name");
 		selenium.clickAt("link=Site Name", RuntimeVariables.replace("Site Name"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isElementPresent(
 				"//body[contains(@class,'live-view')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//body[contains(@class,'live-staging')]"));
 		assertEquals(RuntimeVariables.replace("Staging"),
 			selenium.getText("//div[@class='staging-bar']/ul/li[2]/span/a"));
 		selenium.clickAt("//div[@class='staging-bar']/ul/li[2]/span/a",
 			RuntimeVariables.replace("Staging"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isElementPresent(
 				"//body[contains(@class,'local-staging')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//body[contains(@class,'live-view')]"));
 		assertEquals(RuntimeVariables.replace("Draft"),
 			selenium.getText("//span[@class='workflow-status']/strong"));
@@ -67,7 +50,7 @@ public class User_DragAndDropPortletMBColumn1SiteStagingTest
 			selenium.getText("//div[@class='portlet-msg-alert']"));
 		assertTrue(selenium.isVisible(
 				"//div[@id='column-2']/div/div[contains(@class,'portlet-message-boards')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//div[@id='column-1']/div/div[contains(@class,'portlet-message-boards')]"));
 		assertEquals(RuntimeVariables.replace("Message Boards"),
 			selenium.getText("xPath=(//span[@class='portlet-title-text'])[4]"));
@@ -76,27 +59,11 @@ public class User_DragAndDropPortletMBColumn1SiteStagingTest
 		Thread.sleep(5000);
 		selenium.dragAndDropToObject("xPath=(//span[@class='portlet-title-text'])[4]",
 			"//div[@id='column-1']");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@id='column-1']/div/div[contains(@class,'portlet-message-boards')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@id='column-1']/div/div[contains(@class,'portlet-message-boards')]");
 		assertTrue(selenium.isVisible(
 				"//div[@id='column-1']/div/div[contains(@class,'portlet-message-boards')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//div[@id='column-2']/div/div[contains(@class,'portlet-message-boards')]"));
 	}
 }

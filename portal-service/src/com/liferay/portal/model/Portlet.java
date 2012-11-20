@@ -607,6 +607,20 @@ public interface Portlet extends PortletModel, PersistedModel {
 	public com.liferay.portal.kernel.lar.PortletDataHandler getPortletDataHandlerInstance();
 
 	/**
+	* Returns the name of the portlet display style class of the portlet.
+	*
+	* @return the name of the portlet display style class of the portlet
+	*/
+	public java.lang.String getPortletDisplayTemplateHandlerClass();
+
+	/**
+	* Returns the portlet display style instance of the portlet.
+	*
+	* @return the portlet display style instance of the portlet
+	*/
+	public com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandler getPortletDisplayTemplateHandlerInstance();
+
+	/**
 	* Returns the filters of the portlet.
 	*
 	* @return filters of the portlet
@@ -1011,6 +1025,14 @@ public interface Portlet extends PortletModel, PersistedModel {
 	* @return <code>true</code> if the portlet uses the default template
 	*/
 	public boolean getUseDefaultTemplate();
+
+	/**
+	* Returns the user ID of the portlet. This only applies when the portlet is
+	* added by a user in a customizable layout.
+	*
+	* @return the user ID of the portlet
+	*/
+	public long getUserId();
 
 	/**
 	* Returns the user principal strategy of the portlet.
@@ -1776,6 +1798,16 @@ public interface Portlet extends PortletModel, PersistedModel {
 	*/
 	public void setPortletDataHandlerClass(
 		java.lang.String portletDataHandlerClass);
+
+	/**
+	* Sets the name of the portlet display template handler class of the
+	* portlet.
+	*
+	* @param portletDisplayTemplateHandlerClass the name of display template
+	handler class of the portlet
+	*/
+	public void setPortletDisplayTemplateHandlerClass(
+		java.lang.String portletDisplayTemplateHandlerClass);
 
 	/**
 	* Sets the filters of the portlet.

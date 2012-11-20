@@ -22,35 +22,17 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class VoteQuestionTest extends BaseTestCase {
 	public void testVoteQuestion() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Polls Display Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Polls Display Test Page",
 			RuntimeVariables.replace("Polls Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//div/span[2]/span/span/input",
 			RuntimeVariables.replace("Choice B Radio Button"));
 		selenium.clickAt("//input[@value='Vote']",
 			RuntimeVariables.replace("Vote"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Thank you for your vote."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
 		assertEquals(RuntimeVariables.replace("0%"),
@@ -64,7 +46,7 @@ public class VoteQuestionTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("1"),
 			selenium.getText("//tr[3]/td[2]"));
 		assertEquals(RuntimeVariables.replace("PD Question ChoiceB"),
-			selenium.getText("//tr[3]/td[7]"));
+			selenium.getText("//tr[3]/td[5]"));
 		assertEquals(RuntimeVariables.replace("0%"),
 			selenium.getText("//tr[4]/td[1]"));
 		assertEquals(RuntimeVariables.replace("0"),
@@ -73,9 +55,9 @@ public class VoteQuestionTest extends BaseTestCase {
 			selenium.getText("//tr[4]/td[5]"));
 		assertEquals(RuntimeVariables.replace("Total Votes: 1"),
 			selenium.getText("//form/div"));
-		assertFalse(selenium.isElementPresent("//input[@value='Vote']"));
-		assertFalse(selenium.isElementPresent("//div/span[1]/span/span/input"));
-		assertFalse(selenium.isElementPresent("//div/span[2]/span/span/input"));
-		assertFalse(selenium.isElementPresent("//div/span[3]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//input[@value='Vote']"));
+		assertTrue(selenium.isElementNotPresent("//div/span[1]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//div/span[2]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//div/span[3]/span/span/input"));
 	}
 }

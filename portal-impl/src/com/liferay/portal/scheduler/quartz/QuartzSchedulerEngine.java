@@ -32,7 +32,7 @@ import com.liferay.portal.kernel.scheduler.IntervalTrigger;
 import com.liferay.portal.kernel.scheduler.JobState;
 import com.liferay.portal.kernel.scheduler.JobStateSerializeUtil;
 import com.liferay.portal.kernel.scheduler.SchedulerEngine;
-import com.liferay.portal.kernel.scheduler.SchedulerEngineUtil;
+import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
 import com.liferay.portal.kernel.scheduler.SchedulerException;
 import com.liferay.portal.kernel.scheduler.StorageType;
 import com.liferay.portal.kernel.scheduler.TriggerFactoryUtil;
@@ -41,13 +41,12 @@ import com.liferay.portal.kernel.scheduler.TriggerType;
 import com.liferay.portal.kernel.scheduler.messaging.SchedulerEventMessageListenerWrapper;
 import com.liferay.portal.kernel.scheduler.messaging.SchedulerResponse;
 import com.liferay.portal.kernel.util.CharPool;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.ClassLoaderPool;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.scheduler.job.MessageSenderJob;
+import com.liferay.portal.security.pacl.PACLClassLoaderUtil;
 import com.liferay.portal.service.QuartzLocalService;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
@@ -625,13 +624,7 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 		Date startDate = trigger.getStartDate();
 
 		if (startDate == null) {
-			if (ServerDetector.isTomcat()) {
-				startDate = new Date(System.currentTimeMillis() + Time.MINUTE);
-			}
-			else {
-				startDate = new Date(
-					System.currentTimeMillis() + Time.MINUTE * 3);
-			}
+			startDate = new Date(System.currentTimeMillis());
 		}
 
 		Trigger quartzTrigger = null;
@@ -886,7 +879,7 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 				message.put(JOB_NAME, jobKey.getName());
 				message.put(GROUP_NAME, jobKey.getGroup());
 
-				SchedulerEngineUtil.auditSchedulerJobs(
+				SchedulerEngineHelperUtil.auditSchedulerJobs(
 					message, TriggerState.EXPIRED);
 
 				_persistedScheduler.deleteJob(jobKey);
@@ -911,10 +904,19 @@ public class QuartzSchedulerEngine implements SchedulerEngine {
 		ClassLoader classLoader = null;
 
 		if (Validator.isNull(portletId)) {
-			classLoader = PortalClassLoaderUtil.getClassLoader();
+			classLoader = PACLClassLoaderUtil.getPortalClassLoader();
 		}
 		else {
 			classLoader = PortletClassLoaderUtil.getClassLoader(portletId);
+
+			if (classLoader == null) {
+
+				// No class loader found for the portlet ID, try getting the
+				// class loader where we assume the portlet ID is really a
+				// servlet context name
+
+				classLoader = ClassLoaderPool.getClassLoader(portletId);
+			}
 		}
 
 		if (classLoader == null) {

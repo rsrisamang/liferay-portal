@@ -22,108 +22,75 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AssignMembersRegRoleUserTest extends BaseTestCase {
 	public void testAssignMembersRegRoleUser() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Roles", RuntimeVariables.replace("Roles"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_128_keywords']",
 			RuntimeVariables.replace("Regrole"));
 		selenium.clickAt("//input[@value='Search']",
 			RuntimeVariables.replace("Search"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Roles Regrole Name"),
-			selenium.getText(
-				"//td[@id='_128_ocerSearchContainer_col-name_row-1']"));
+			selenium.getText("//tr[contains(.,'Roles Regrole Name')]/td[1]/a"));
 		assertEquals(RuntimeVariables.replace("Regular"),
-			selenium.getText(
-				"//td[@id='_128_ocerSearchContainer_col-type_row-1']"));
+			selenium.getText("//tr[contains(.,'Roles Regrole Name')]/td[2]/a"));
+		assertEquals(RuntimeVariables.replace(""),
+			selenium.getText("//tr[contains(.,'Roles Regrole Name')]/td[3]/a"));
 		assertEquals(RuntimeVariables.replace("Actions"),
 			selenium.getText(
-				"//span[@title='Actions']/ul[@id='_128_ocerSearchContainer_1_menu']/li/strong/a/span"));
-		selenium.clickAt("//span[@title='Actions']/ul[@id='_128_ocerSearchContainer_1_menu']/li/strong/a/span",
+				"//tr[contains(.,'Roles Regrole Name')]/td[4]/span[@title='Actions']/ul/li/strong/a/span"));
+		selenium.clickAt("//tr[contains(.,'Roles Regrole Name')]/td[4]/span[@title='Actions']/ul/li/strong/a/span",
 			RuntimeVariables.replace("Actions"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Assign Members')]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Assign Members')]");
 		assertEquals(RuntimeVariables.replace("Assign Members"),
 			selenium.getText(
 				"//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Assign Members')]"));
 		selenium.clickAt("//div[@class='lfr-component lfr-menu-list']/ul/li/a[contains(.,'Assign Members')]",
 			RuntimeVariables.replace("Assign Members"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Roles Regrole Name"),
 			selenium.getText("//h1[@class='header-title']/span"));
-		selenium.clickAt("link=Available", RuntimeVariables.replace("Available"));
+		assertEquals(RuntimeVariables.replace("Available"),
+			selenium.getText(
+				"//ul[@class='aui-tabview-list']/li/span/a[contains(.,'Available')]"));
+		selenium.clickAt("//ul[@class='aui-tabview-list']/li/span/a[contains(.,'Available')]",
+			RuntimeVariables.replace("Available"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@name='_128_keywords']",
 			RuntimeVariables.replace("usersn"));
 		selenium.clickAt("//input[@value='Search']",
 			RuntimeVariables.replace("Search"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("userfn userln"),
-			selenium.getText(
-				"//td[@id='_128_usersSearchContainer_col-name_row-usersn']"));
+			selenium.getText("//tr[contains(.,'userfn userln')]/td[2]"));
 		assertEquals(RuntimeVariables.replace("usersn"),
-			selenium.getText(
-				"//td[@id='_128_usersSearchContainer_col-screen-name_row-usersn']"));
+			selenium.getText("//tr[contains(.,'userfn userln')]/td[3]"));
 		assertFalse(selenium.isChecked(
-				"//td[@id='_128_usersSearchContainer_col-rowChecker_row-usersn']/input"));
-		selenium.check(
-			"//td[@id='_128_usersSearchContainer_col-rowChecker_row-usersn']/input");
+				"//tr[contains(.,'userfn userln')]/td[1]/input"));
+		selenium.check("//tr[contains(.,'userfn userln')]/td[1]/input");
 		assertTrue(selenium.isChecked(
-				"//td[@id='_128_usersSearchContainer_col-rowChecker_row-usersn']/input"));
+				"//tr[contains(.,'userfn userln')]/td[1]/input"));
 		selenium.clickAt("//input[@value='Update Associations']",
 			RuntimeVariables.replace("Update Associations"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
 		assertTrue(selenium.isChecked(
-				"//td[@id='_128_usersSearchContainer_col-rowChecker_row-usersn']/input"));
+				"//tr[contains(.,'userfn userln')]/td[1]/input"));
 	}
 }

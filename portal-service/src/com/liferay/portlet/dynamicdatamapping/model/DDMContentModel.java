@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatamapping.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
@@ -339,6 +340,9 @@ public interface DDMContentModel extends BaseModel<DDMContent>, GroupedModel {
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(DDMContent ddmContent);
@@ -348,6 +352,8 @@ public interface DDMContentModel extends BaseModel<DDMContent>, GroupedModel {
 	public CacheModel<DDMContent> toCacheModel();
 
 	public DDMContent toEscapedModel();
+
+	public DDMContent toUnescapedModel();
 
 	public String toString();
 

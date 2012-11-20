@@ -31,6 +31,7 @@ import com.liferay.portal.kernel.concurrent.ThreadPoolExecutor;
 import com.liferay.portal.kernel.dao.shard.ShardUtil;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.executor.PortalExecutorManagerUtil;
+import com.liferay.portal.kernel.image.GhostscriptUtil;
 import com.liferay.portal.kernel.image.ImageMagickUtil;
 import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayOutputStream;
 import com.liferay.portal.kernel.io.unsync.UnsyncPrintWriter;
@@ -49,6 +50,7 @@ import com.liferay.portal.kernel.scripting.ScriptingException;
 import com.liferay.portal.kernel.scripting.ScriptingUtil;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.SearchEngineUtil;
+import com.liferay.portal.kernel.servlet.DirectServletRegistryUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.CharPool;
@@ -157,6 +159,9 @@ public class EditServerAction extends PortletAction {
 		else if (cmd.equals("cacheMulti")) {
 			cacheMulti();
 		}
+		else if (cmd.equals("cacheServlet")) {
+			cacheServlet();
+		}
 		else if (cmd.equals("cacheSingle")) {
 			cacheSingle();
 		}
@@ -226,6 +231,10 @@ public class EditServerAction extends PortletAction {
 
 	protected void cacheMulti() throws Exception {
 		MultiVMPoolUtil.clear();
+	}
+
+	protected void cacheServlet() throws Exception {
+		DirectServletRegistryUtil.clearServlets();
 	}
 
 	protected void cacheSingle() throws Exception {
@@ -382,14 +391,24 @@ public class EditServerAction extends PortletAction {
 				return;
 			}
 
+			Set<String> searchEngineIds = new HashSet<String>();
+
+			for (Indexer indexer : indexers) {
+				searchEngineIds.add(indexer.getSearchEngineId());
+			}
+
+			for (String searchEngineId : searchEngineIds) {
+				for (long companyId : companyIds) {
+					SearchEngineUtil.deletePortletDocuments(
+						searchEngineId, companyId, portletId);
+				}
+			}
+
 			for (Indexer indexer : indexers) {
 				for (long companyId : companyIds) {
 					ShardUtil.pushCompanyService(companyId);
 
 					try {
-						SearchEngineUtil.deletePortletDocuments(
-							indexer.getSearchEngineId(), companyId, portletId);
-
 						indexer.reindex(
 							new String[] {String.valueOf(companyId)});
 
@@ -461,7 +480,7 @@ public class EditServerAction extends PortletAction {
 			unsyncPrintWriter.flush();
 
 			SessionMessages.add(
-				actionRequest, "script_output",
+				actionRequest, "scriptOutput",
 				unsyncByteArrayOutputStream.toString());
 		}
 		catch (ScriptingException se) {
@@ -645,6 +664,7 @@ public class EditServerAction extends PortletAction {
 
 		preferences.store();
 
+		GhostscriptUtil.reset();
 		ImageMagickUtil.reset();
 	}
 
@@ -842,8 +862,8 @@ public class EditServerAction extends PortletAction {
 	private static Log _log = LogFactoryUtil.getLog(EditServerAction.class);
 
 	private static MethodKey _loadIndexesFromClusterMethodKey = new MethodKey(
-		LuceneClusterUtil.class.getName(), "loadIndexesFromCluster",
-		long[].class, Address.class);
+		LuceneClusterUtil.class, "loadIndexesFromCluster", long[].class,
+		Address.class);
 
 	private static class ClusterLoadingSyncJob implements Runnable {
 

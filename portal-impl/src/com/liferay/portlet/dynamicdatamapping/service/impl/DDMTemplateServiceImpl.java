@@ -26,6 +26,8 @@ import com.liferay.portlet.dynamicdatamapping.service.base.DDMTemplateServiceBas
 import com.liferay.portlet.dynamicdatamapping.service.permission.DDMPermission;
 import com.liferay.portlet.dynamicdatamapping.service.permission.DDMTemplatePermission;
 
+import java.io.File;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,7 +43,8 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 			long groupId, long classNameId, long classPK, String templateKey,
 			Map<Locale, String> nameMap, Map<Locale, String> descriptionMap,
 			String type, String mode, String language, String script,
-			ServiceContext serviceContext)
+			boolean cacheable, boolean smallImage, String smallImageURL,
+			File smallImageFile, ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		String ddmResource = ParamUtil.getString(serviceContext, "ddmResource");
@@ -50,7 +53,12 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 			serviceContext, "ddmResourceActionId");
 
 		if (Validator.isNull(ddmResourceActionId)) {
-			ddmResourceActionId = ActionKeys.ADD_TEMPLATE;
+			if (ddmResource.equals(_DDL_CLASS_NAME)) {
+				ddmResourceActionId = ActionKeys.ADD_TEMPLATE;
+			}
+			else {
+				ddmResourceActionId = ActionKeys.ADD_PORTLET_DISPLAY_TEMPLATE;
+			}
 		}
 
 		DDMPermission.check(
@@ -59,7 +67,8 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 
 		return ddmTemplateLocalService.addTemplate(
 			getUserId(), groupId, classNameId, classPK, templateKey, nameMap,
-			descriptionMap, type, mode, language, script, serviceContext);
+			descriptionMap, type, mode, language, script, cacheable, smallImage,
+			smallImageURL, smallImageFile, serviceContext);
 	}
 
 	public List<DDMTemplate> copyTemplates(
@@ -153,6 +162,29 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 			mode, language, andOperator, start, end, orderByComparator);
 	}
 
+	public List<DDMTemplate> search(
+			long companyId, long[] groupIds, long[] classNameIds, long classPK,
+			String keywords, String type, String mode, int start, int end,
+			OrderByComparator orderByComparator)
+		throws SystemException {
+
+		return ddmTemplateFinder.filterFindByKeywords(
+			companyId, groupIds, classNameIds, classPK, keywords, type, mode,
+			start, end, orderByComparator);
+	}
+
+	public List<DDMTemplate> search(
+			long companyId, long[] groupIds, long[] classNameIds, long classPK,
+			String name, String description, String type, String mode,
+			String language, boolean andOperator, int start, int end,
+			OrderByComparator orderByComparator)
+		throws SystemException {
+
+		return ddmTemplateFinder.filterFindByC_G_C_C_N_D_T_M_L(
+			companyId, groupIds, classNameIds, classPK, name, description, type,
+			mode, language, andOperator, start, end, orderByComparator);
+	}
+
 	public int searchCount(
 			long companyId, long groupId, long classNameId, long classPK,
 			String keywords, String type, String mode)
@@ -173,10 +205,32 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 			mode, language, andOperator);
 	}
 
+	public int searchCount(
+			long companyId, long[] groupIds, long[] classNameIds, long classPK,
+			String keywords, String type, String mode)
+		throws SystemException {
+
+		return ddmTemplateFinder.filterCountByKeywords(
+			companyId, groupIds, classNameIds, classPK, keywords, type, mode);
+	}
+
+	public int searchCount(
+			long companyId, long[] groupIds, long[] classNameIds, long classPK,
+			String name, String description, String type, String mode,
+			String language, boolean andOperator)
+		throws SystemException {
+
+		return ddmTemplateFinder.filterCountByC_G_C_C_N_D_T_M_L(
+			companyId, groupIds, classNameIds, classPK, name, description, type,
+			mode, language, andOperator);
+	}
+
 	public DDMTemplate updateTemplate(
 			long templateId, Map<Locale, String> nameMap,
 			Map<Locale, String> descriptionMap, String type, String mode,
-			String language, String script, ServiceContext serviceContext)
+			String language, String script, boolean cacheable,
+			boolean smallImage, String smallImageURL, File smallImageFile,
+			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
 		DDMTemplatePermission.check(
@@ -184,7 +238,11 @@ public class DDMTemplateServiceImpl extends DDMTemplateServiceBaseImpl {
 
 		return ddmTemplateLocalService.updateTemplate(
 			templateId, nameMap, descriptionMap, type, mode, language, script,
+			cacheable, smallImage, smallImageURL, smallImageFile,
 			serviceContext);
 	}
+
+	private static final String _DDL_CLASS_NAME =
+		"com.liferay.portlet.dynamicdatalists";
 
 }

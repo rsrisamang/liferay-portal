@@ -99,6 +99,10 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 	 */
 	public static SocialActivitySetting toModel(
 		SocialActivitySettingSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		SocialActivitySetting model = new SocialActivitySettingImpl();
 
 		model.setActivitySettingId(soapModel.getActivitySettingId());
@@ -120,6 +124,10 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 	 */
 	public static List<SocialActivitySetting> toModels(
 		SocialActivitySettingSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<SocialActivitySetting> models = new ArrayList<SocialActivitySetting>(soapModels.length);
 
 		for (SocialActivitySettingSoap soapModel : soapModels) {
@@ -361,17 +369,6 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 	}
 
 	@Override
-	public SocialActivitySetting toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (SocialActivitySetting)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			SocialActivitySetting.class.getName(), getPrimaryKey());
@@ -382,6 +379,16 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public SocialActivitySetting toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (SocialActivitySetting)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -564,7 +571,7 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 	}
 
 	private static ClassLoader _classLoader = SocialActivitySetting.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			SocialActivitySetting.class
 		};
 	private long _activitySettingId;
@@ -582,5 +589,5 @@ public class SocialActivitySettingModelImpl extends BaseModelImpl<SocialActivity
 	private String _originalName;
 	private String _value;
 	private long _columnBitmask;
-	private SocialActivitySetting _escapedModelProxy;
+	private SocialActivitySetting _escapedModel;
 }

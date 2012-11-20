@@ -91,6 +91,10 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 	 * @return the normal model instance
 	 */
 	public static Portlet toModel(PortletSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		Portlet model = new PortletImpl();
 
 		model.setId(soapModel.getId());
@@ -109,6 +113,10 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 	 * @return the normal model instances
 	 */
 	public static List<Portlet> toModels(PortletSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<Portlet> models = new ArrayList<Portlet>(soapModels.length);
 
 		for (PortletSoap soapModel : soapModels) {
@@ -280,17 +288,6 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 	}
 
 	@Override
-	public Portlet toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Portlet)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			Portlet.class.getName(), getPrimaryKey());
@@ -301,6 +298,16 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Portlet toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Portlet)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -457,7 +464,7 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 	}
 
 	private static ClassLoader _classLoader = Portlet.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Portlet.class
 		};
 	private long _id;
@@ -469,5 +476,5 @@ public class PortletModelImpl extends BaseModelImpl<Portlet>
 	private String _roles;
 	private boolean _active;
 	private long _columnBitmask;
-	private Portlet _escapedModelProxy;
+	private Portlet _escapedModel;
 }

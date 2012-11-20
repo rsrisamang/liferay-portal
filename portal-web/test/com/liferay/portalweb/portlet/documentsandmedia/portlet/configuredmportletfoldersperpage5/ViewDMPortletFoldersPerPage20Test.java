@@ -22,46 +22,29 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewDMPortletFoldersPerPage20Test extends BaseTestCase {
 	public void testViewDMPortletFoldersPerPage20() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder1 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[1]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[1]"));
 		assertEquals(RuntimeVariables.replace("DM Folder2 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[2]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[2]"));
 		assertEquals(RuntimeVariables.replace("DM Folder3 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[3]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[3]"));
 		assertEquals(RuntimeVariables.replace("DM Folder4 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[4]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[4]"));
 		assertEquals(RuntimeVariables.replace("DM Folder5 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[5]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[5]"));
 		assertEquals(RuntimeVariables.replace("DM Folder6 Name"),
 			selenium.getText(
-				"xPath=(//a[contains(@class,'document-link')]/span[@class='entry-title'])[6]"));
+				"xPath=(//a[contains(@class,'entry-link')]/span[@class='entry-title'])[6]"));
 	}
 }

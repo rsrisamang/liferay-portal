@@ -89,6 +89,10 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 	 * @return the normal model instance
 	 */
 	public static ClassName toModel(ClassNameSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		ClassName model = new ClassNameImpl();
 
 		model.setClassNameId(soapModel.getClassNameId());
@@ -104,6 +108,10 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 	 * @return the normal model instances
 	 */
 	public static List<ClassName> toModels(ClassNameSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<ClassName> models = new ArrayList<ClassName>(soapModels.length);
 
 		for (ClassNameSoap soapModel : soapModels) {
@@ -224,17 +232,6 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 	}
 
 	@Override
-	public ClassName toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (ClassName)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
 			ClassName.class.getName(), getPrimaryKey());
@@ -245,6 +242,16 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public ClassName toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (ClassName)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -364,12 +371,12 @@ public class ClassNameModelImpl extends BaseModelImpl<ClassName>
 	}
 
 	private static ClassLoader _classLoader = ClassName.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			ClassName.class
 		};
 	private long _classNameId;
 	private String _value;
 	private String _originalValue;
 	private long _columnBitmask;
-	private ClassName _escapedModelProxy;
+	private ClassName _escapedModel;
 }

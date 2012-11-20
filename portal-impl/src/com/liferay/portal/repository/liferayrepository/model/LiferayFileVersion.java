@@ -20,9 +20,10 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.security.auth.PrincipalThreadLocal;
 import com.liferay.portlet.documentlibrary.model.DLFileVersion;
+import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
-import com.liferay.portlet.documentlibrary.util.DLAppUtil;
 import com.liferay.portlet.expando.model.ExpandoBridge;
+import com.liferay.portlet.trash.util.TrashUtil;
 
 import java.io.File;
 import java.io.InputStream;
@@ -176,7 +177,11 @@ public class LiferayFileVersion extends LiferayModel implements FileVersion {
 	}
 
 	public String getTitle() {
-		return DLAppUtil.stripTrashNamespace(_dlFileVersion.getTitle());
+		return TrashUtil.stripTrashNamespace(_dlFileVersion.getTitle());
+	}
+
+	public DLFolder getTrashFolder() {
+		return _dlFileVersion.getTrashFolder();
 	}
 
 	public long getUserId() {
@@ -228,6 +233,10 @@ public class LiferayFileVersion extends LiferayModel implements FileVersion {
 		return _dlFileVersion.isInTrash();
 	}
 
+	public boolean isInTrashFolder() {
+		return _dlFileVersion.isInTrashFolder();
+	}
+
 	public boolean isPending() {
 		return _dlFileVersion.isPending();
 	}
@@ -274,6 +283,16 @@ public class LiferayFileVersion extends LiferayModel implements FileVersion {
 		else {
 			return new LiferayFileVersion(
 				_dlFileVersion.toEscapedModel(), true);
+		}
+	}
+
+	public FileVersion toUnescapedModel() {
+		if (isEscapedModel()) {
+			return new LiferayFileVersion(
+				_dlFileVersion.toUnescapedModel(), true);
+		}
+		else {
+			return this;
 		}
 	}
 

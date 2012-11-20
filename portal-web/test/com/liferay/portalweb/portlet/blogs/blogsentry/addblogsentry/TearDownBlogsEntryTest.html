@@ -34,11 +34,6 @@
 	<td>Move to the Recycle Bin</td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Are you sure you want to move this to the Recycle Bin?</td>
-	<td></td>
-</tr>
-<tr>
 	<td>storeElementPresent</td>
 	<td>link=Move to the Recycle Bin</td>
 	<td>blogsEntry2Present</td>
@@ -52,11 +47,6 @@
 	<td>clickAndWait</td>
 	<td>link=Move to the Recycle Bin</td>
 	<td>Move to the Recycle Bin</td>
-</tr>
-<tr>
-	<td>assertConfirmation</td>
-	<td>Are you sure you want to move this to the Recycle Bin?</td>
-	<td></td>
 </tr>
 <tr>
 	<td>storeElementPresent</td>
@@ -74,11 +64,6 @@
 	<td>Move to the Recycle Bin</td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Are you sure you want to move this to the Recycle Bin?</td>
-	<td></td>
-</tr>
-<tr>
 	<td>storeElementPresent</td>
 	<td>link=Move to the Recycle Bin</td>
 	<td>blogsEntry4Present</td>
@@ -94,11 +79,6 @@
 	<td>Move to the Recycle Bin</td>
 </tr>
 <tr>
-	<td>assertConfirmation</td>
-	<td>Are you sure you want to move this to the Recycle Bin?</td>
-	<td></td>
-</tr>
-<tr>
 	<td>storeElementPresent</td>
 	<td>link=Move to the Recycle Bin</td>
 	<td>blogsEntry5Present</td>
@@ -112,11 +92,6 @@
 	<td>clickAndWait</td>
 	<td>link=Move to the Recycle Bin</td>
 	<td>Move to the Recycle Bin</td>
-</tr>
-<tr>
-	<td>assertConfirmation</td>
-	<td>Are you sure you want to move this to the Recycle Bin?</td>
-	<td></td>
 </tr>
 <tr>
 	<td>label</td>
@@ -149,14 +124,24 @@
 	<td></td>
 </tr>
 <tr>
-	<td>waitForVisible</td>
+	<td>clickAt</td>
+	<td>//div[@id='dockbar']</td>
+	<td>Dockbar</td>
+</tr>
+<tr>
+	<td>waitForElementPresent</td>
+	<td>//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]</td>
+	<td>AUI Editable Min</td>
+</tr>
+<tr>
+	<td>assertText</td>
 	<td>//li[@id='_145_mySites']/a/span</td>
-	<td>Go To</td>
+	<td>Go to</td>
 </tr>
 <tr>
 	<td>mouseOver</td>
 	<td>//li[@id='_145_mySites']/a/span</td>
-	<td>Go To</td>
+	<td>Go to</td>
 </tr>
 <tr>
 	<td>waitForVisible</td>
@@ -175,32 +160,22 @@
 </tr>
 <tr>
 	<td>storeElementPresent</td>
-	<td>//input[@name='_182_rowIds']</td>
-	<td>assetPresent</td>
+	<td>//form[@id='_182_emptyForm']/a</td>
+	<td>recycleBinPresent</td>
 </tr>
 <tr>
 	<td>gotoIf</td>
-	<td>!${assetPresent}</td>
-	<td>AssetNotPresent</td>
+	<td>!${recycleBinPresent}</td>
+	<td>RecycleBinNotPresent</td>
 </tr>
 <tr>
-	<td>assertNotChecked</td>
-	<td>//input[@name='_182_allRowIds']</td>
-	<td>All Rows</td>
+	<td>assertText</td>
+	<td>//form[@id='_182_emptyForm']/a</td>
+	<td>Empty the Recycle Bin</td>
 </tr>
 <tr>
-	<td>clickAt</td>
-	<td>//input[@name='_182_allRowIds']</td>
-	<td>All Rows</td>
-</tr>
-<tr>
-	<td>assertChecked</td>
-	<td>//input[@name='_182_allRowIds']</td>
-	<td>All Rows</td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>//input[@value='Empty the Recycle Bin']</td>
+	<td>clickAtAndWait</td>
+	<td>//form[@id='_182_emptyForm']/a</td>
 	<td>Empty the Recycle Bin</td>
 </tr>
 <tr>
@@ -210,7 +185,7 @@
 </tr>
 <tr>
 	<td>label</td>
-	<td>AssetNotPresent</td>
+	<td>RecycleBinNotPresent</td>
 	<td></td>
 </tr>
 </tbody></table>

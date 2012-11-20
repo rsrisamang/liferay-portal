@@ -262,7 +262,14 @@ public class BrowserTrackerPersistenceImpl extends BasePersistenceImpl<BrowserTr
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, browserTracker);
+			if (!session.contains(browserTracker)) {
+				browserTracker = (BrowserTracker)session.get(BrowserTrackerImpl.class,
+						browserTracker.getPrimaryKeyObj());
+			}
+
+			if (browserTracker != null) {
+				session.delete(browserTracker);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -271,14 +278,16 @@ public class BrowserTrackerPersistenceImpl extends BasePersistenceImpl<BrowserTr
 			closeSession(session);
 		}
 
-		clearCache(browserTracker);
+		if (browserTracker != null) {
+			clearCache(browserTracker);
+		}
 
 		return browserTracker;
 	}
 
 	@Override
 	public BrowserTracker updateImpl(
-		com.liferay.portal.model.BrowserTracker browserTracker, boolean merge)
+		com.liferay.portal.model.BrowserTracker browserTracker)
 		throws SystemException {
 		browserTracker = toUnwrappedModel(browserTracker);
 
@@ -291,9 +300,14 @@ public class BrowserTrackerPersistenceImpl extends BasePersistenceImpl<BrowserTr
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, browserTracker, merge);
+			if (browserTracker.isNew()) {
+				session.save(browserTracker);
 
-			browserTracker.setNew(false);
+				browserTracker.setNew(false);
+			}
+			else {
+				session.merge(browserTracker);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -325,6 +339,7 @@ public class BrowserTrackerPersistenceImpl extends BasePersistenceImpl<BrowserTr
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_USERID, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_USERID, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_USERID,

@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.asset.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
@@ -441,6 +442,9 @@ public interface AssetVocabularyModel extends BaseModel<AssetVocabulary>,
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(AssetVocabulary assetVocabulary);
@@ -450,6 +454,8 @@ public interface AssetVocabularyModel extends BaseModel<AssetVocabulary>,
 	public CacheModel<AssetVocabulary> toCacheModel();
 
 	public AssetVocabulary toEscapedModel();
+
+	public AssetVocabulary toUnescapedModel();
 
 	public String toString();
 

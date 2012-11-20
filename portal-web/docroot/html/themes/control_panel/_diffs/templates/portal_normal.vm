@@ -12,18 +12,20 @@
 
 <body class="$css_class">
 
+<a href="#main-content" id="skip-to-content">#language ("skip-to-content")</a>
+
+$theme.include($body_top_include)
+
 #if ($control_panel_category == "")
 	#dockbar()
 #end
 
 <div id="wrapper">
-	<a href="#main-content" id="skip-to-content">#language("skip-to-content")</a>
-
 	<header id="banner" role="banner">
 		<div id="heading">
 			<h1 class="company-title">
-				<a class="$logo_css_class" href="$control_panel_url" title="#language("go-to") #language("control-panel")">
-					<span>#language("control-panel")</span>
+				<a class="$logo_css_class" href="$control_panel_url" title="#language ("go-to") #language ("control-panel")">
+					<span>#language ("control-panel")</span>
 				</a>
 			</h1>
 		</div>
@@ -37,7 +39,7 @@
 		#end
 
 			<h1>
-				<span>#language("breadcrumbs")</span>
+				<span>#language ("breadcrumbs")</span>
 			</h1>
 
 			#breadcrumbs("control_panel")
@@ -55,6 +57,10 @@
 
 		<div class="clear"></div>
 	</div>
+</div>
+
+$theme.include($body_bottom_include)
+
 </body>
 
 $theme.include($bottom_include)

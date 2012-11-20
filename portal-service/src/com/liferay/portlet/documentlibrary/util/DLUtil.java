@@ -39,15 +39,22 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.Group;
-import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.WorkflowDefinitionLinkLocalServiceUtil;
+import com.liferay.portal.theme.PortletDisplay;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portal.util.PortletKeys;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
+import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
 import com.liferay.portlet.documentlibrary.model.DLFileShortcut;
+import com.liferay.portlet.documentlibrary.model.DLFolder;
 import com.liferay.portlet.documentlibrary.model.DLFolderConstants;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.service.DLFolderLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelCreateDateComparator;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelModifiedDateComparator;
 import com.liferay.portlet.documentlibrary.util.comparator.RepositoryModelNameComparator;
@@ -77,6 +84,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DLUtil {
 
+	public static final String MANUAL_CHECK_IN_REQUIRED =
+		"manualCheckInRequired";
+
+	public static final String MANUAL_CHECK_IN_REQUIRED_PATH =
+		StringPool.SLASH + MANUAL_CHECK_IN_REQUIRED;
+
+	public static final String WEBDAV_CHECK_IN_MODE = "webDAVCheckInMode";
+
 	public static void addPortletBreadcrumbEntries(
 			DLFileShortcut dlFileShortcut, HttpServletRequest request,
 			RenderResponse renderResponse)
@@ -90,6 +105,9 @@ public class DLUtil {
 			addPortletBreadcrumbEntries(folder, request, renderResponse);
 		}
 
+		DLFileShortcut unescapedDLFileShortcut =
+			dlFileShortcut.toUnescapedModel();
+
 		PortletURL portletURL = renderResponse.createRenderURL();
 
 		portletURL.setParameter(
@@ -98,7 +116,8 @@ public class DLUtil {
 			"fileEntryId", String.valueOf(dlFileShortcut.getToFileEntryId()));
 
 		PortalUtil.addPortletBreadcrumbEntry(
-			request, dlFileShortcut.getToTitle(), portletURL.toString());
+			request, unescapedDLFileShortcut.getToTitle(),
+			portletURL.toString());
 	}
 
 	public static void addPortletBreadcrumbEntries(
@@ -116,13 +135,15 @@ public class DLUtil {
 
 		PortletURL portletURL = renderResponse.createRenderURL();
 
+		FileEntry unescapedFileEntry = fileEntry.toUnescapedModel();
+
 		portletURL.setParameter(
 			"struts_action", "/document_library/view_file_entry");
 		portletURL.setParameter(
 			"fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
 
 		PortalUtil.addPortletBreadcrumbEntry(
-			request, fileEntry.getTitle(), portletURL.toString());
+			request, unescapedFileEntry.getTitle(), portletURL.toString());
 	}
 
 	public static void addPortletBreadcrumbEntries(
@@ -201,13 +222,16 @@ public class DLUtil {
 		if ((folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) &&
 			(folderId != defaultFolderId)) {
 
+			Folder unescapedFolder = folder.toUnescapedModel();
+
 			Map<String, Object> data = new HashMap<String, Object>();
 
 			data.put("direction-right", Boolean.TRUE.toString());
 			data.put("folder-id", folderId);
 
 			PortalUtil.addPortletBreadcrumbEntry(
-				request, folder.getName(), portletURL.toString(), data);
+				request, unescapedFolder.getName(), portletURL.toString(),
+				data);
 		}
 	}
 
@@ -292,6 +316,41 @@ public class DLUtil {
 		return 0;
 	}
 
+	public static String getAbsolutePath(
+			PortletRequest portletRequest, long folderId)
+		throws PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (folderId == DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			return themeDisplay.translate("home");
+		}
+
+		DLFolder dlFolder = DLFolderLocalServiceUtil.getFolder(folderId);
+
+		List<DLFolder> dlFolders = dlFolder.getAncestors();
+
+		StringBundler sb = new StringBundler((dlFolders.size() * 3) + 6);
+
+		sb.append(themeDisplay.translate("home"));
+		sb.append(StringPool.SPACE);
+
+		for (int i = dlFolders.size() - 1; i >= 0; i--) {
+			DLFolder curDLFolder = dlFolders.get(i);
+
+			sb.append(StringPool.RAQUO);
+			sb.append(StringPool.SPACE);
+			sb.append(curDLFolder.getName());
+		}
+
+		sb.append(StringPool.RAQUO);
+		sb.append(StringPool.SPACE);
+		sb.append(dlFolder.getName());
+
+		return sb.toString();
+	}
+
 	public static Set<String> getAllMediaGalleryMimeTypes() {
 		return _instance._allMediaGalleryMimeTypes;
 	}
@@ -333,6 +392,24 @@ public class DLUtil {
 		return sb.toString();
 	}
 
+	public static String getDLControlPanelLink(
+			PortletRequest portletRequest, long folderId)
+		throws PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			portletRequest, PortletKeys.DOCUMENT_LIBRARY,
+			PortalUtil.getControlPanelPlid(themeDisplay.getCompanyId()),
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter("struts_action", "/document_library/view");
+		portletURL.setParameter("folderId", String.valueOf(folderId));
+
+		return portletURL.toString();
+	}
+
 	public static String getFileEntryImage(
 		FileEntry fileEntry, ThemeDisplay themeDisplay) {
 
@@ -353,30 +430,6 @@ public class DLUtil {
 
 	public static String getGenericName(String extension) {
 		return _instance._getGenericName(extension);
-	}
-
-	public static long[] getGroupIds(long groupId)
-		throws PortalException, SystemException {
-
-		Group scopeGroup = GroupLocalServiceUtil.getGroup(groupId);
-
-		Group companyGroup = GroupLocalServiceUtil.getCompanyGroup(
-			scopeGroup.getCompanyId());
-
-		if (scopeGroup.isLayout()) {
-			return new long[] {
-				scopeGroup.getParentGroupId(), companyGroup.getGroupId()
-			};
-		}
-		else {
-			return new long[] {groupId, companyGroup.getGroupId()};
-		}
-	}
-
-	public static long[] getGroupIds(ThemeDisplay themeDisplay)
-		throws PortalException, SystemException {
-
-		return getGroupIds(themeDisplay.getScopeGroupId());
 	}
 
 	public static String[] getMediaGalleryMimeTypes(
@@ -423,10 +476,9 @@ public class DLUtil {
 			if (absoluteURL) {
 				sb.append(themeDisplay.getPortalURL());
 			}
-
-			sb.append(themeDisplay.getPathContext());
 		}
 
+		sb.append(PortalUtil.getPathContext());
 		sb.append("/documents/");
 		sb.append(fileEntry.getRepositoryId());
 		sb.append(StringPool.SLASH);
@@ -455,6 +507,19 @@ public class DLUtil {
 		}
 
 		sb.append(queryString);
+
+		if (themeDisplay != null) {
+			PortletDisplay portletDisplay = themeDisplay.getPortletDisplay();
+
+			if (portletDisplay != null) {
+				String portletId = portletDisplay.getId();
+
+				if (portletId.equals(PortletKeys.TRASH)) {
+					sb.append("&status=");
+					sb.append(WorkflowConstants.STATUS_IN_TRASH);
+				}
+			}
+		}
 
 		String previewURL = sb.toString();
 
@@ -547,14 +612,18 @@ public class DLUtil {
 
 		String thumbnailQueryString = null;
 
-		if (ImageProcessorUtil.hasImages(fileVersion)) {
-			thumbnailQueryString = "&imageThumbnail=1";
-		}
-		else if (PDFProcessorUtil.hasImages(fileVersion)) {
-			thumbnailQueryString = "&documentThumbnail=1";
-		}
-		else if (VideoProcessorUtil.hasVideo(fileVersion)) {
-			thumbnailQueryString = "&videoThumbnail=1";
+		if (GetterUtil.getBoolean(
+				PropsUtil.get(PropsKeys.DL_FILE_ENTRY_THUMBNAIL_ENABLED))) {
+
+			if (ImageProcessorUtil.hasImages(fileVersion)) {
+				thumbnailQueryString = "&imageThumbnail=1";
+			}
+			else if (PDFProcessorUtil.hasImages(fileVersion)) {
+				thumbnailQueryString = "&documentThumbnail=1";
+			}
+			else if (VideoProcessorUtil.hasVideo(fileVersion)) {
+				thumbnailQueryString = "&videoThumbnail=1";
+			}
 		}
 
 		if (Validator.isNotNull(thumbnailQueryString)) {
@@ -624,6 +693,14 @@ public class DLUtil {
 			ThemeDisplay themeDisplay, Folder folder, FileEntry fileEntry)
 		throws PortalException, SystemException {
 
+		return getWebDavURL(themeDisplay, folder, fileEntry, false);
+	}
+
+	public static String getWebDavURL(
+			ThemeDisplay themeDisplay, Folder folder, FileEntry fileEntry,
+			boolean manualCheckInRequired)
+		throws PortalException, SystemException {
+
 		StringBuilder sb = new StringBuilder();
 
 		if (folder != null) {
@@ -652,9 +729,53 @@ public class DLUtil {
 
 		Group group = themeDisplay.getScopeGroup();
 
-		return themeDisplay.getPortalURL() + themeDisplay.getPathContext() +
-			"/api/secure/webdav" + group.getFriendlyURL() +
-				"/document_library" + sb.toString();
+		StringBundler webDavURL = new StringBundler(7);
+
+		webDavURL.append(themeDisplay.getPortalURL());
+		webDavURL.append(themeDisplay.getPathContext());
+		webDavURL.append("/webdav");
+
+		if (manualCheckInRequired) {
+			webDavURL.append(MANUAL_CHECK_IN_REQUIRED_PATH);
+		}
+
+		webDavURL.append(group.getFriendlyURL());
+		webDavURL.append("/document_library");
+		webDavURL.append(sb.toString());
+
+		return webDavURL.toString();
+	}
+
+	public static boolean hasWorkflowDefinitionLink(
+			long companyId, long groupId, long folderId, long fileEntryTypeId)
+		throws Exception {
+
+		while (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			DLFolder dlFolder = DLFolderLocalServiceUtil.fetchDLFolder(
+				folderId);
+
+			if (dlFolder == null) {
+				return false;
+			}
+
+			if (dlFolder.isOverrideFileEntryTypes()) {
+				break;
+			}
+
+			folderId = dlFolder.getParentFolderId();
+		}
+
+		if (WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(
+				companyId, groupId, DLFolderConstants.getClassName(), folderId,
+				fileEntryTypeId) ||
+			WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(
+				companyId, groupId, DLFolderConstants.getClassName(), folderId,
+				DLFileEntryTypeConstants.FILE_ENTRY_TYPE_ID_ALL)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public static boolean isAutoGeneratedDLFileEntryTypeDDMStructureKey(

@@ -223,20 +223,6 @@ public class PortletLocalServiceWrapper implements PortletLocalService,
 	}
 
 	/**
-	* Updates the portlet in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
-	*
-	* @param portlet the portlet
-	* @param merge whether to merge the portlet with the current session. See {@link com.liferay.portal.service.persistence.BatchSession#update(com.liferay.portal.kernel.dao.orm.Session, com.liferay.portal.model.BaseModel, boolean)} for an explanation.
-	* @return the portlet that was updated
-	* @throws SystemException if a system exception occurred
-	*/
-	public com.liferay.portal.model.Portlet updatePortlet(
-		com.liferay.portal.model.Portlet portlet, boolean merge)
-		throws com.liferay.portal.kernel.exception.SystemException {
-		return _portletLocalService.updatePortlet(portlet, merge);
-	}
-
-	/**
 	* Returns the Spring bean ID for this bean.
 	*
 	* @return the Spring bean ID for this bean
@@ -289,6 +275,20 @@ public class PortletLocalServiceWrapper implements PortletLocalService,
 	public com.liferay.portal.model.Portlet clonePortlet(
 		java.lang.String portletId) {
 		return _portletLocalService.clonePortlet(portletId);
+	}
+
+	public void deletePortlet(long companyId, java.lang.String portletId,
+		long plid)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_portletLocalService.deletePortlet(companyId, portletId, plid);
+	}
+
+	public void deletePortlets(long companyId, java.lang.String[] portletIds,
+		long plid)
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		_portletLocalService.deletePortlets(companyId, portletIds, plid);
 	}
 
 	public com.liferay.portal.model.Portlet deployRemotePortlet(

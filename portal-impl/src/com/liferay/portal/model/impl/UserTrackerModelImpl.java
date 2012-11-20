@@ -313,17 +313,6 @@ public class UserTrackerModelImpl extends BaseModelImpl<UserTracker>
 	}
 
 	@Override
-	public UserTracker toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (UserTracker)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			UserTracker.class.getName(), getPrimaryKey());
@@ -334,6 +323,16 @@ public class UserTrackerModelImpl extends BaseModelImpl<UserTracker>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public UserTracker toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (UserTracker)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -540,7 +539,7 @@ public class UserTrackerModelImpl extends BaseModelImpl<UserTracker>
 	}
 
 	private static ClassLoader _classLoader = UserTracker.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			UserTracker.class
 		};
 	private long _userTrackerId;
@@ -558,5 +557,5 @@ public class UserTrackerModelImpl extends BaseModelImpl<UserTracker>
 	private String _remoteHost;
 	private String _userAgent;
 	private long _columnBitmask;
-	private UserTracker _escapedModelProxy;
+	private UserTracker _escapedModel;
 }

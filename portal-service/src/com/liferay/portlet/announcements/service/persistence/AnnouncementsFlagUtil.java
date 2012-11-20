@@ -95,21 +95,20 @@ public class AnnouncementsFlagUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
-	public static AnnouncementsFlag update(
-		AnnouncementsFlag announcementsFlag, boolean merge)
+	public static AnnouncementsFlag update(AnnouncementsFlag announcementsFlag)
 		throws SystemException {
-		return getPersistence().update(announcementsFlag, merge);
+		return getPersistence().update(announcementsFlag);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static AnnouncementsFlag update(
-		AnnouncementsFlag announcementsFlag, boolean merge,
-		ServiceContext serviceContext) throws SystemException {
-		return getPersistence().update(announcementsFlag, merge, serviceContext);
+		AnnouncementsFlag announcementsFlag, ServiceContext serviceContext)
+		throws SystemException {
+		return getPersistence().update(announcementsFlag, serviceContext);
 	}
 
 	/**
@@ -159,10 +158,9 @@ public class AnnouncementsFlagUtil {
 	}
 
 	public static com.liferay.portlet.announcements.model.AnnouncementsFlag updateImpl(
-		com.liferay.portlet.announcements.model.AnnouncementsFlag announcementsFlag,
-		boolean merge)
+		com.liferay.portlet.announcements.model.AnnouncementsFlag announcementsFlag)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(announcementsFlag, merge);
+		return getPersistence().updateImpl(announcementsFlag);
 	}
 
 	/**
@@ -249,10 +247,6 @@ public class AnnouncementsFlagUtil {
 	/**
 	* Returns the first announcements flag in the ordered set where entryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param entryId the entry ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching announcements flag
@@ -268,11 +262,22 @@ public class AnnouncementsFlagUtil {
 	}
 
 	/**
-	* Returns the last announcements flag in the ordered set where entryId = &#63;.
+	* Returns the first announcements flag in the ordered set where entryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param entryId the entry ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching announcements flag, or <code>null</code> if a matching announcements flag could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.announcements.model.AnnouncementsFlag fetchByEntryId_First(
+		long entryId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByEntryId_First(entryId, orderByComparator);
+	}
+
+	/**
+	* Returns the last announcements flag in the ordered set where entryId = &#63;.
 	*
 	* @param entryId the entry ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -289,11 +294,22 @@ public class AnnouncementsFlagUtil {
 	}
 
 	/**
-	* Returns the announcements flags before and after the current announcements flag in the ordered set where entryId = &#63;.
+	* Returns the last announcements flag in the ordered set where entryId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param entryId the entry ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching announcements flag, or <code>null</code> if a matching announcements flag could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portlet.announcements.model.AnnouncementsFlag fetchByEntryId_Last(
+		long entryId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence().fetchByEntryId_Last(entryId, orderByComparator);
+	}
+
+	/**
+	* Returns the announcements flags before and after the current announcements flag in the ordered set where entryId = &#63;.
 	*
 	* @param flagId the primary key of the current announcements flag
 	* @param entryId the entry ID

@@ -20,7 +20,7 @@
 String viewOrganizationsRedirect = ParamUtil.getString(request, "viewOrganizationsRedirect", themeDisplay.getURLControlPanel());
 String redirect = ParamUtil.getString(request, "redirect", viewOrganizationsRedirect);
 String closeRedirect = ParamUtil.getString(request, "closeRedirect");
-String backURL = ParamUtil.getString(request, "backURL", redirect);
+String backURL = ParamUtil.getString(request, "backURL");
 
 Group group = (Group)request.getAttribute(WebKeys.GROUP);
 
@@ -84,12 +84,24 @@ if (group != null) {
 	miscellaneousSections = PropsValues.SITES_FORM_UPDATE_MISCELLANEOUS;
 }
 
+String[] analyticsTypes = PrefsPropsUtil.getStringArray(company.getCompanyId(), PropsKeys.ADMIN_ANALYTICS_TYPES, StringPool.NEW_LINE);
+
+if ((analyticsTypes.length == 0) && ArrayUtil.contains(advancedSections, "analytics")) {
+	advancedSections = ArrayUtil.remove(advancedSections, "analytics");
+}
+
+int trashEnabled = PrefsPropsUtil.getInteger(company.getCompanyId(), PropsKeys.TRASH_ENABLED);
+
+if ((trashEnabled == 0) && ArrayUtil.contains(advancedSections, "recycle-bin")) {
+	advancedSections = ArrayUtil.remove(advancedSections, "recycle-bin");
+}
+
 String[][] categorySections = {mainSections, seoSections, advancedSections, miscellaneousSections};
 %>
 
 <c:if test="<%= portletName.equals(PortletKeys.SITES_ADMIN) %>">
 	<liferay-util:include page="/html/portlet/sites_admin/toolbar.jsp">
-		<liferay-util:param name="toolbarItem" value='<%= (group == null) ? "add" : "view-all" %>' />
+		<liferay-util:param name="toolbarItem" value='<%= (group == null) ? "add" : "browse" %>' />
 	</liferay-util:include>
 </c:if>
 
@@ -244,5 +256,5 @@ else {
 %>
 
 <%!
-private static String[] _CATEGORY_NAMES = {"basic-information", "search-engine-optimization", "advanced", "miscellaneous"};
+private static final String[] _CATEGORY_NAMES = {"basic-information", "search-engine-optimization", "advanced", "miscellaneous"};
 %>

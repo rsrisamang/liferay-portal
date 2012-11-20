@@ -321,17 +321,6 @@ public class AssetLinkModelImpl extends BaseModelImpl<AssetLink>
 	}
 
 	@Override
-	public AssetLink toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (AssetLink)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			AssetLink.class.getName(), getPrimaryKey());
@@ -342,6 +331,16 @@ public class AssetLinkModelImpl extends BaseModelImpl<AssetLink>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public AssetLink toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (AssetLink)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -547,7 +546,7 @@ public class AssetLinkModelImpl extends BaseModelImpl<AssetLink>
 	}
 
 	private static ClassLoader _classLoader = AssetLink.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			AssetLink.class
 		};
 	private long _linkId;
@@ -567,5 +566,5 @@ public class AssetLinkModelImpl extends BaseModelImpl<AssetLink>
 	private boolean _setOriginalType;
 	private int _weight;
 	private long _columnBitmask;
-	private AssetLink _escapedModelProxy;
+	private AssetLink _escapedModel;
 }

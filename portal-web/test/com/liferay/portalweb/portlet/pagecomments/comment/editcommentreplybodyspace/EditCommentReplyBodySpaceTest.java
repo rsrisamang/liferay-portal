@@ -22,29 +22,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class EditCommentReplyBodySpaceTest extends BaseTestCase {
 	public void testEditCommentReplyBodySpace() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Page Comments Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Page Comments Test Page",
 			RuntimeVariables.replace("Page Comments Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("PC Comment Reply"),
 			selenium.getText(
 				"xPath=(//div[@class='lfr-discussion-message'])[2]"));
@@ -52,47 +35,13 @@ public class EditCommentReplyBodySpaceTest extends BaseTestCase {
 			selenium.getText("//div[2]/div[3]/div/div[2]/ul/li[3]/span/a/span"));
 		selenium.clickAt("//div[2]/div[3]/div/div[2]/ul/li[3]/span/a/span",
 			RuntimeVariables.replace("Edit"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//textarea[@name='_107_editReplyBody2']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("//textarea[@name='_107_editReplyBody2']");
 		selenium.type("//textarea[@name='_107_editReplyBody2']",
 			RuntimeVariables.replace(" "));
 		selenium.clickAt("xPath=(//input[@value='Publish'])[2]",
 			RuntimeVariables.replace("Publish"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Please enter a valid message.")
-										.equals(selenium.getText(
-								"//div[@class='lfr-message-response portlet-msg-error']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//div[@class='lfr-message-response portlet-msg-error']");
 		assertEquals(RuntimeVariables.replace("Please enter a valid message."),
 			selenium.getText(
 				"//div[@class='lfr-message-response portlet-msg-error']"));
@@ -101,28 +50,9 @@ public class EditCommentReplyBodySpaceTest extends BaseTestCase {
 		assertFalse(selenium.isTextPresent(
 				"Your request processed successfully."));
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Page Comments Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Page Comments Test Page",
 			RuntimeVariables.replace("Page Comments Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("PC Comment Reply"),
 			selenium.getText(
 				"xPath=(//div[@class='lfr-discussion-message'])[2]"));

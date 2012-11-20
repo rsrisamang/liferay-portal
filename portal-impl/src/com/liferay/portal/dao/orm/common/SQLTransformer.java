@@ -258,7 +258,7 @@ public class SQLTransformer {
 	}
 
 	private String _replaceReplace(String newSQL) {
-		return StringUtil.replace(newSQL, "replace(", "str_replace(");
+		return newSQL.replaceAll("(?i)replace\\(", "str_replace(");
 	}
 
 	private String _replaceUnion(String sql) {
@@ -414,7 +414,7 @@ public class SQLTransformer {
 	private static Pattern _modPattern = Pattern.compile(
 		"MOD\\((.+?),(.+?)\\)", Pattern.CASE_INSENSITIVE);
 	private static Pattern _negativeComparisonPattern = Pattern.compile(
-		"(!=)?( -([0-9]+)?)", Pattern.CASE_INSENSITIVE);
+		"(!?=)( -([0-9]+)?)", Pattern.CASE_INSENSITIVE);
 	private static Pattern _unionAllPattern = Pattern.compile(
 		"SELECT \\* FROM(.*)TEMP_TABLE(.*)", Pattern.CASE_INSENSITIVE);
 

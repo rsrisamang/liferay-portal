@@ -701,7 +701,7 @@ serverURL.setParameter("tabs3", tabs3);
 					script = (String)SessionMessages.get(renderRequest, "script");
 				}
 
-				String scriptOutput = (String)SessionMessages.get(renderRequest, "script_output");
+				String scriptOutput = (String)SessionMessages.get(renderRequest, "scriptOutput");
 				%>
 
 				<aui:fieldset>
@@ -859,6 +859,14 @@ serverURL.setParameter("tabs3", tabs3);
 							</td>
 							<td>
 								<input type="button" value="<liferay-ui:message key="execute" />" onClick="<portlet:namespace />saveServer('cacheDb');" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<liferay-ui:message key="clear-the-direct-servlet-cache" />
+							</td>
+							<td>
+								<input type="button" value="<liferay-ui:message key="execute" />" onClick="<portlet:namespace />saveServer('cacheServlet');" />
 							</td>
 						</tr>
 						<tr>

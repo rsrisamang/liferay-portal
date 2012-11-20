@@ -18,14 +18,15 @@ import com.liferay.portal.kernel.io.unsync.UnsyncByteArrayInputStream;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
 import com.liferay.portal.kernel.repository.model.Folder;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.model.Group;
 import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.test.EnvironmentExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayIntegrationJUnitTestRunner;
-import com.liferay.portal.util.TestPropsValues;
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryConstants;
@@ -48,12 +49,15 @@ public class DLCheckInCheckOutTest {
 
 	@Before
 	public void setUp() throws Exception {
-		long repositoryId = TestPropsValues.getGroupId();
+		_group = ServiceTestUtil.addGroup();
+
+		long repositoryId = _group.getGroupId();
 
 		_folder = createFolder(repositoryId, "CheckInCheckOutTest");
 
 		_serviceContext = new ServiceContext();
 
+		_serviceContext.setScopeGroupId(_group.getGroupId());
 		_serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
 
 		_fileEntry = createFileEntry(
@@ -92,25 +96,33 @@ public class DLCheckInCheckOutTest {
 	public void testCheckIn() throws Exception {
 		ServiceContext serviceContext = new ServiceContext();
 
-		DLAppServiceUtil.checkOutFileEntry(
-			_fileEntry.getFileEntryId(), serviceContext);
+		for (int i = 0; i < 2; i++) {
+			DLAppServiceUtil.checkOutFileEntry(
+				_fileEntry.getFileEntryId(), serviceContext);
 
-		FileVersion fileVersion = _fileEntry.getLatestFileVersion();
+			FileVersion fileVersion = _fileEntry.getLatestFileVersion();
 
-		Assert.assertEquals("PWC", fileVersion.getVersion());
+			Assert.assertEquals("PWC", fileVersion.getVersion());
 
-		getAssetEntry(fileVersion.getFileVersionId(), true);
+			getAssetEntry(fileVersion.getFileVersionId(), true);
 
-		DLAppServiceUtil.checkInFileEntry(
-			_fileEntry.getFileEntryId(), false, StringPool.BLANK,
-			_serviceContext);
+			if (i == 1) {
+				updateFileEntry(_fileEntry.getFileEntryId(), _serviceContext);
+			}
 
-		FileEntry fileEntry = DLAppServiceUtil.getFileEntry(
-			_fileEntry.getFileEntryId());
+			DLAppServiceUtil.checkInFileEntry(
+				_fileEntry.getFileEntryId(), false, StringPool.BLANK,
+				_serviceContext);
 
-		Assert.assertEquals("1.1", fileEntry.getVersion());
+			FileEntry fileEntry = DLAppServiceUtil.getFileEntry(
+				_fileEntry.getFileEntryId());
 
-		getAssetEntry(fileVersion.getFileVersionId(), false);
+			Assert.assertEquals("1." + i, fileEntry.getVersion());
+
+			fileVersion = fileEntry.getFileVersion();
+
+			getAssetEntry(fileVersion.getFileVersionId(), false);
+		}
 	}
 
 	@Test
@@ -223,12 +235,14 @@ public class DLCheckInCheckOutTest {
 			long fileEntryId, ServiceContext serviceContext)
 		throws Exception {
 
+		String newContent = _TEST_CONTENT + "\n" + System.currentTimeMillis();
+
 		InputStream inputStream = new UnsyncByteArrayInputStream(
-			_TEST_CONTENT.getBytes());
+			newContent.getBytes());
 
 		return DLAppServiceUtil.updateFileEntry(
 			fileEntryId, "test1.txt", ContentTypes.TEXT_PLAIN, "test1.txt",
-			null, null, false, inputStream, _TEST_CONTENT.length(),
+			null, null, false, inputStream, newContent.length(),
 			serviceContext);
 	}
 
@@ -237,6 +251,7 @@ public class DLCheckInCheckOutTest {
 
 	private FileEntry _fileEntry;
 	private Folder _folder;
+	private Group _group;
 	private ServiceContext _serviceContext;
 
 }

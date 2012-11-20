@@ -14,13 +14,16 @@
 
 package com.liferay.portal.kernel.util;
 
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.pacl.permission.PortalRuntimePermission;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -29,8 +32,16 @@ import java.util.TreeMap;
  */
 public class LocaleUtil {
 
+	public static boolean equals(Locale locale1, Locale locale2) {
+		return getInstance()._equals(locale1, locale2);
+	}
+
 	public static Locale fromLanguageId(String languageId) {
 		return getInstance()._fromLanguageId(languageId);
+	}
+
+	public static Locale[] fromLanguageIds(List<String> languageIds) {
+		return getInstance()._fromLanguageIds(languageIds);
 	}
 
 	public static Locale[] fromLanguageIds(String[] languageIds) {
@@ -49,6 +60,20 @@ public class LocaleUtil {
 
 	public static Map<String, String> getISOLanguages(Locale locale) {
 		return getInstance()._getISOLanguages(locale);
+	}
+
+	public static String getLongDisplayName(Locale locale) {
+		return getInstance()._getLongDisplayName(locale);
+	}
+
+	public static Locale getMostRelevantLocale() {
+		return getInstance()._getMostRelevantLocale();
+	}
+
+	public static String getShortDisplayName(
+		Locale locale, Set<String> duplicateLanguages) {
+
+		return getInstance()._getShortDisplayName(locale, duplicateLanguages);
 	}
 
 	public static void setDefault(
@@ -83,6 +108,13 @@ public class LocaleUtil {
 
 	private LocaleUtil() {
 		_locale = new Locale("en", "US");
+	}
+
+	private boolean _equals(Locale locale1, Locale locale2) {
+		String languageId1 = _toLanguageId(locale1);
+		String languageId2 = _toLanguageId(locale2);
+
+		return languageId1.equalsIgnoreCase(languageId2);
 	}
 
 	private Locale _fromLanguageId(String languageId) {
@@ -123,7 +155,7 @@ public class LocaleUtil {
 				}
 			}
 
-			if (_locales.size() < _MAX_LOCALES) {
+			if (_locales.size() < _LOCALES_MAX) {
 				_locales.put(languageId, locale);
 			}
 			else {
@@ -143,6 +175,16 @@ public class LocaleUtil {
 		}
 
 		return locale;
+	}
+
+	private Locale[] _fromLanguageIds(List<String> languageIds) {
+		Locale[] locales = new Locale[languageIds.size()];
+
+		for (int i = 0; i < languageIds.size(); i++) {
+			locales[i] = _fromLanguageId(languageIds.get(i));
+		}
+
+		return locales;
 	}
 
 	private Locale[] _fromLanguageIds(String[] languageIds) {
@@ -177,6 +219,58 @@ public class LocaleUtil {
 		}
 
 		return isoLanguages;
+	}
+
+	private String _getLongDisplayName(Locale locale) {
+		String displayName = locale.getDisplayName(locale);
+
+		if (LanguageUtil.isBetaLocale(locale)) {
+			return displayName.concat(_BETA_SUFFIX);
+		}
+
+		return displayName;
+	}
+
+	private Locale _getMostRelevantLocale() {
+		Locale locale = LocaleThreadLocal.getThemeDisplayLocale();
+
+		if (locale == null) {
+			locale = _getDefault();
+		}
+
+		return locale;
+	}
+
+	private String _getShortDisplayName(
+		Locale locale, Set<String> duplicateLanguages) {
+
+		StringBundler sb = new StringBundler(6);
+
+		String language = locale.getDisplayLanguage(locale);
+
+		if (language.length() > 3) {
+			language = locale.getLanguage();
+			language = language.toUpperCase();
+		}
+
+		sb.append(language);
+
+		if (duplicateLanguages.contains(locale.getLanguage())) {
+			sb.append(StringPool.SPACE);
+			sb.append(StringPool.OPEN_PARENTHESIS);
+
+			String country = locale.getCountry();
+
+			sb.append(country.toUpperCase());
+
+			sb.append(StringPool.CLOSE_PARENTHESIS);
+		}
+
+		if (LanguageUtil.isBetaLocale(locale)) {
+			sb.append(_BETA_SUFFIX);
+		}
+
+		return sb.toString();
 	}
 
 	private void _setDefault(
@@ -284,7 +378,9 @@ public class LocaleUtil {
 		return w3cLanguageIds;
 	}
 
-	private static final int _MAX_LOCALES = 1000;
+	private static final String _BETA_SUFFIX = " [Beta]";
+
+	private static final int _LOCALES_MAX = 1000;
 
 	private static Log _log = LogFactoryUtil.getLog(LocaleUtil.class);
 

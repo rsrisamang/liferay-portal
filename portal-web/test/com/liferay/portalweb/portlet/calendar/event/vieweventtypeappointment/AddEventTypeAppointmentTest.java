@@ -22,32 +22,15 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddEventTypeAppointmentTest extends BaseTestCase {
 	public void testAddEventTypeAppointment() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Calendar Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Calendar Test Page");
 		selenium.clickAt("link=Calendar Test Page", RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//input[@value='Add Event']",
 			RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("_8_title", RuntimeVariables.replace("Test Event"));
 		selenium.type("_8_description",
 			RuntimeVariables.replace("This is a Test Event."));
@@ -56,7 +39,6 @@ public class AddEventTypeAppointmentTest extends BaseTestCase {
 		selenium.select("_8_type", RuntimeVariables.replace("label=Appointment"));
 		selenium.clickAt("//input[@value='Save']", RuntimeVariables.replace(""));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertTrue(selenium.isTextPresent(
 				"Your request completed successfully."));
 		assertEquals(RuntimeVariables.replace("Test Event"),

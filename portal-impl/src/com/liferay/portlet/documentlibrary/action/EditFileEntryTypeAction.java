@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.documentlibrary.action;
 
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.Constants;
@@ -38,6 +39,7 @@ import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.portlet.dynamicdatamapping.NoSuchStructureException;
 import com.liferay.portlet.dynamicdatamapping.RequiredStructureException;
 import com.liferay.portlet.dynamicdatamapping.StructureDuplicateElementException;
+import com.liferay.portlet.dynamicdatamapping.StructureNameException;
 import com.liferay.portlet.dynamicdatamapping.model.DDMStructure;
 import com.liferay.portlet.dynamicdatamapping.service.DDMStructureLocalServiceUtil;
 
@@ -75,9 +77,12 @@ public class EditFileEntryTypeAction extends PortletAction {
 			}
 
 			if (SessionErrors.isEmpty(actionRequest)) {
+				LiferayPortletConfig liferayPortletConfig =
+					(LiferayPortletConfig)portletConfig;
+
 				SessionMessages.add(
 					actionRequest,
-					portletConfig.getPortletName() +
+					liferayPortletConfig.getPortletId() +
 						SessionMessages.KEY_SUFFIX_REFRESH_PORTLET,
 					PortletKeys.DOCUMENT_LIBRARY);
 			}
@@ -87,7 +92,8 @@ public class EditFileEntryTypeAction extends PortletAction {
 		catch (Exception e) {
 			if (e instanceof DuplicateFileEntryTypeException ||
 				e instanceof NoSuchMetadataSetException ||
-				e instanceof StructureDuplicateElementException) {
+				e instanceof StructureDuplicateElementException ||
+				e instanceof StructureNameException) {
 
 				SessionErrors.add(actionRequest, e.getClass());
 			}

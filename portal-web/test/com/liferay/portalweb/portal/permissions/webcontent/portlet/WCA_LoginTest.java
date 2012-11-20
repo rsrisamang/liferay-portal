@@ -22,25 +22,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class WCA_LoginTest extends BaseTestCase {
 	public void testWCA_Login() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//input[@id='_58_login']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.clickAt("link=Welcome", RuntimeVariables.replace("Welcome"));
+		selenium.waitForPageToLoad("30000");
+		selenium.waitForVisible("//input[@id='_58_login']");
 		selenium.type("//input[@id='_58_login']",
 			RuntimeVariables.replace("wca@liferay.com"));
 		selenium.type("//input[@id='_58_password']",
@@ -50,6 +37,5 @@ public class WCA_LoginTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Sign In']",
 			RuntimeVariables.replace("Sign In"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 	}
 }

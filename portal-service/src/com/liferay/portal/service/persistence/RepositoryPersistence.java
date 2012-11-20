@@ -71,7 +71,7 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	public com.liferay.portal.model.Repository updateImpl(
-		com.liferay.portal.model.Repository repository, boolean merge)
+		com.liferay.portal.model.Repository repository)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
@@ -148,10 +148,6 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 	/**
 	* Returns the first repository in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching repository
@@ -165,11 +161,20 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the last repository in the ordered set where uuid = &#63;.
+	* Returns the first repository in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByUuid_First(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the last repository in the ordered set where uuid = &#63;.
 	*
 	* @param uuid the uuid
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -184,11 +189,20 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the repositories before and after the current repository in the ordered set where uuid = &#63;.
+	* Returns the last repository in the ordered set where uuid = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByUuid_Last(
+		java.lang.String uuid,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repositories before and after the current repository in the ordered set where uuid = &#63;.
 	*
 	* @param repositoryId the primary key of the current repository
 	* @param uuid the uuid
@@ -295,10 +309,6 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 	/**
 	* Returns the first repository in the ordered set where uuid = &#63; and companyId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param uuid the uuid
 	* @param companyId the company ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -313,11 +323,21 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the last repository in the ordered set where uuid = &#63; and companyId = &#63;.
+	* Returns the first repository in the ordered set where uuid = &#63; and companyId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByUuid_C_First(
+		java.lang.String uuid, long companyId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the last repository in the ordered set where uuid = &#63; and companyId = &#63;.
 	*
 	* @param uuid the uuid
 	* @param companyId the company ID
@@ -333,11 +353,21 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the repositories before and after the current repository in the ordered set where uuid = &#63; and companyId = &#63;.
+	* Returns the last repository in the ordered set where uuid = &#63; and companyId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param uuid the uuid
+	* @param companyId the company ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByUuid_C_Last(
+		java.lang.String uuid, long companyId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repositories before and after the current repository in the ordered set where uuid = &#63; and companyId = &#63;.
 	*
 	* @param repositoryId the primary key of the current repository
 	* @param uuid the uuid
@@ -403,10 +433,6 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 	/**
 	* Returns the first repository in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param groupId the group ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching repository
@@ -420,11 +446,20 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the last repository in the ordered set where groupId = &#63;.
+	* Returns the first repository in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByGroupId_First(
+		long groupId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the last repository in the ordered set where groupId = &#63;.
 	*
 	* @param groupId the group ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -439,11 +474,20 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 			com.liferay.portal.kernel.exception.SystemException;
 
 	/**
-	* Returns the repositories before and after the current repository in the ordered set where groupId = &#63;.
+	* Returns the last repository in the ordered set where groupId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param groupId the group ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByGroupId_Last(
+		long groupId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repositories before and after the current repository in the ordered set where groupId = &#63;.
 	*
 	* @param repositoryId the primary key of the current repository
 	* @param groupId the group ID
@@ -457,6 +501,49 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
 		throws com.liferay.portal.NoSuchRepositoryException,
 			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repository where groupId = &#63; and name = &#63; and portletId = &#63; or throws a {@link com.liferay.portal.NoSuchRepositoryException} if it could not be found.
+	*
+	* @param groupId the group ID
+	* @param name the name
+	* @param portletId the portlet ID
+	* @return the matching repository
+	* @throws com.liferay.portal.NoSuchRepositoryException if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository findByG_N_P(long groupId,
+		java.lang.String name, java.lang.String portletId)
+		throws com.liferay.portal.NoSuchRepositoryException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repository where groupId = &#63; and name = &#63; and portletId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	*
+	* @param groupId the group ID
+	* @param name the name
+	* @param portletId the portlet ID
+	* @return the matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByG_N_P(long groupId,
+		java.lang.String name, java.lang.String portletId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the repository where groupId = &#63; and name = &#63; and portletId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	*
+	* @param groupId the group ID
+	* @param name the name
+	* @param portletId the portlet ID
+	* @param retrieveFromCache whether to use the finder cache
+	* @return the matching repository, or <code>null</code> if a matching repository could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository fetchByG_N_P(long groupId,
+		java.lang.String name, java.lang.String portletId,
+		boolean retrieveFromCache)
+		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
 	* Returns all the repositories.
@@ -543,6 +630,20 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**
+	* Removes the repository where groupId = &#63; and name = &#63; and portletId = &#63; from the database.
+	*
+	* @param groupId the group ID
+	* @param name the name
+	* @param portletId the portlet ID
+	* @return the repository that was removed
+	* @throws SystemException if a system exception occurred
+	*/
+	public com.liferay.portal.model.Repository removeByG_N_P(long groupId,
+		java.lang.String name, java.lang.String portletId)
+		throws com.liferay.portal.NoSuchRepositoryException,
+			com.liferay.portal.kernel.exception.SystemException;
+
+	/**
 	* Removes all the repositories from the database.
 	*
 	* @throws SystemException if a system exception occurred
@@ -590,6 +691,19 @@ public interface RepositoryPersistence extends BasePersistence<Repository> {
 	* @throws SystemException if a system exception occurred
 	*/
 	public int countByGroupId(long groupId)
+		throws com.liferay.portal.kernel.exception.SystemException;
+
+	/**
+	* Returns the number of repositories where groupId = &#63; and name = &#63; and portletId = &#63;.
+	*
+	* @param groupId the group ID
+	* @param name the name
+	* @param portletId the portlet ID
+	* @return the number of matching repositories
+	* @throws SystemException if a system exception occurred
+	*/
+	public int countByG_N_P(long groupId, java.lang.String name,
+		java.lang.String portletId)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
 	/**

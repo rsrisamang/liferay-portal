@@ -27,7 +27,6 @@ import com.liferay.portal.kernel.process.ProcessExecutor;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.FileComparator;
-import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StreamUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -35,6 +34,7 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.pacl.PACLClassLoaderUtil;
 import com.liferay.util.PwdGenerator;
 import com.liferay.util.ant.ExpandTask;
 
@@ -59,6 +59,9 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.pdfbox.exceptions.CryptographyException;
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.tika.Tika;
 import org.apache.tools.ant.DirectoryScanner;
 
@@ -89,14 +92,14 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 				if (fileArray[i].isDirectory()) {
 					copyDirectory(
 						fileArray[i],
-						new File(destination.getPath() + File.separator
-							+ fileArray[i].getName()));
+						new File(destination.getPath() + File.separator +
+							fileArray[i].getName()));
 				}
 				else {
 					copyFile(
 						fileArray[i],
-						new File(destination.getPath() + File.separator
-							+ fileArray[i].getName()));
+						new File(destination.getPath() + File.separator +
+							fileArray[i].getName()));
 				}
 			}
 		}
@@ -195,12 +198,20 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 		sb.append(Time.getTimestamp());
 		sb.append(PwdGenerator.getPassword(PwdGenerator.KEY2, 8));
 
-		if (Validator.isNotNull(extension)) {
+		if (Validator.isFileExtension(extension)) {
 			sb.append(StringPool.PERIOD);
 			sb.append(extension);
 		}
 
 		return sb.toString();
+	}
+
+	public File createTempFolder() {
+		File file = new File(createTempFileName());
+
+		file.mkdirs();
+
+		return file;
 	}
 
 	public String decodeSafeFileName(String fileName) {
@@ -275,18 +286,20 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 	public String extractText(InputStream is, String fileName) {
 		String text = null;
 
-		ClassLoader portalClassLoader = PortalClassLoaderUtil.getClassLoader();
+		ClassLoader portalClassLoader =
+			PACLClassLoaderUtil.getPortalClassLoader();
 
-		Thread currentThread = Thread.currentThread();
-
-		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
+		ClassLoader contextClassLoader =
+			PACLClassLoaderUtil.getContextClassLoader();
 
 		try {
 			if (contextClassLoader != portalClassLoader) {
-				currentThread.setContextClassLoader(portalClassLoader);
+				PACLClassLoaderUtil.setContextClassLoader(portalClassLoader);
 			}
 
 			Tika tika = new Tika();
+
+			tika.setMaxStringLength(-1);
 
 			boolean forkProcess = false;
 
@@ -313,11 +326,22 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 			}
 		}
 		catch (Exception e) {
-			_log.error(e, e);
+			Throwable throwable = ExceptionUtils.getRootCause(e);
+
+			if ((throwable instanceof CryptographyException) ||
+				(throwable instanceof EncryptedDocumentException)) {
+
+				if (_log.isWarnEnabled()) {
+					_log.warn("Unable to extract text from an encrypted file");
+				}
+			}
+			else {
+				_log.error(e, e);
+			}
 		}
 		finally {
 			if (contextClassLoader != portalClassLoader) {
-				currentThread.setContextClassLoader(contextClassLoader);
+				PACLClassLoaderUtil.setContextClassLoader(contextClassLoader);
 			}
 		}
 
@@ -433,29 +457,23 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 	}
 
 	public String getPath(String fullFileName) {
-		int pos = fullFileName.lastIndexOf(CharPool.SLASH);
+		int x = fullFileName.lastIndexOf(CharPool.SLASH);
+		int y = fullFileName.lastIndexOf(CharPool.BACK_SLASH);
 
-		if (pos == -1) {
-			pos = fullFileName.lastIndexOf(CharPool.BACK_SLASH);
-		}
-
-		String shortFileName = fullFileName.substring(0, pos);
-
-		if (Validator.isNull(shortFileName)) {
+		if ((x == -1) && (y == -1)) {
 			return StringPool.SLASH;
 		}
+
+		String shortFileName = fullFileName.substring(0, Math.max(x, y));
 
 		return shortFileName;
 	}
 
 	public String getShortFileName(String fullFileName) {
-		int pos = fullFileName.lastIndexOf(CharPool.SLASH);
+		int x = fullFileName.lastIndexOf(CharPool.SLASH);
+		int y = fullFileName.lastIndexOf(CharPool.BACK_SLASH);
 
-		if (pos == -1) {
-			pos = fullFileName.lastIndexOf(CharPool.BACK_SLASH);
-		}
-
-		String shortFileName = fullFileName.substring(pos + 1);
+		String shortFileName = fullFileName.substring(Math.max(x, y) + 1);
 
 		return shortFileName;
 	}
@@ -599,7 +617,19 @@ public class FileImpl implements com.liferay.portal.kernel.util.File {
 
 		destination.delete();
 
-		return source.renameTo(destination);
+		try {
+			if (source.isDirectory()) {
+				FileUtils.moveDirectory(source, destination);
+			}
+			else {
+				FileUtils.moveFile(source, destination);
+			}
+		}
+		catch (IOException ioe) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public boolean move(String sourceFileName, String destinationFileName) {

@@ -21,23 +21,28 @@
 	<%
 	String redirect = ParamUtil.getString(request, "redirect");
 
-	long entryId = ParamUtil.getLong(request, "entryId");
+	long trashEntryId = ParamUtil.getLong(request, "trashEntryId");
 
 	String className = ParamUtil.getString(request, "className");
 	long classPK = ParamUtil.getLong(request, "classPK");
 
 	TrashEntry entry = null;
 
-	if (entryId > 0) {
-		entry = TrashEntryLocalServiceUtil.getEntry(entryId);
+	if (trashEntryId > 0) {
+		entry = TrashEntryLocalServiceUtil.getEntry(trashEntryId);
 	}
 	else if (Validator.isNotNull(className) && (classPK > 0)) {
-		entry = TrashEntryLocalServiceUtil.getEntry(className, classPK);
+		entry = TrashEntryLocalServiceUtil.fetchEntry(className, classPK);
 	}
 
-	TrashHandler trashHandler = TrashHandlerRegistryUtil.getTrashHandler(entry.getClassName());
+	if (entry != null) {
+		className = entry.getClassName();
+		classPK = entry.getClassPK();
+	}
 
-	TrashRenderer trashRenderer = trashHandler.getTrashRenderer(entry.getClassPK());
+	TrashHandler trashHandler = TrashHandlerRegistryUtil.getTrashHandler(className);
+
+	TrashRenderer trashRenderer = trashHandler.getTrashRenderer(classPK);
 
 	String path = trashRenderer.render(renderRequest, renderResponse, AssetRenderer.TEMPLATE_FULL_CONTENT);
 	%>
@@ -47,6 +52,15 @@
 		localizeTitle="<%= false %>"
 		title="<%= trashRenderer.getTitle(locale) %>"
 	/>
+
+	<c:if test="<%= ((entry != null) && (entry.getRootEntry() == null)) || Validator.isNotNull(trashRenderer.renderActions(renderRequest, renderResponse)) %>">
+
+		<%
+		request.setAttribute(WebKeys.TRASH_ENTRY, entry);
+		%>
+
+		<liferay-util:include page='<%= (entry != null) && (entry.getRootEntry() == null) ? "/html/portlet/trash/entry_action.jsp" : trashRenderer.renderActions(renderRequest, renderResponse) %>' />
+	</c:if>
 
 	<c:choose>
 		<c:when test="<%= Validator.isNotNull(path) %>">
@@ -68,13 +82,13 @@
 		<c:if test="<%= !assetRenderer.getAssetRendererFactoryClassName().equals(DLFileEntryAssetRendererFactory.CLASS_NAME) %>">
 			<div class="asset-ratings">
 				<liferay-ui:ratings
-					className="<%= entry.getClassName() %>"
-					classPK="<%= entry.getClassPK() %>"
+					className="<%= className %>"
+					classPK="<%= classPK %>"
 				/>
 			</div>
 
 			<%
-			AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(entry.getClassName(), entry.getClassPK());
+			AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(className, classPK);
 			%>
 
 			<div class="asset-related-assets">
@@ -90,16 +104,26 @@
 
 				<div class="asset-discussion">
 					<liferay-ui:discussion
-						className="<%= entry.getClassName() %>"
-						classPK="<%= entry.getClassPK() %>"
+						className="<%= className %>"
+						classPK="<%= classPK %>"
 						formAction="<%= discussionURL %>"
-						formName='<%= "fm" + entry.getClassPK() %>'
+						formName='<%= "fm" + classPK %>'
 						redirect="<%= currentURL %>"
 						subject="<%= trashRenderer.getTitle(locale) %>"
-						userId="<%= entry.getUserId() %>"
+						userId="<%= assetEntry.getUserId() %>"
 					/>
 				</div>
 			</c:if>
 		</c:if>
 	</c:if>
 </div>
+
+<aui:script use="liferay-restore-entry">
+	new Liferay.RestoreEntry(
+		{
+			checkEntryURL: '<portlet:actionURL><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.CHECK %>" /><portlet:param name="struts_action" value="/trash/edit_entry" /></portlet:actionURL>',
+			namespace: '<portlet:namespace />',
+			restoreEntryURL: '<portlet:renderURL windowState="<%= LiferayWindowState.EXCLUSIVE.toString() %>"><portlet:param name="struts_action" value="/trash/restore_entry" /><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:renderURL>'
+		}
+	);
+</aui:script>

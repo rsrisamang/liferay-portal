@@ -23,8 +23,9 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class SOUs_ViewMBEntryActivityConnectionsTest extends BaseTestCase {
 	public void testSOUs_ViewMBEntryActivityConnections()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/socialoffice01/so/dashboard");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Activities"),
 			selenium.getText("xPath=(//h1[@class='portlet-title']/span)[2]"));
 		assertEquals(RuntimeVariables.replace("Connections"),
@@ -32,7 +33,6 @@ public class SOUs_ViewMBEntryActivityConnectionsTest extends BaseTestCase {
 		selenium.clickAt("link=Connections",
 			RuntimeVariables.replace("Connections"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Microblogs Post"),
 			selenium.getText("//div[@class='activity-title']"));
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),

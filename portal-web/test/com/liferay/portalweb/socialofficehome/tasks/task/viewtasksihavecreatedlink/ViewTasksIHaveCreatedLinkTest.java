@@ -22,30 +22,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewTasksIHaveCreatedLinkTest extends BaseTestCase {
 	public void testViewTasksIHaveCreatedLink() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//nav/ul/li[contains(.,'Tasks')]/a/span")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("//nav/ul/li[contains(.,'Tasks')]/a/span",
 			RuntimeVariables.replace("Tasks"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Tasks"),
 			selenium.getText("//span[@class='portlet-title-default']"));
 		assertEquals(RuntimeVariables.replace("I Have Created"),
@@ -53,7 +35,6 @@ public class ViewTasksIHaveCreatedLinkTest extends BaseTestCase {
 		selenium.clickAt("link=I Have Created",
 			RuntimeVariables.replace("I Have Created"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Task Description"),
 			selenium.getText("link=Task Description"));
 		assertEquals(RuntimeVariables.replace("Assignee: Joe Bloggs"),

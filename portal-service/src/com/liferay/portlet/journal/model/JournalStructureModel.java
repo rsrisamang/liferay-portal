@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.journal.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
@@ -455,6 +456,9 @@ public interface JournalStructureModel extends BaseModel<JournalStructure>,
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(JournalStructure journalStructure);
@@ -464,6 +468,8 @@ public interface JournalStructureModel extends BaseModel<JournalStructure>,
 	public CacheModel<JournalStructure> toCacheModel();
 
 	public JournalStructure toEscapedModel();
+
+	public JournalStructure toUnescapedModel();
 
 	public String toString();
 

@@ -88,6 +88,10 @@ public class UserGroupRoleModelImpl extends BaseModelImpl<UserGroupRole>
 	 * @return the normal model instance
 	 */
 	public static UserGroupRole toModel(UserGroupRoleSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		UserGroupRole model = new UserGroupRoleImpl();
 
 		model.setUserId(soapModel.getUserId());
@@ -104,6 +108,10 @@ public class UserGroupRoleModelImpl extends BaseModelImpl<UserGroupRole>
 	 * @return the normal model instances
 	 */
 	public static List<UserGroupRole> toModels(UserGroupRoleSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<UserGroupRole> models = new ArrayList<UserGroupRole>(soapModels.length);
 
 		for (UserGroupRoleSoap soapModel : soapModels) {
@@ -254,13 +262,12 @@ public class UserGroupRoleModelImpl extends BaseModelImpl<UserGroupRole>
 
 	@Override
 	public UserGroupRole toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (UserGroupRole)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
+		if (_escapedModel == null) {
+			_escapedModel = (UserGroupRole)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
 		}
 
-		return _escapedModelProxy;
+		return _escapedModel;
 	}
 
 	@Override
@@ -385,7 +392,7 @@ public class UserGroupRoleModelImpl extends BaseModelImpl<UserGroupRole>
 	}
 
 	private static ClassLoader _classLoader = UserGroupRole.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			UserGroupRole.class
 		};
 	private long _userId;
@@ -399,5 +406,5 @@ public class UserGroupRoleModelImpl extends BaseModelImpl<UserGroupRole>
 	private long _originalRoleId;
 	private boolean _setOriginalRoleId;
 	private long _columnBitmask;
-	private UserGroupRole _escapedModelProxy;
+	private UserGroupRole _escapedModel;
 }

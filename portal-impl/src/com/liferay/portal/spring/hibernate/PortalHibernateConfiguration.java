@@ -23,19 +23,25 @@ import com.liferay.portal.kernel.util.Converter;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.security.pacl.PACLClassLoaderUtil;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.InputStream;
 
+import java.net.URL;
+
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 
 import javassist.util.proxy.ProxyFactory;
 
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.dialect.Dialect;
 
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
@@ -43,6 +49,7 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
  * @author Brian Wing Shun Chan
  * @author Marcellus Tavares
  * @author Shuyang Zhou
+ * @author Tomas Polesovsky
  */
 public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 
@@ -52,9 +59,7 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 			new ProxyFactory.ClassLoaderProvider() {
 
 				public ClassLoader get(ProxyFactory proxyFactory) {
-					Thread currentThread = Thread.currentThread();
-
-					return currentThread.getContextClassLoader();
+					return PACLClassLoaderUtil.getContextClassLoader();
 				}
 
 			};
@@ -64,14 +69,21 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 		return super.buildSessionFactory();
 	}
 
+	@Override
+	public void destroy() throws HibernateException {
+		setBeanClassLoader(null);
+
+		super.destroy();
+	}
+
 	public void setHibernateConfigurationConverter(
 		Converter<String> hibernateConfigurationConverter) {
 
 		_hibernateConfigurationConverter = hibernateConfigurationConverter;
 	}
 
-	protected String determineDialect() {
-		return DialectDetector.determineDialect(getDataSource());
+	protected Dialect determineDialect() {
+		return DialectDetector.getDialect(getDataSource());
 	}
 
 	protected ClassLoader getConfigurationClassLoader() {
@@ -105,9 +117,13 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 			configuration.setProperties(PropsUtil.getProperties());
 
 			if (Validator.isNull(PropsValues.HIBERNATE_DIALECT)) {
-				String dialect = determineDialect();
+				Dialect dialect = determineDialect();
 
-				configuration.setProperty("hibernate.dialect", dialect);
+				setDB(dialect);
+
+				Class<?> clazz = dialect.getClass();
+
+				configuration.setProperty("hibernate.dialect", clazz.getName());
 			}
 
 			DB db = DBFactoryUtil.getDB();
@@ -155,31 +171,62 @@ public class PortalHibernateConfiguration extends LocalSessionFactoryBean {
 		}
 	}
 
+	protected void readResource(
+			Configuration configuration, InputStream inputStream)
+		throws Exception {
+
+		if (inputStream == null) {
+			return;
+		}
+
+		if (_hibernateConfigurationConverter != null) {
+			String configurationString = StringUtil.read(inputStream);
+
+			inputStream.close();
+
+			configurationString = _hibernateConfigurationConverter.convert(
+				configurationString);
+
+			inputStream = new UnsyncByteArrayInputStream(
+				configurationString.getBytes());
+		}
+
+		configuration = configuration.addInputStream(inputStream);
+
+		inputStream.close();
+	}
+
 	protected void readResource(Configuration configuration, String resource)
 		throws Exception {
 
 		ClassLoader classLoader = getConfigurationClassLoader();
 
-		InputStream is = classLoader.getResourceAsStream(resource);
+		if (resource.startsWith("classpath*:")) {
+			String name = resource.substring("classpath*:".length());
 
-		if (is == null) {
-			return;
+			Enumeration<URL> enu = classLoader.getResources(name);
+
+			if (_log.isDebugEnabled() && !enu.hasMoreElements()) {
+				_log.debug("No resources found for " + name);
+			}
+
+			while (enu.hasMoreElements()) {
+				URL url = enu.nextElement();
+
+				InputStream inputStream = url.openStream();
+
+				readResource(configuration, inputStream);
+			}
 		}
+		else {
+			InputStream inputStream = classLoader.getResourceAsStream(resource);
 
-		if (_hibernateConfigurationConverter != null) {
-			String configurationString = StringUtil.read(is);
-
-			is.close();
-
-			configurationString = _hibernateConfigurationConverter.convert(
-				configurationString);
-
-			is = new UnsyncByteArrayInputStream(configurationString.getBytes());
+			readResource(configuration, inputStream);
 		}
+	}
 
-		configuration = configuration.addInputStream(is);
-
-		is.close();
+	protected void setDB(Dialect dialect) {
+		DBFactoryUtil.setDB(dialect);
 	}
 
 	private static Log _log = LogFactoryUtil.getLog(

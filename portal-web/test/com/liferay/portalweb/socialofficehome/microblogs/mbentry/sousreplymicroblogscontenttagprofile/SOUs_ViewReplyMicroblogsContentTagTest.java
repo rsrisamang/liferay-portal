@@ -28,30 +28,12 @@ public class SOUs_ViewReplyMicroblogsContentTagTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/user/socialoffice01/so/dashboard/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//nav/ul/li[contains(.,'Microblogs')]/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("//nav/ul/li[contains(.,'Microblogs')]/a/span",
 					RuntimeVariables.replace("Microblogs"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean replyVisible = selenium.isElementPresent(
 						"//div[@class='microblogs-entry show-comments']");
@@ -66,23 +48,7 @@ public class SOUs_ViewReplyMicroblogsContentTagTest extends BaseTestCase {
 					selenium.getText("//span[@class='action comment']/a"));
 				selenium.clickAt("//span[@class='action comment']/a",
 					RuntimeVariables.replace("1 Comment"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"xPath=(//div[@class='content'])[2]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
+				selenium.waitForVisible("xPath=(//div[@class='content'])[2]");
 
 			case 2:
 				assertTrue(selenium.isPartialText(
@@ -93,7 +59,6 @@ public class SOUs_ViewReplyMicroblogsContentTagTest extends BaseTestCase {
 				selenium.clickAt("//div[@class='content']/span/a",
 					RuntimeVariables.replace("Joe Bloggs"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.isElementPresent(
 						"//div[@class='user-profile-detail']"));
 				assertEquals(RuntimeVariables.replace("Profile"),

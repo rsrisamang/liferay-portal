@@ -82,7 +82,7 @@ if (Validator.isNull(mainLanguageValue)) {
 		</aui:script>
 	</c:if>
 
-	<c:if test="<%= Validator.isNull(languageId) %>">
+	<c:if test="<%= (locales.length > 1) && Validator.isNull(languageId) %>">
 		<span class="flag-selector nobr">
 			<img alt="<%= defaultLocale.getDisplayName() %>" class="default-language" src="<%= themeDisplay.getPathThemeImages() %>/language/<%= mainLanguageId %>.png" />
 
@@ -167,7 +167,7 @@ if (Validator.isNull(mainLanguageValue)) {
 									languageValue = LocalizationUtil.getLocalization(xml, curLanguageId, false);
 								}
 
-								if (!ignoreRequestValue){
+								if (!ignoreRequestValue) {
 									languageValue = ParamUtil.getString(request, name + StringPool.UNDERLINE + curLanguageId, languageValue);
 								}
 								%>
@@ -204,7 +204,7 @@ if (Validator.isNull(mainLanguageValue)) {
 	</c:if>
 </span>
 
-<c:if test="<%= Validator.isNull(languageId) %>">
+<c:if test="<%= (locales.length > 1) && Validator.isNull(languageId) %>">
 	<aui:script use="liferay-auto-fields,liferay-panel-floating">
 		var updateLanguageFlag = function(event) {
 			var target = event.target;
@@ -263,8 +263,10 @@ if (Validator.isNull(mainLanguageValue)) {
 						}
 					}
 				}
-			).render();
+			);
 		</c:if>
+
+		var form = A.one(document.<portlet:namespace /><%= formName %>);
 
 		var panel = new Liferay.PanelFloating(
 			{
@@ -274,7 +276,7 @@ if (Validator.isNull(mainLanguageValue)) {
 					hide: function(event) {
 						var instance = this;
 
-						instance._positionHelper.appendTo(document.<portlet:namespace /><%= formName %>);
+						instance._positionHelper.appendTo(form);
 					},
 					show: function(event) {
 						var instance = this;
@@ -287,21 +289,41 @@ if (Validator.isNull(mainLanguageValue)) {
 			}
 		);
 
-		panel._positionHelper.appendTo(document.<portlet:namespace /><%= formName %>);
-
-		A.all('#<%= randomNamespace %>languageSelector select').each(
-			function(item) {
-				if (item) {
-					item.on('change', updateLanguageFlag);
-				}
-			}
-		);
+		panel._positionHelper.appendTo(form);
 
 		var languageSelectorTrigger = A.one('#<%= randomNamespace %>languageSelectorTrigger');
 
 		if (languageSelectorTrigger) {
-			languageSelectorTrigger.setData('autoFieldsInstance', autoFields);
-			languageSelectorTrigger.setData('panelInstance', panel);
+			Liferay.component(
+				'<%= namespace + name %>languageSelector',
+				function(event) {
+					if (handle) {
+						handle.detach();
+
+						handle = null;
+					}
+
+					autoFields.render();
+
+					A.all('#<%= randomNamespace %>languageSelector select').each(
+						function(item) {
+							if (item) {
+								item.on('change', updateLanguageFlag);
+							}
+						}
+					);
+
+					languageSelectorTrigger.setData('autoFieldsInstance', autoFields);
+					languageSelectorTrigger.setData('panelInstance', panel);
+				}
+			);
+
+			var handle = languageSelectorTrigger.once(
+				'click',
+				function(event) {
+					Liferay.component('<%= namespace + name %>languageSelector');
+				}
+			);
 		}
 	</aui:script>
 </c:if>

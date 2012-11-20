@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.asset.model;
 
+import com.liferay.portal.LocaleException;
 import com.liferay.portal.kernel.bean.AutoEscape;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.BaseModel;
@@ -482,6 +483,9 @@ public interface AssetCategoryModel extends BaseModel<AssetCategory>,
 
 	public void setExpandoBridgeAttributes(ServiceContext serviceContext);
 
+	public void prepareLocalizedFieldsForImport(Locale defaultImportLocale)
+		throws LocaleException;
+
 	public Object clone();
 
 	public int compareTo(AssetCategory assetCategory);
@@ -491,6 +495,8 @@ public interface AssetCategoryModel extends BaseModel<AssetCategory>,
 	public CacheModel<AssetCategory> toCacheModel();
 
 	public AssetCategory toEscapedModel();
+
+	public AssetCategory toUnescapedModel();
 
 	public String toString();
 

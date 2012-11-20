@@ -19,6 +19,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.Document;
@@ -56,7 +57,7 @@ public class JournalFeedLocalServiceImpl
 			String templateId, String rendererTemplateId, int delta,
 			String orderByCol, String orderByType,
 			String targetLayoutFriendlyUrl, String targetPortletId,
-			String contentField, String feedType, double feedVersion,
+			String contentField, String feedFormat, double feedVersion,
 			ServiceContext serviceContext)
 		throws PortalException, SystemException {
 
@@ -99,16 +100,16 @@ public class JournalFeedLocalServiceImpl
 		feed.setTargetPortletId(targetPortletId);
 		feed.setContentField(contentField);
 
-		if (Validator.isNull(feedType)) {
-			feed.setFeedType(RSSUtil.TYPE_DEFAULT);
+		if (Validator.isNull(feedFormat)) {
+			feed.setFeedFormat(RSSUtil.FORMAT_DEFAULT);
 			feed.setFeedVersion(RSSUtil.VERSION_DEFAULT);
 		}
 		else {
-			feed.setFeedType(feedType);
+			feed.setFeedFormat(feedFormat);
 			feed.setFeedVersion(feedVersion);
 		}
 
-		journalFeedPersistence.update(feed, false);
+		journalFeedPersistence.update(feed);
 
 		// Resources
 
@@ -280,9 +281,9 @@ public class JournalFeedLocalServiceImpl
 			String type, String structureId, String templateId,
 			String rendererTemplateId, int delta, String orderByCol,
 			String orderByType, String targetLayoutFriendlyUrl,
-			String targetPortletId, String contentField, String feedType,
+			String targetPortletId, String contentField, String feedFormat,
 			double feedVersion, ServiceContext serviceContext)
-		throws PortalException, SystemException{
+		throws PortalException, SystemException {
 
 		// Feed
 
@@ -306,16 +307,16 @@ public class JournalFeedLocalServiceImpl
 		feed.setTargetPortletId(targetPortletId);
 		feed.setContentField(contentField);
 
-		if (Validator.isNull(feedType)) {
-			feed.setFeedType(RSSUtil.TYPE_DEFAULT);
+		if (Validator.isNull(feedFormat)) {
+			feed.setFeedFormat(RSSUtil.FORMAT_DEFAULT);
 			feed.setFeedVersion(RSSUtil.VERSION_DEFAULT);
 		}
 		else {
-			feed.setFeedType(feedType);
+			feed.setFeedFormat(feedFormat);
 			feed.setFeedVersion(feedVersion);
 		}
 
-		journalFeedPersistence.update(feed, false);
+		journalFeedPersistence.update(feed);
 
 		// Expando
 
@@ -341,8 +342,10 @@ public class JournalFeedLocalServiceImpl
 
 				Document document = SAXReaderUtil.read(structure.getXsd());
 
+				contentField = HtmlUtil.escapeXPathAttribute(contentField);
+
 				XPath xPathSelector = SAXReaderUtil.createXPath(
-					"//dynamic-element[@name='"+ contentField + "']");
+					"//dynamic-element[@name="+ contentField + "]");
 
 				Node node = xPathSelector.selectSingleNode(document);
 

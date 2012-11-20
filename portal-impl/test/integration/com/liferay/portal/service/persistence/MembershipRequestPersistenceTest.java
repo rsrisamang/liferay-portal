@@ -22,12 +22,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.model.MembershipRequest;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 
@@ -52,19 +52,21 @@ import java.util.Set;
 public class MembershipRequestPersistenceTest {
 	@After
 	public void tearDown() throws Exception {
-		Map<Serializable, BasePersistence<?>> persistedEntities = _transactionalPersistenceAdvice.getBasePersistences();
+		Map<Serializable, BasePersistence<?>> basePersistences = _transactionalPersistenceAdvice.getBasePersistences();
 
-		Set<Serializable> entityKeys = persistedEntities.keySet();
+		Set<Serializable> primaryKeys = basePersistences.keySet();
 
-		for (Serializable entitiKey : entityKeys) {
-			BasePersistence<?> persistence = persistedEntities.get(entitiKey);
+		for (Serializable primaryKey : primaryKeys) {
+			BasePersistence<?> basePersistence = basePersistences.get(primaryKey);
 
 			try {
-				persistence.remove(entitiKey);
+				basePersistence.remove(primaryKey);
 			}
 			catch (Exception e) {
-				_log.debug("The entity " + entitiKey +
-					" has been already deleted");
+				if (_log.isDebugEnabled()) {
+					_log.debug("The model with primary key " + primaryKey +
+						" was already deleted");
+				}
 			}
 		}
 
@@ -122,7 +124,7 @@ public class MembershipRequestPersistenceTest {
 
 		newMembershipRequest.setStatusId(ServiceTestUtil.nextInt());
 
-		_persistence.update(newMembershipRequest, false);
+		_persistence.update(newMembershipRequest);
 
 		MembershipRequest existingMembershipRequest = _persistence.findByPrimaryKey(newMembershipRequest.getPrimaryKey());
 
@@ -289,7 +291,7 @@ public class MembershipRequestPersistenceTest {
 
 		membershipRequest.setStatusId(ServiceTestUtil.nextInt());
 
-		_persistence.update(membershipRequest, false);
+		_persistence.update(membershipRequest);
 
 		return membershipRequest;
 	}

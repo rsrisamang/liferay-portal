@@ -22,63 +22,30 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class InvoiceOrderTest extends BaseTestCase {
 	public void testInvoiceOrder() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Shopping Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Shopping Test Page",
 			RuntimeVariables.replace("Shopping Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Orders", RuntimeVariables.replace("Orders"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Joe Bloggs"),
-			selenium.getText("//tr[3]/td[5]"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row last']/td[5]"));
 		assertEquals(RuntimeVariables.replace("Checkout"),
-			selenium.getText("//td[4]/a"));
-		selenium.clickAt("//td[4]/a", RuntimeVariables.replace("Checkout"));
+			selenium.getText(
+				"//tr[@class='portlet-section-body results-row last']/td[4]/a"));
+		selenium.clickAt("//tr[@class='portlet-section-body results-row last']/td[4]/a",
+			RuntimeVariables.replace("Checkout"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertTrue(selenium.isTextPresent("Shopping Category Item Comments"));
+		assertTrue(selenium.isPartialText("//form[@id='_34_fm']",
+				"Shopping Category Item Comments"));
 		selenium.clickAt("//input[@value='Invoice']",
 			RuntimeVariables.replace("Invoice"));
-		selenium.waitForPopUp("", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("name=undefined");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Invoice")
-										.equals(selenium.getText(
-								"//form[@id='_34_fm']/span/strong"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForPopUp("Shopping", RuntimeVariables.replace("30000"));
+		selenium.selectWindow("title=Shopping");
+		selenium.waitForText("//form[@id='_34_fm']/span/strong", "Invoice");
 		assertEquals(RuntimeVariables.replace("Invoice"),
 			selenium.getText("//form[@id='_34_fm']/span/strong"));
 		selenium.close();

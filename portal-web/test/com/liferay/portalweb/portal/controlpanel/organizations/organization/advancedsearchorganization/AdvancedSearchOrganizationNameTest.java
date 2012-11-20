@@ -27,40 +27,26 @@ public class AdvancedSearchOrganizationNameTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
+				selenium.clickAt("//div[@id='dockbar']",
+					RuntimeVariables.replace("Dockbar"));
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 				assertEquals(RuntimeVariables.replace("Go to"),
 					selenium.getText("//li[@id='_145_mySites']/a/span"));
 				selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Control Panel")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Control Panel");
 				selenium.clickAt("link=Control Panel",
 					RuntimeVariables.replace("Control Panel"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Users and Organizations",
 					RuntimeVariables.replace("Users and Organizations"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("//a[@id='_125_allOrganizationsLink']",
 					RuntimeVariables.replace("View All Organizations"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean advancedPresent = selenium.isVisible(
 						"link=Advanced \u00bb");
@@ -76,12 +62,13 @@ public class AdvancedSearchOrganizationNameTest extends BaseTestCase {
 
 			case 2:
 				selenium.type("//input[@id='_125_name']",
-					RuntimeVariables.replace("Selenium"));
+					RuntimeVariables.replace("Organization Name"));
 				selenium.clickAt("//div[2]/span[2]/span/input",
 					RuntimeVariables.replace("Search"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.isElementPresent("link=Selenium"));
+				assertEquals(RuntimeVariables.replace("Organization Name"),
+					selenium.getText(
+						"//tr[@class='portlet-section-body results-row last']/td[2]/a"));
 
 				boolean basicPresent = selenium.isVisible("link=\u00ab Basic");
 

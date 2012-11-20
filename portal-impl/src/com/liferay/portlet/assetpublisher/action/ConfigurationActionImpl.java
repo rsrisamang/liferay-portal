@@ -15,6 +15,7 @@
 package com.liferay.portlet.assetpublisher.action;
 
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.Constants;
@@ -26,7 +27,7 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.model.LayoutTypePortletConstants;
-import com.liferay.portal.service.LayoutServiceUtil;
+import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.WebKeys;
@@ -101,15 +102,18 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 				if (SessionErrors.isEmpty(actionRequest)) {
 					preferences.store();
 
+					LiferayPortletConfig liferayPortletConfig =
+						(LiferayPortletConfig)portletConfig;
+
 					SessionMessages.add(
 						actionRequest,
-						portletConfig.getPortletName() +
+						liferayPortletConfig.getPortletId() +
 							SessionMessages.KEY_SUFFIX_REFRESH_PORTLET,
 						portletResource);
 
 					SessionMessages.add(
 						actionRequest,
-						portletConfig.getPortletName() +
+						liferayPortletConfig.getPortletId() +
 							SessionMessages.KEY_SUFFIX_UPDATED_CONFIGURATION);
 				}
 
@@ -296,7 +300,13 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 		if (selectionStyle.equals("manual") ||
 			selectionStyle.equals("view-count")) {
 
-			preferences.setValue("showQueryLogic", String.valueOf(false));
+			preferences.setValue("enableRss", String.valueOf(false));
+			preferences.setValue("showQueryLogic", Boolean.FALSE.toString());
+
+			preferences.reset("rssDelta");
+			preferences.reset("rssDisplayStyle");
+			preferences.reset("rssFormat");
+			preferences.reset("rssName");
 		}
 
 		if (!selectionStyle.equals("view-count") &&
@@ -341,7 +351,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 			}
 		}
 
-		layout = LayoutServiceUtil.updateLayout(
+		layout = LayoutLocalServiceUtil.updateLayout(
 			layout.getGroupId(), layout.isPrivateLayout(), layout.getLayoutId(),
 			layout.getTypeSettings());
 	}
@@ -388,14 +398,16 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 			String[] values = null;
 
 			if (name.equals("assetTags")) {
-				values = StringUtil.split(ParamUtil.getString(
-					actionRequest, "queryTagNames" + queryRulesIndex));
+				values = StringUtil.split(
+					ParamUtil.getString(
+						actionRequest, "queryTagNames" + queryRulesIndex));
 
 				AssetTagLocalServiceUtil.checkTags(userId, groupId, values);
 			}
 			else {
-				values = StringUtil.split(ParamUtil.getString(
-					actionRequest, "queryCategoryIds" + queryRulesIndex));
+				values = StringUtil.split(
+					ParamUtil.getString(
+						actionRequest, "queryCategoryIds" + queryRulesIndex));
 			}
 
 			setPreference(

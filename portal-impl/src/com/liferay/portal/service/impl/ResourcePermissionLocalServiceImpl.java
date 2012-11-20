@@ -67,8 +67,7 @@ public class ResourcePermissionLocalServiceImpl
 	extends ResourcePermissionLocalServiceBaseImpl {
 
 	/**
-	 * @see {@link VerifyPermission#fixOrganizationRolePermissions_6} and
-	 *      LPS-23704
+	 * @see com.liferay.portal.verify.VerifyPermission#fixOrganizationRolePermissions
 	 */
 	public static final String[] EMPTY_ACTION_IDS = {null};
 
@@ -203,7 +202,7 @@ public class ResourcePermissionLocalServiceImpl
 
 				resourcePermission.setActionIds(actionIdsLong);
 
-				resourcePermissionPersistence.update(resourcePermission, false);
+				resourcePermissionPersistence.update(resourcePermission);
 			}
 		}
 	}
@@ -812,7 +811,7 @@ public class ResourcePermissionLocalServiceImpl
 		for (ResourcePermission resourcePermission : resourcePermissions) {
 			resourcePermission.setRoleId(toRoleId);
 
-			resourcePermissionPersistence.update(resourcePermission, false);
+			resourcePermissionPersistence.update(resourcePermission);
 		}
 
 		roleLocalService.deleteRole(fromRoleId);
@@ -1127,7 +1126,7 @@ public class ResourcePermissionLocalServiceImpl
 
 		resourcePermission.setActionIds(actionIdsLong);
 
-		resourcePermissionPersistence.update(resourcePermission, false);
+		resourcePermissionPersistence.update(resourcePermission);
 
 		PermissionCacheUtil.clearCache();
 

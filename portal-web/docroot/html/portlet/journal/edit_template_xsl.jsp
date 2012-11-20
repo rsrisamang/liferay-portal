@@ -63,7 +63,7 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 	</aui:button-row>
 </aui:form>
 
-<aui:script use='<%= "aui-ace-editor-base,aui-ace-editor-mode-" + editorMode + ",aui-dialog,aui-io-request" %>'>
+<aui:script use="aui-ace-editor,aui-dialog,aui-io-request">
 	var editorType = '<%= HtmlUtil.escapeJS(editorType) %>';
 
 	var openerAUI = Liferay.Util.getOpener().AUI();
@@ -132,12 +132,7 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 		if (editorContentOutputElement) {
 			var editorMode = '<%= editorMode %>';
 
-			if (editorMode == 'xml') {
-				editorContentOutputElement.val(content);
-			}
-			else {
-				editorContentOutputElement.val(encodeURIComponent(content));
-			}
+			editorContentOutputElement.val(content);
 
 			var dialog = Liferay.Util.getWindow();
 
@@ -164,7 +159,7 @@ else if (langType.equals("xml") || langType.equals("xsl") || langType.equals("xs
 			).render();
 
 			if (editorContentInputElement) {
-				setEditorContent(editorType, decodeURIComponent(editorContentInputElement.val()));
+				setEditorContent(editorType, editorContentInputElement.val());
 			}
 
 			A.one('#<portlet:namespace />editorType').on('change', updateEditorType);

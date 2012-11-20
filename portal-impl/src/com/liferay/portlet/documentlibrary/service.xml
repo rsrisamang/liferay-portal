@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.1.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_1_0.dtd">
+<!DOCTYPE service-builder PUBLIC "-//Liferay//DTD Service Builder 6.2.0//EN" "http://www.liferay.com/dtd/liferay-service-builder_6_2_0.dtd">
 
 <service-builder package-path="com.liferay.portlet.documentlibrary">
 	<namespace>DL</namespace>
@@ -21,8 +21,8 @@
 
 		<reference package-path="com.liferay.portal" entity="Group" />
 		<reference package-path="com.liferay.portal" entity="Image" />
-		<reference package-path="com.liferay.portal" entity="Lock" />
 		<reference package-path="com.liferay.portal" entity="Layout" />
+		<reference package-path="com.liferay.portal" entity="Lock" />
 		<reference package-path="com.liferay.portal" entity="Subscription" />
 		<reference package-path="com.liferay.portal" entity="WebDAVProps" />
 		<reference package-path="com.liferay.portal" entity="WorkflowInstanceLink" />
@@ -128,6 +128,7 @@
 		<column name="largeImageId" type="long" />
 		<column name="custom1ImageId" type="long" />
 		<column name="custom2ImageId" type="long" />
+		<column name="manualCheckInRequired" type="boolean" />
 
 		<!-- Order -->
 
@@ -146,6 +147,10 @@
 		</finder>
 		<finder name="MimeType" return-type="Collection" db-index="false" >
 			<finder-column name="mimeType" />
+		</finder>
+		<finder name="F_N" return-type="Collection">
+			<finder-column name="folderId" />
+			<finder-column name="name" />
 		</finder>
 		<finder name="G_U" return-type="Collection">
 			<finder-column name="groupId" />
@@ -187,7 +192,10 @@
 		<reference package-path="com.liferay.portlet.asset" entity="AssetLink" />
 		<reference package-path="com.liferay.portlet.asset" entity="AssetTag" />
 		<reference package-path="com.liferay.portlet.dynamicdatamapping" entity="DDMStructure" />
+		<reference package-path="com.liferay.portlet.expando" entity="ExpandoRow" />
+		<reference package-path="com.liferay.portlet.expando" entity="ExpandoTable" />
 		<reference package-path="com.liferay.portlet.expando" entity="ExpandoValue" />
+		<reference package-path="com.liferay.portlet.trash" entity="TrashEntry" />
 
 		<!-- Transactions -->
 
@@ -220,10 +228,6 @@
 		</finder>
 		<finder name="D_F" return-type="DLFileEntryMetadata" unique="true">
 			<finder-column name="DDMStructureId" />
-			<finder-column name="fileVersionId" />
-		</finder>
-		<finder name="F_V" return-type="DLFileEntryMetadata">
-			<finder-column name="fileEntryId" />
 			<finder-column name="fileVersionId" />
 		</finder>
 
@@ -363,6 +367,10 @@
 		<finder name="ToFileEntryId" return-type="Collection">
 			<finder-column name="toFileEntryId" />
 		</finder>
+		<finder name="G_F" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="folderId" />
+		</finder>
 		<finder name="G_F_A" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="folderId" />
@@ -413,6 +421,7 @@
 		<column name="fileEntryTypeId" type="long" />
 		<column name="version" type="String" />
 		<column name="size" type="long" />
+		<column name="checksum" type="String" />
 		<column name="status" type="int" />
 		<column name="statusByUserId" type="long" />
 		<column name="statusByUserName" type="String" />
@@ -443,12 +452,18 @@
 			<finder-column name="folderId" />
 			<finder-column name="status" />
 		</finder>
+		<finder name="G_F_T_V" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="folderId" />
+			<finder-column name="title" />
+			<finder-column name="version" />
+		</finder>
 	</entity>
 	<entity name="DLFolder" human-name="document library folder" uuid="true" local-service="true" remote-service="true">
 
 		<!-- PK fields -->
 
-		<column name="folderId" type="long" primary="true" />
+		<column name="folderId" type="long" primary="true" container-model="true" />
 
 		<!-- Group instance -->
 
@@ -466,11 +481,12 @@
 
 		<column name="repositoryId" type="long" />
 		<column name="mountPoint" type="boolean" />
-		<column name="parentFolderId" type="long" />
+		<column name="parentFolderId" type="long" parent-container-model="true" />
 		<column name="name" type="String" />
 		<column name="description" type="String" />
 		<column name="lastPostDate" type="Date" />
 		<column name="defaultFileEntryTypeId" type="long" />
+		<column name="hidden" type="boolean" />
 		<column name="overrideFileEntryTypes" type="boolean" />
 		<column name="status" type="int" />
 		<column name="statusByUserId" type="long" />
@@ -522,6 +538,12 @@
 			<finder-column name="parentFolderId" />
 			<finder-column name="status" />
 		</finder>
+		<finder name="G_M_P_H" return-type="Collection">
+			<finder-column name="groupId" />
+			<finder-column name="mountPoint" />
+			<finder-column name="parentFolderId" />
+			<finder-column name="hidden" />
+		</finder>
 		<finder name="G_M_P_S" return-type="Collection">
 			<finder-column name="groupId" />
 			<finder-column name="mountPoint" />
@@ -537,6 +559,7 @@
 		<reference package-path="com.liferay.portal" entity="WorkflowDefinitionLink" />
 		<reference package-path="com.liferay.portal" entity="WorkflowInstanceLink" />
 		<reference package-path="com.liferay.portlet.expando" entity="ExpandoValue" />
+		<reference package-path="com.liferay.portlet.trash" entity="TrashEntry" />
 	</entity>
 	<entity name="DLSync" local-service="true" remote-service="true">
 

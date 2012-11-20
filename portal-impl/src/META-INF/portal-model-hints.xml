@@ -522,7 +522,9 @@
 		<field name="minAge" type="long" />
 		<field name="checkSyntax" type="boolean" />
 		<field name="allowDictionaryWords" type="boolean" />
-		<field name="minAlphanumeric" type="int" />
+		<field name="minAlphanumeric" type="int">
+			<hint name="display-width">20</hint>
+		</field>
 		<field name="minLength" type="int">
 			<hint name="display-width">20</hint>
 		</field>
@@ -684,6 +686,7 @@
 		<field name="groupId" type="long" />
 		<field name="repositoryId" type="long" />
 		<field name="mappedId" type="String" />
+		<field name="manualCheckInRequired" type="boolean" />
 	</model>
 	<model name="com.liferay.portal.model.ResourceAction">
 		<field name="resourceActionId" type="long" />
@@ -827,6 +830,7 @@
 			<validator name="email" />
 		</field>
 		<field name="facebookId" type="long" />
+		<field name="ldapServerId" type="long" />
 		<field name="openId" type="String">
 			<hint name="max-length">1024</hint>
 			<hint name="display-width">400</hint>
@@ -1181,7 +1185,10 @@
 		<field name="urlTitle" type="String">
 			<hint name="max-length">150</hint>
 		</field>
-		<field name="description" type="String" />
+		<field name="description" type="String">
+			<hint-collection name="TEXTAREA" />
+			<hint name="display-width">350</hint>
+		</field>
 		<field name="content" type="String">
 			<hint-collection name="CLOB" />
 			<sanitize content-type="text/html" modes="ALL" />
@@ -1341,6 +1348,7 @@
 		<field name="largeImageId" type="long" />
 		<field name="custom1ImageId" type="long" />
 		<field name="custom2ImageId" type="long" />
+		<field name="manualCheckInRequired" type="boolean" />
 	</model>
 	<model name="com.liferay.portlet.documentlibrary.model.DLFileEntryMetadata">
 		<field name="uuid" type="String" />
@@ -1419,6 +1427,7 @@
 		<field name="fileEntryTypeId" type="long" />
 		<field name="version" type="String" />
 		<field name="size" type="long" />
+		<field name="checksum" type="String" />
 		<field name="status" type="int" />
 		<field name="statusByUserId" type="long" />
 		<field name="statusByUserName" type="String" />
@@ -1445,6 +1454,7 @@
 		</field>
 		<field name="lastPostDate" type="Date" />
 		<field name="defaultFileEntryTypeId" type="long" />
+		<field name="hidden" type="boolean" />
 		<field name="overrideFileEntryTypes" type="boolean" />
 		<field name="status" type="int" />
 		<field name="statusByUserId" type="long" />
@@ -1561,6 +1571,7 @@
 		<field name="userName" type="String" />
 		<field name="createDate" type="Date" />
 		<field name="modifiedDate" type="Date" />
+		<field name="parentStructureId" type="long" />
 		<field name="classNameId" type="long" />
 		<field name="structureKey" type="String">
 			<hint name="upper-case">true</hint>
@@ -1608,6 +1619,10 @@
 		<field name="script" type="String">
 			<hint-collection name="CLOB" />
 		</field>
+		<field name="cacheable" type="boolean" />
+		<field name="smallImage" type="boolean" />
+		<field name="smallImageId" type="long" />
+		<field name="smallImageURL" type="String" />
 	</model>
 	<model name="com.liferay.portlet.expando.model.ExpandoColumn">
 		<field name="columnId" type="long" />
@@ -1627,6 +1642,7 @@
 	<model name="com.liferay.portlet.expando.model.ExpandoRow">
 		<field name="rowId" type="long" />
 		<field name="companyId" type="long" />
+		<field name="modifiedDate" type="Date" />
 		<field name="tableId" type="long" />
 		<field name="classPK" type="long" />
 	</model>
@@ -1771,7 +1787,7 @@
 		</field>
 		<field name="targetPortletId" type="String" />
 		<field name="contentField" type="String" />
-		<field name="feedType" type="String" />
+		<field name="feedFormat" type="String" />
 		<field name="feedVersion" type="double" />
 	</model>
 	<model name="com.liferay.portlet.journal.model.JournalFolder">
@@ -2567,6 +2583,10 @@
 			<hint-collection name="TEXTAREA" />
 		</field>
 		<field name="lastPostDate" type="Date" />
+		<field name="status" type="int" />
+		<field name="statusByUserId" type="long" />
+		<field name="statusByUserName" type="String" />
+		<field name="statusDate" type="Date" />
 	</model>
 	<model name="com.liferay.portlet.wiki.model.WikiPage">
 		<field name="uuid" type="String" />

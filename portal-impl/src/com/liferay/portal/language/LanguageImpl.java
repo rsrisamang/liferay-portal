@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.language.LanguageWrapper;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.CookieKeys;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -34,7 +35,6 @@ import com.liferay.portal.model.Portlet;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
 import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portal.util.CookieKeys;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portal.util.PortletKeys;
 import com.liferay.portal.util.PrefsPropsUtil;
@@ -44,8 +44,10 @@ import com.liferay.portlet.PortletConfigFactoryUtil;
 
 import java.text.MessageFormat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -443,6 +445,20 @@ public class LanguageImpl implements Language {
 		return _getInstance()._getLocale(languageCode);
 	}
 
+	public Locale[] getSupportedLocales() {
+		List<Locale> supportedLocales = new ArrayList<Locale>();
+
+		Locale[] locales = getAvailableLocales();
+
+		for (Locale locale : locales) {
+			if (!isBetaLocale(locale)) {
+				supportedLocales.add(locale);
+			}
+		}
+
+		return supportedLocales.toArray(new Locale[supportedLocales.size()]);
+	}
+
 	public String getTimeDescription(Locale locale, long milliseconds) {
 		return getTimeDescription(locale, milliseconds, false);
 	}
@@ -534,7 +550,7 @@ public class LanguageImpl implements Language {
 	}
 
 	public void resetAvailableLocales(long companyId) {
-		 _resetAvailableLocales(companyId);
+		_resetAvailableLocales(companyId);
 	}
 
 	public void updateCookie(

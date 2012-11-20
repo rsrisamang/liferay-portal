@@ -22,132 +22,79 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewQuestionGraphsTest extends BaseTestCase {
 	public void testViewQuestionGraphs() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Polls", RuntimeVariables.replace("Polls"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Test Poll Question",
+		assertEquals(RuntimeVariables.replace("Test Poll Question"),
+			selenium.getText("//tr[contains(.,'Test Poll Question')]/td[1]/a"));
+		selenium.clickAt("//tr[contains(.,'Test Poll Question')]/td[1]/a",
 			RuntimeVariables.replace("Test Poll Question"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Area", RuntimeVariables.replace("Area"));
-		selenium.waitForPopUp("viewChart", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("viewChart");
+		assertEquals(RuntimeVariables.replace("Area"),
+			selenium.getText("//a[contains(.,'Area')]"));
+		selenium.clickAt("//a[contains(.,'Area')]",
+			RuntimeVariables.replace("Area"));
+		Thread.sleep(5000);
+		selenium.selectPopUp("");
+		selenium.waitForVisible("//body/img");
+		assertTrue(selenium.isVisible("//body/img"));
 		selenium.close();
 		selenium.selectWindow("null");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Horizontal Bar")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Horizontal Bar",
+		selenium.waitForVisible("//a[contains(.,'Horizontal Bar')]");
+		assertEquals(RuntimeVariables.replace("Horizontal Bar"),
+			selenium.getText("//a[contains(.,'Horizontal Bar')]"));
+		selenium.clickAt("//a[contains(.,'Horizontal Bar')]",
 			RuntimeVariables.replace("Horizontal Bar"));
-		selenium.waitForPopUp("viewChart", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("viewChart");
+		Thread.sleep(5000);
+		selenium.selectPopUp("");
+		selenium.waitForVisible("//body/img");
+		assertTrue(selenium.isVisible("//body/img"));
 		selenium.close();
 		selenium.selectWindow("null");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Line")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Line", RuntimeVariables.replace("Line"));
-		selenium.waitForPopUp("viewChart", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("viewChart");
+		selenium.waitForVisible("//a[contains(.,'Line')]");
+		assertEquals(RuntimeVariables.replace("Line"),
+			selenium.getText("//a[contains(.,'Line')]"));
+		selenium.clickAt("//a[contains(.,'Line')]",
+			RuntimeVariables.replace("Line"));
+		Thread.sleep(5000);
+		selenium.selectPopUp("");
+		selenium.waitForVisible("//body/img");
+		assertTrue(selenium.isVisible("//body/img"));
 		selenium.close();
 		selenium.selectWindow("null");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Pie")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Pie", RuntimeVariables.replace("Pie"));
-		selenium.waitForPopUp("viewChart", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("viewChart");
+		selenium.waitForVisible("//a[contains(.,'Pie')]");
+		assertEquals(RuntimeVariables.replace("Pie"),
+			selenium.getText("//a[contains(.,'Pie')]"));
+		selenium.clickAt("//a[contains(.,'Pie')]",
+			RuntimeVariables.replace("Pie"));
+		Thread.sleep(5000);
+		selenium.selectPopUp("");
+		selenium.waitForVisible("//body/img");
+		assertTrue(selenium.isVisible("//body/img"));
 		selenium.close();
 		selenium.selectWindow("null");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Vertical Bar")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Vertical Bar",
+		selenium.waitForVisible("//a[contains(.,'Vertical Bar')]");
+		assertEquals(RuntimeVariables.replace("Vertical Bar"),
+			selenium.getText("//a[contains(.,'Vertical Bar')]"));
+		selenium.clickAt("//a[contains(.,'Vertical Bar')]",
 			RuntimeVariables.replace("Vertical Bar"));
-		selenium.waitForPopUp("viewChart", RuntimeVariables.replace("30000"));
-		selenium.selectWindow("viewChart");
+		Thread.sleep(5000);
+		selenium.selectPopUp("");
+		selenium.waitForVisible("//body/img");
+		assertTrue(selenium.isVisible("//body/img"));
 		selenium.close();
 		selenium.selectWindow("null");
 	}

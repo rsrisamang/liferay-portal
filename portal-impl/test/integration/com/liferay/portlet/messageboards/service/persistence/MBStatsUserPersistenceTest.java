@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -117,7 +117,7 @@ public class MBStatsUserPersistenceTest {
 
 		newMBStatsUser.setLastPostDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(newMBStatsUser, false);
+		_persistence.update(newMBStatsUser);
 
 		MBStatsUser existingMBStatsUser = _persistence.findByPrimaryKey(newMBStatsUser.getPrimaryKey());
 
@@ -277,7 +277,7 @@ public class MBStatsUserPersistenceTest {
 
 		mbStatsUser.setLastPostDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(mbStatsUser, false);
+		_persistence.update(mbStatsUser);
 
 		return mbStatsUser;
 	}

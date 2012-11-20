@@ -27,37 +27,18 @@ public class ViewDMDocumentJPGTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"link=Documents and Media Test Page")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
 				selenium.clickAt("link=Documents and Media Test Page",
 					RuntimeVariables.replace("Documents and Media Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace("DM Document Title"),
 					selenium.getText(
 						"//div[@data-title='DM Document Title']/a/span[2]"));
 				selenium.clickAt("//div[@data-title='DM Document Title']/a/span[2]",
 					RuntimeVariables.replace("DM Document Title"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertEquals(RuntimeVariables.replace(
 						"Automatically Extracted Metadata"),
 					selenium.getText(
@@ -88,7 +69,7 @@ public class ViewDMDocumentJPGTest extends BaseTestCase {
 				assertEquals(RuntimeVariables.replace("Image Width 394"),
 					selenium.getText(
 						"//div[@id='documentLibraryAssetMetadataPanel']/div[2]/div[4]"));
-				assertFalse(selenium.isElementPresent(
+				assertTrue(selenium.isElementNotPresent(
 						"xPath=(//div[@id='documentLibraryAssetMetadataPanel'])[2]/div/div/span"));
 
 			case 100:

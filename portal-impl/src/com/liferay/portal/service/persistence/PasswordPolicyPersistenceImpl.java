@@ -293,7 +293,14 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, passwordPolicy);
+			if (!session.contains(passwordPolicy)) {
+				passwordPolicy = (PasswordPolicy)session.get(PasswordPolicyImpl.class,
+						passwordPolicy.getPrimaryKeyObj());
+			}
+
+			if (passwordPolicy != null) {
+				session.delete(passwordPolicy);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -302,14 +309,16 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 			closeSession(session);
 		}
 
-		clearCache(passwordPolicy);
+		if (passwordPolicy != null) {
+			clearCache(passwordPolicy);
+		}
 
 		return passwordPolicy;
 	}
 
 	@Override
 	public PasswordPolicy updateImpl(
-		com.liferay.portal.model.PasswordPolicy passwordPolicy, boolean merge)
+		com.liferay.portal.model.PasswordPolicy passwordPolicy)
 		throws SystemException {
 		passwordPolicy = toUnwrappedModel(passwordPolicy);
 
@@ -322,9 +331,14 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, passwordPolicy, merge);
+			if (passwordPolicy.isNew()) {
+				session.save(passwordPolicy);
 
-			passwordPolicy.setNew(false);
+				passwordPolicy.setNew(false);
+			}
+			else {
+				session.merge(passwordPolicy);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -366,6 +380,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_DP, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_DP, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_DP,
@@ -384,6 +399,7 @@ public class PasswordPolicyPersistenceImpl extends BasePersistenceImpl<PasswordP
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_N, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_N, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_N,

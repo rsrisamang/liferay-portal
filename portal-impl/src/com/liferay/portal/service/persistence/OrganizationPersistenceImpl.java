@@ -359,7 +359,14 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, organization);
+			if (!session.contains(organization)) {
+				organization = (Organization)session.get(OrganizationImpl.class,
+						organization.getPrimaryKeyObj());
+			}
+
+			if (organization != null) {
+				session.delete(organization);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -368,14 +375,16 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			closeSession(session);
 		}
 
-		clearCache(organization);
+		if (organization != null) {
+			clearCache(organization);
+		}
 
 		return organization;
 	}
 
 	@Override
 	public Organization updateImpl(
-		com.liferay.portal.model.Organization organization, boolean merge)
+		com.liferay.portal.model.Organization organization)
 		throws SystemException {
 		organization = toUnwrappedModel(organization);
 
@@ -388,9 +397,14 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, organization, merge);
+			if (organization.isNew()) {
+				session.save(organization);
 
-			organization.setNew(false);
+				organization.setNew(false);
+			}
+			else {
+				session.merge(organization);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -404,6 +418,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		if (isNew || !OrganizationModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((organizationModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_COMPANYID.getColumnBitmask()) != 0) {
@@ -490,6 +505,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_N, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_N, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_N,
@@ -765,10 +781,6 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	/**
 	 * Returns the first organization in the ordered set where companyId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching organization
@@ -778,32 +790,47 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByCompanyId_First(long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByCompanyId_First(companyId,
+				orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the first organization in the ordered set where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByCompanyId_First(long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<Organization> list = findByCompanyId(companyId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last organization in the ordered set where companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -814,34 +841,49 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByCompanyId_Last(long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByCompanyId_Last(companyId,
+				orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the last organization in the ordered set where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByCompanyId_Last(long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByCompanyId(companyId);
 
 		List<Organization> list = findByCompanyId(companyId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the organizations before and after the current organization in the ordered set where companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param organizationId the primary key of the current organization
 	 * @param companyId the company ID
@@ -1435,10 +1477,6 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	/**
 	 * Returns the first organization in the ordered set where companyId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching organization
@@ -1448,32 +1486,47 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByLocations_First(long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByLocations_First(companyId,
+				orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the first organization in the ordered set where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByLocations_First(long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<Organization> list = findByLocations(companyId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last organization in the ordered set where companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param companyId the company ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -1484,34 +1537,49 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByLocations_Last(long companyId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByLocations_Last(companyId,
+				orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the last organization in the ordered set where companyId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByLocations_Last(long companyId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByLocations(companyId);
 
 		List<Organization> list = findByLocations(companyId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the organizations before and after the current organization in the ordered set where companyId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param organizationId the primary key of the current organization
 	 * @param companyId the company ID
@@ -2119,10 +2187,6 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	/**
 	 * Returns the first organization in the ordered set where companyId = &#63; and parentOrganizationId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param companyId the company ID
 	 * @param parentOrganizationId the parent organization ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -2133,35 +2197,52 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByC_P_First(long companyId,
 		long parentOrganizationId, OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByC_P_First(companyId,
+				parentOrganizationId, orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(", parentOrganizationId=");
+		msg.append(parentOrganizationId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the first organization in the ordered set where companyId = &#63; and parentOrganizationId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param parentOrganizationId the parent organization ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByC_P_First(long companyId,
+		long parentOrganizationId, OrderByComparator orderByComparator)
+		throws SystemException {
 		List<Organization> list = findByC_P(companyId, parentOrganizationId, 0,
 				1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(", parentOrganizationId=");
-			msg.append(parentOrganizationId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last organization in the ordered set where companyId = &#63; and parentOrganizationId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param companyId the company ID
 	 * @param parentOrganizationId the parent organization ID
@@ -2173,37 +2254,54 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public Organization findByC_P_Last(long companyId,
 		long parentOrganizationId, OrderByComparator orderByComparator)
 		throws NoSuchOrganizationException, SystemException {
+		Organization organization = fetchByC_P_Last(companyId,
+				parentOrganizationId, orderByComparator);
+
+		if (organization != null) {
+			return organization;
+		}
+
+		StringBundler msg = new StringBundler(6);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(", parentOrganizationId=");
+		msg.append(parentOrganizationId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrganizationException(msg.toString());
+	}
+
+	/**
+	 * Returns the last organization in the ordered set where companyId = &#63; and parentOrganizationId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param parentOrganizationId the parent organization ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching organization, or <code>null</code> if a matching organization could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public Organization fetchByC_P_Last(long companyId,
+		long parentOrganizationId, OrderByComparator orderByComparator)
+		throws SystemException {
 		int count = countByC_P(companyId, parentOrganizationId);
 
 		List<Organization> list = findByC_P(companyId, parentOrganizationId,
 				count - 1, count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(6);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(", parentOrganizationId=");
-			msg.append(parentOrganizationId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrganizationException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the organizations before and after the current organization in the ordered set where companyId = &#63; and parentOrganizationId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param organizationId the primary key of the current organization
 	 * @param companyId the company ID

@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.portlet.ConfigurationAction;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.portlet.PortletBag;
 import com.liferay.portal.kernel.portlet.PortletLayoutListener;
+import com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandler;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.OpenSearch;
 import com.liferay.portal.kernel.servlet.URLEncoder;
@@ -60,6 +61,7 @@ public class PortletBagImpl implements PortletBag {
 		FriendlyURLMapper friendlyURLMapperInstance,
 		URLEncoder urlEncoderInstance,
 		PortletDataHandler portletDataHandlerInstance,
+		PortletDisplayTemplateHandler portletDisplayTemplateHandlerInstance,
 		PortletLayoutListener portletLayoutListenerInstance,
 		PollerProcessor pollerProcessorInstance,
 		MessageListener popMessageListenerInstance,
@@ -85,6 +87,8 @@ public class PortletBagImpl implements PortletBag {
 		_friendlyURLMapperInstance = friendlyURLMapperInstance;
 		_urlEncoderInstance = urlEncoderInstance;
 		_portletDataHandlerInstance = portletDataHandlerInstance;
+		_portletDisplayTemplateHandlerInstance =
+			portletDisplayTemplateHandlerInstance;
 		_portletLayoutListenerInstance = portletLayoutListenerInstance;
 		_pollerProcessorInstance = pollerProcessorInstance;
 		_popMessageListenerInstance = popMessageListenerInstance;
@@ -110,6 +114,7 @@ public class PortletBagImpl implements PortletBag {
 			getConfigurationActionInstance(), getIndexerInstances(),
 			getOpenSearchInstance(), getFriendlyURLMapperInstance(),
 			getURLEncoderInstance(), getPortletDataHandlerInstance(),
+			getPortletDisplayTemplateHandlerInstance(),
 			getPortletLayoutListenerInstance(), getPollerProcessorInstance(),
 			getPopMessageListenerInstance(),
 			getSocialActivityInterpreterInstance(),
@@ -169,6 +174,12 @@ public class PortletBagImpl implements PortletBag {
 
 	public PortletDataHandler getPortletDataHandlerInstance() {
 		return _portletDataHandlerInstance;
+	}
+
+	public PortletDisplayTemplateHandler
+		getPortletDisplayTemplateHandlerInstance() {
+
+		return _portletDisplayTemplateHandlerInstance;
 	}
 
 	public Portlet getPortletInstance() {
@@ -259,6 +270,8 @@ public class PortletBagImpl implements PortletBag {
 	private PollerProcessor _pollerProcessorInstance;
 	private MessageListener _popMessageListenerInstance;
 	private PortletDataHandler _portletDataHandlerInstance;
+	private PortletDisplayTemplateHandler
+		_portletDisplayTemplateHandlerInstance;
 	private Portlet _portletInstance;
 	private PortletLayoutListener _portletLayoutListenerInstance;
 	private String _portletName;

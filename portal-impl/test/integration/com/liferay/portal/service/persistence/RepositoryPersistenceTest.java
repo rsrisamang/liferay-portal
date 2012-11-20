@@ -22,6 +22,7 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.Repository;
@@ -29,7 +30,6 @@ import com.liferay.portal.model.impl.RepositoryModelImpl;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -55,19 +55,21 @@ import java.util.Set;
 public class RepositoryPersistenceTest {
 	@After
 	public void tearDown() throws Exception {
-		Map<Serializable, BasePersistence<?>> persistedEntities = _transactionalPersistenceAdvice.getBasePersistences();
+		Map<Serializable, BasePersistence<?>> basePersistences = _transactionalPersistenceAdvice.getBasePersistences();
 
-		Set<Serializable> entityKeys = persistedEntities.keySet();
+		Set<Serializable> primaryKeys = basePersistences.keySet();
 
-		for (Serializable entitiKey : entityKeys) {
-			BasePersistence<?> persistence = persistedEntities.get(entitiKey);
+		for (Serializable primaryKey : primaryKeys) {
+			BasePersistence<?> basePersistence = basePersistences.get(primaryKey);
 
 			try {
-				persistence.remove(entitiKey);
+				basePersistence.remove(primaryKey);
 			}
 			catch (Exception e) {
-				_log.debug("The entity " + entitiKey +
-					" has been already deleted");
+				if (_log.isDebugEnabled()) {
+					_log.debug("The model with primary key " + primaryKey +
+						" was already deleted");
+				}
 			}
 		}
 
@@ -133,7 +135,7 @@ public class RepositoryPersistenceTest {
 
 		newRepository.setDlFolderId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newRepository, false);
+		_persistence.update(newRepository);
 
 		Repository existingRepository = _persistence.findByPrimaryKey(newRepository.getPrimaryKey());
 
@@ -301,6 +303,15 @@ public class RepositoryPersistenceTest {
 				existingRepositoryModelImpl.getOriginalUuid()));
 		Assert.assertEquals(existingRepositoryModelImpl.getGroupId(),
 			existingRepositoryModelImpl.getOriginalGroupId());
+
+		Assert.assertEquals(existingRepositoryModelImpl.getGroupId(),
+			existingRepositoryModelImpl.getOriginalGroupId());
+		Assert.assertTrue(Validator.equals(
+				existingRepositoryModelImpl.getName(),
+				existingRepositoryModelImpl.getOriginalName()));
+		Assert.assertTrue(Validator.equals(
+				existingRepositoryModelImpl.getPortletId(),
+				existingRepositoryModelImpl.getOriginalPortletId()));
 	}
 
 	protected Repository addRepository() throws Exception {
@@ -334,7 +345,7 @@ public class RepositoryPersistenceTest {
 
 		repository.setDlFolderId(ServiceTestUtil.nextLong());
 
-		_persistence.update(repository, false);
+		_persistence.update(repository);
 
 		return repository;
 	}

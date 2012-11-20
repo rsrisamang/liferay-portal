@@ -103,6 +103,10 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 	 * @return the normal model instance
 	 */
 	public static MembershipRequest toModel(MembershipRequestSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		MembershipRequest model = new MembershipRequestImpl();
 
 		model.setMembershipRequestId(soapModel.getMembershipRequestId());
@@ -127,6 +131,10 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 	 */
 	public static List<MembershipRequest> toModels(
 		MembershipRequestSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<MembershipRequest> models = new ArrayList<MembershipRequest>(soapModels.length);
 
 		for (MembershipRequestSoap soapModel : soapModels) {
@@ -407,17 +415,6 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 	}
 
 	@Override
-	public MembershipRequest toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (MembershipRequest)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			MembershipRequest.class.getName(), getPrimaryKey());
@@ -428,6 +425,16 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public MembershipRequest toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (MembershipRequest)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -650,7 +657,7 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 	}
 
 	private static ClassLoader _classLoader = MembershipRequest.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			MembershipRequest.class
 		};
 	private long _membershipRequestId;
@@ -672,5 +679,5 @@ public class MembershipRequestModelImpl extends BaseModelImpl<MembershipRequest>
 	private int _originalStatusId;
 	private boolean _setOriginalStatusId;
 	private long _columnBitmask;
-	private MembershipRequest _escapedModelProxy;
+	private MembershipRequest _escapedModel;
 }

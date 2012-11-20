@@ -10,13 +10,8 @@
 </thead><tbody>
 <tr>
 	<td>open</td>
-	<td>/user/joebloggs/home/</td>
+	<td>/user/joebloggs/so/dashboard/</td>
 	<td></td>
-</tr>
-<tr>
-	<td>waitForVisible</td>
-	<td>//nav/ul/li[contains(.,'Microblogs')]/a/span</td>
-	<td>Microblogs</td>
 </tr>
 <tr>
 	<td>clickAtAndWait</td>
@@ -32,6 +27,26 @@
 	<td>clickAt</td>
 	<td>link=Timeline</td>
 	<td>Timeline</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>xPath=(//div[@class='content'])[1]</td>
+	<td>Microblogs Post</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>xPath=(//div[@class='content'])[2]</td>
+	<td>Microblogs Post</td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>xPath=(//div[@class='content'])[3]</td>
+	<td>Microblogs Post</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>5000</td>
+	<td></td>
 </tr>
 <tr>
 	<td>assertText</td>
@@ -78,7 +93,6 @@
 	<td>xPath=(//span[@class='action comment']/a)[3]</td>
 	<td>Comment</td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

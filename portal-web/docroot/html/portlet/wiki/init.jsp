@@ -16,7 +16,10 @@
 
 <%@ include file="/html/portlet/init.jsp" %>
 
-<%@ page import="com.liferay.portal.kernel.search.Document" %><%@
+<%@ page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandler" %><%@
+page import="com.liferay.portal.kernel.portletdisplaytemplate.PortletDisplayTemplateHandlerRegistryUtil" %><%@
+page import="com.liferay.portal.kernel.repository.model.FileEntry" %><%@
+page import="com.liferay.portal.kernel.search.Document" %><%@
 page import="com.liferay.portal.kernel.search.Hits" %><%@
 page import="com.liferay.portal.kernel.search.Indexer" %><%@
 page import="com.liferay.portal.kernel.search.IndexerRegistryUtil" %><%@
@@ -31,9 +34,13 @@ page import="com.liferay.portlet.asset.util.AssetUtil" %><%@
 page import="com.liferay.portlet.documentlibrary.DuplicateFileException" %><%@
 page import="com.liferay.portlet.documentlibrary.FileNameException" %><%@
 page import="com.liferay.portlet.documentlibrary.FileSizeException" %><%@
-page import="com.liferay.portlet.documentlibrary.store.DLStoreUtil" %><%@
+page import="com.liferay.portlet.documentlibrary.model.DLFileEntry" %><%@
 page import="com.liferay.portlet.documentlibrary.util.DLUtil" %><%@
 page import="com.liferay.portlet.documentlibrary.util.DocumentConversionUtil" %><%@
+page import="com.liferay.portlet.portletdisplaytemplate.util.PortletDisplayTemplateUtil" %><%@
+page import="com.liferay.portlet.trash.model.TrashEntry" %><%@
+page import="com.liferay.portlet.trash.service.TrashEntryLocalServiceUtil" %><%@
+page import="com.liferay.portlet.trash.util.TrashUtil" %><%@
 page import="com.liferay.portlet.wiki.DuplicateNodeNameException" %><%@
 page import="com.liferay.portlet.wiki.DuplicatePageException" %><%@
 page import="com.liferay.portlet.wiki.ImportFilesException" %><%@
@@ -59,6 +66,7 @@ page import="com.liferay.portlet.wiki.service.permission.WikiNodePermission" %><
 page import="com.liferay.portlet.wiki.service.permission.WikiPagePermission" %><%@
 page import="com.liferay.portlet.wiki.service.permission.WikiPermission" %><%@
 page import="com.liferay.portlet.wiki.util.WikiCacheUtil" %><%@
+page import="com.liferay.portlet.wiki.util.WikiPageAttachmentUtil" %><%@
 page import="com.liferay.portlet.wiki.util.WikiUtil" %><%@
 page import="com.liferay.portlet.wiki.util.comparator.PageVersionComparator" %><%@
 page import="com.liferay.util.RSSUtil" %>
@@ -72,6 +80,7 @@ if (Validator.isNotNull(portletResource)) {
 	preferences = PortletPreferencesFactoryUtil.getPortletSetup(request, portletResource);
 }
 
+String displayStyle = preferences.getValue("displayStyle", StringPool.BLANK);
 boolean enableRelatedAssets = GetterUtil.getBoolean(preferences.getValue("enableRelatedAssets", null), true);
 boolean enablePageRatings = PropsValues.WIKI_PAGE_RATINGS_ENABLED && GetterUtil.getBoolean(preferences.getValue("enablePageRatings", null), true);
 boolean enableComments = PropsValues.WIKI_PAGE_COMMENTS_ENABLED && GetterUtil.getBoolean(preferences.getValue("enableComments", null), true);

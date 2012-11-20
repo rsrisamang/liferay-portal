@@ -536,6 +536,15 @@ public class DLFileShortcutWrapper implements DLFileShortcut,
 	}
 
 	/**
+	* Returns <code>true</code> if this document library file shortcut is denied.
+	*
+	* @return <code>true</code> if this document library file shortcut is denied; <code>false</code> otherwise
+	*/
+	public boolean isDenied() {
+		return _dlFileShortcut.isDenied();
+	}
+
+	/**
 	* Returns <code>true</code> if this document library file shortcut is a draft.
 	*
 	* @return <code>true</code> if this document library file shortcut is a draft; <code>false</code> otherwise
@@ -554,6 +563,24 @@ public class DLFileShortcutWrapper implements DLFileShortcut,
 	}
 
 	/**
+	* Returns <code>true</code> if this document library file shortcut is inactive.
+	*
+	* @return <code>true</code> if this document library file shortcut is inactive; <code>false</code> otherwise
+	*/
+	public boolean isInactive() {
+		return _dlFileShortcut.isInactive();
+	}
+
+	/**
+	* Returns <code>true</code> if this document library file shortcut is incomplete.
+	*
+	* @return <code>true</code> if this document library file shortcut is incomplete; <code>false</code> otherwise
+	*/
+	public boolean isIncomplete() {
+		return _dlFileShortcut.isIncomplete();
+	}
+
+	/**
 	* Returns <code>true</code> if this document library file shortcut is in the Recycle Bin.
 	*
 	* @return <code>true</code> if this document library file shortcut is in the Recycle Bin; <code>false</code> otherwise
@@ -569,6 +596,15 @@ public class DLFileShortcutWrapper implements DLFileShortcut,
 	*/
 	public boolean isPending() {
 		return _dlFileShortcut.isPending();
+	}
+
+	/**
+	* Returns <code>true</code> if this document library file shortcut is scheduled.
+	*
+	* @return <code>true</code> if this document library file shortcut is scheduled; <code>false</code> otherwise
+	*/
+	public boolean isScheduled() {
+		return _dlFileShortcut.isScheduled();
 	}
 
 	public boolean isNew() {
@@ -631,6 +667,10 @@ public class DLFileShortcutWrapper implements DLFileShortcut,
 		return new DLFileShortcutWrapper(_dlFileShortcut.toEscapedModel());
 	}
 
+	public com.liferay.portlet.documentlibrary.model.DLFileShortcut toUnescapedModel() {
+		return new DLFileShortcutWrapper(_dlFileShortcut.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _dlFileShortcut.toString();
@@ -651,6 +691,14 @@ public class DLFileShortcutWrapper implements DLFileShortcut,
 
 	public java.lang.String getToTitle() {
 		return _dlFileShortcut.getToTitle();
+	}
+
+	public com.liferay.portlet.documentlibrary.model.DLFolder getTrashFolder() {
+		return _dlFileShortcut.getTrashFolder();
+	}
+
+	public boolean isInTrashFolder() {
+		return _dlFileShortcut.isInTrashFolder();
 	}
 
 	/**

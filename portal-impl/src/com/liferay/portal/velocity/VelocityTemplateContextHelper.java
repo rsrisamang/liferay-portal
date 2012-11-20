@@ -14,6 +14,9 @@
 
 package com.liferay.portal.velocity;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.template.TemplateResource;
 import com.liferay.portal.kernel.templateparser.TemplateContext;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -84,8 +87,13 @@ public class VelocityTemplateContextHelper extends TemplateContextHelper {
 
 		// Permissions
 
-		velocityContext.put(
-			"rolePermission", RolePermissionUtil.getRolePermission());
+		try {
+			velocityContext.put(
+				"rolePermission", RolePermissionUtil.getRolePermission());
+		}
+		catch (SecurityException se) {
+			_log.error(se, se);
+		}
 
 		return velocityContext;
 	}
@@ -108,12 +116,13 @@ public class VelocityTemplateContextHelper extends TemplateContextHelper {
 			WebKeys.THEME_DISPLAY);
 
 		if (themeDisplay != null) {
+
 			// Init
 
 			templateContext.put(
 				"init",
 				themeDisplay.getPathContext() +
-					VelocityResourceListener.SERVLET_SEPARATOR +
+					TemplateResource.SERVLET_SEPARATOR +
 						"/html/themes/_unstyled/templates/init.vm");
 		}
 
@@ -126,6 +135,7 @@ public class VelocityTemplateContextHelper extends TemplateContextHelper {
 		}
 
 		if (theme != null) {
+
 			// Full css and templates path
 
 			String servletContextName = GetterUtil.getString(
@@ -158,5 +168,8 @@ public class VelocityTemplateContextHelper extends TemplateContextHelper {
 			}
 		}
 	}
+
+	private static Log _log = LogFactoryUtil.getLog(
+		VelocityTemplateContextHelper.class);
 
 }

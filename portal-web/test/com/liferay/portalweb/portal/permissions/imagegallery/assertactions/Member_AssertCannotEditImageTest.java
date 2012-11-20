@@ -22,55 +22,22 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class Member_AssertCannotEditImageTest extends BaseTestCase {
 	public void testMember_AssertCannotEditImage() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent(
-							"link=Media Gallery Permissions Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Media Gallery Permissions Test Page",
 			RuntimeVariables.replace("Media Gallery Permissions Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Permissions Image 2 Test"),
 			selenium.getText("//a[@title='Permissions Image 2 Test - ']"));
 		selenium.clickAt("//a[@title='Permissions Image 2 Test - ']",
 			RuntimeVariables.replace("Permissions Image 2 Test"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div/div[2]/div[1]")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		assertTrue(selenium.isElementPresent("//img[@alt='Download (29.9k)']"));
-		assertTrue(selenium.isElementPresent("//img[@alt='View']"));
-		assertFalse(selenium.isElementPresent("//img[@alt='Edit']"));
-		assertFalse(selenium.isElementPresent("//img[@alt='Permissions']"));
-		assertFalse(selenium.isElementPresent("//img[@alt='Delete']"));
+		selenium.waitForVisible("//div/div[2]/div[1]");
+		assertTrue(selenium.isElementPresent("//img[@title='Download (30k)']"));
+		assertTrue(selenium.isElementPresent("//img[@title='View']"));
+		assertTrue(selenium.isElementNotPresent("//img[@title='Edit']"));
+		assertTrue(selenium.isElementNotPresent("//img[@title='Permissions']"));
+		assertTrue(selenium.isElementNotPresent(
+				"//img[@title='Move to the Recycle Bin']"));
 	}
 }

@@ -23,12 +23,12 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewScopedAnnouncementsEntrySiteNameTest extends BaseTestCase {
 	public void testViewScopedAnnouncementsEntrySiteName()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/site-name/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Announcements Test Page",
 			RuntimeVariables.replace("Announcements Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Scoped Announcements Entry Title"),
 			selenium.getText("//h3[@class='entry-title']/a"));

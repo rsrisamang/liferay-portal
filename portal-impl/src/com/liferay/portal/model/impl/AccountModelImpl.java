@@ -101,6 +101,10 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	 * @return the normal model instance
 	 */
 	public static Account toModel(AccountSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		Account model = new AccountImpl();
 
 		model.setAccountId(soapModel.getAccountId());
@@ -130,6 +134,10 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	 * @return the normal model instances
 	 */
 	public static List<Account> toModels(AccountSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<Account> models = new ArrayList<Account>(soapModels.length);
 
 		for (AccountSoap soapModel : soapModels) {
@@ -495,17 +503,6 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	}
 
 	@Override
-	public Account toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Account)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			Account.class.getName(), getPrimaryKey());
@@ -516,6 +513,16 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Account toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Account)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -824,7 +831,7 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	}
 
 	private static ClassLoader _classLoader = Account.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Account.class
 		};
 	private long _accountId;
@@ -844,5 +851,5 @@ public class AccountModelImpl extends BaseModelImpl<Account>
 	private String _industry;
 	private String _type;
 	private String _size;
-	private Account _escapedModelProxy;
+	private Account _escapedModel;
 }

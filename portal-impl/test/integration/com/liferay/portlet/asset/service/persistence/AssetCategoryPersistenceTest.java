@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -136,7 +136,7 @@ public class AssetCategoryPersistenceTest {
 
 		newAssetCategory.setVocabularyId(ServiceTestUtil.nextLong());
 
-		_persistence.update(newAssetCategory, false);
+		_persistence.update(newAssetCategory);
 
 		AssetCategory existingAssetCategory = _persistence.findByPrimaryKey(newAssetCategory.getPrimaryKey());
 
@@ -344,7 +344,7 @@ public class AssetCategoryPersistenceTest {
 
 		assetCategory.setVocabularyId(ServiceTestUtil.nextLong());
 
-		_persistence.update(assetCategory, false);
+		_persistence.update(assetCategory);
 
 		return assetCategory;
 	}
@@ -391,7 +391,7 @@ public class AssetCategoryPersistenceTest {
 
 		parentAssetCategory.setParentCategoryId(rootAssetCategory.getCategoryId());
 
-		_persistence.update(parentAssetCategory, false);
+		_persistence.update(parentAssetCategory);
 
 		rootAssetCategory = _persistence.fetchByPrimaryKey(rootAssetCategory.getPrimaryKey());
 		childAssetCategory = _persistence.fetchByPrimaryKey(childAssetCategory.getPrimaryKey());
@@ -428,7 +428,7 @@ public class AssetCategoryPersistenceTest {
 
 		parentAssetCategory.setParentCategoryId(rootAssetCategory.getCategoryId());
 
-		_persistence.update(parentAssetCategory, false);
+		_persistence.update(parentAssetCategory);
 
 		rootAssetCategory = _persistence.fetchByPrimaryKey(rootAssetCategory.getPrimaryKey());
 		childAssetCategory = _persistence.fetchByPrimaryKey(childAssetCategory.getPrimaryKey());
@@ -475,7 +475,7 @@ public class AssetCategoryPersistenceTest {
 
 		parentAssetCategory.setParentCategoryId(rightRootChildAssetCategory.getCategoryId());
 
-		_persistence.update(parentAssetCategory, false);
+		_persistence.update(parentAssetCategory);
 
 		rootAssetCategory = _persistence.fetchByPrimaryKey(rootAssetCategory.getPrimaryKey());
 		leftRootChildAssetCategory = _persistence.fetchByPrimaryKey(leftRootChildAssetCategory.getPrimaryKey());
@@ -532,7 +532,7 @@ public class AssetCategoryPersistenceTest {
 
 		parentAssetCategory.setParentCategoryId(leftRootChildAssetCategory.getCategoryId());
 
-		_persistence.update(parentAssetCategory, false);
+		_persistence.update(parentAssetCategory);
 
 		rootAssetCategory = _persistence.fetchByPrimaryKey(rootAssetCategory.getPrimaryKey());
 		leftRootChildAssetCategory = _persistence.fetchByPrimaryKey(leftRootChildAssetCategory.getPrimaryKey());
@@ -596,7 +596,7 @@ public class AssetCategoryPersistenceTest {
 			assetCategory.setParentCategoryId(parentCategoryId);
 		}
 
-		_persistence.update(assetCategory, false);
+		_persistence.update(assetCategory);
 
 		return assetCategory;
 	}

@@ -256,7 +256,14 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, orgLabor);
+			if (!session.contains(orgLabor)) {
+				orgLabor = (OrgLabor)session.get(OrgLaborImpl.class,
+						orgLabor.getPrimaryKeyObj());
+			}
+
+			if (orgLabor != null) {
+				session.delete(orgLabor);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -265,14 +272,16 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 			closeSession(session);
 		}
 
-		clearCache(orgLabor);
+		if (orgLabor != null) {
+			clearCache(orgLabor);
+		}
 
 		return orgLabor;
 	}
 
 	@Override
-	public OrgLabor updateImpl(com.liferay.portal.model.OrgLabor orgLabor,
-		boolean merge) throws SystemException {
+	public OrgLabor updateImpl(com.liferay.portal.model.OrgLabor orgLabor)
+		throws SystemException {
 		orgLabor = toUnwrappedModel(orgLabor);
 
 		boolean isNew = orgLabor.isNew();
@@ -284,9 +293,14 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, orgLabor, merge);
+			if (orgLabor.isNew()) {
+				session.save(orgLabor);
 
-			orgLabor.setNew(false);
+				orgLabor.setNew(false);
+			}
+			else {
+				session.merge(orgLabor);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -300,6 +314,7 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 		if (isNew || !OrgLaborModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((orgLaborModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_ORGANIZATIONID.getColumnBitmask()) != 0) {
@@ -599,10 +614,6 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	/**
 	 * Returns the first org labor in the ordered set where organizationId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param organizationId the organization ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching org labor
@@ -612,32 +623,47 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	public OrgLabor findByOrganizationId_First(long organizationId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrgLaborException, SystemException {
+		OrgLabor orgLabor = fetchByOrganizationId_First(organizationId,
+				orderByComparator);
+
+		if (orgLabor != null) {
+			return orgLabor;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("organizationId=");
+		msg.append(organizationId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrgLaborException(msg.toString());
+	}
+
+	/**
+	 * Returns the first org labor in the ordered set where organizationId = &#63;.
+	 *
+	 * @param organizationId the organization ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching org labor, or <code>null</code> if a matching org labor could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OrgLabor fetchByOrganizationId_First(long organizationId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<OrgLabor> list = findByOrganizationId(organizationId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("organizationId=");
-			msg.append(organizationId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrgLaborException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last org labor in the ordered set where organizationId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param organizationId the organization ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -648,34 +674,49 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	public OrgLabor findByOrganizationId_Last(long organizationId,
 		OrderByComparator orderByComparator)
 		throws NoSuchOrgLaborException, SystemException {
+		OrgLabor orgLabor = fetchByOrganizationId_Last(organizationId,
+				orderByComparator);
+
+		if (orgLabor != null) {
+			return orgLabor;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("organizationId=");
+		msg.append(organizationId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchOrgLaborException(msg.toString());
+	}
+
+	/**
+	 * Returns the last org labor in the ordered set where organizationId = &#63;.
+	 *
+	 * @param organizationId the organization ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching org labor, or <code>null</code> if a matching org labor could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public OrgLabor fetchByOrganizationId_Last(long organizationId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByOrganizationId(organizationId);
 
 		List<OrgLabor> list = findByOrganizationId(organizationId, count - 1,
 				count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("organizationId=");
-			msg.append(organizationId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchOrgLaborException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the org labors before and after the current org labor in the ordered set where organizationId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param orgLaborId the primary key of the current org labor
 	 * @param organizationId the organization ID

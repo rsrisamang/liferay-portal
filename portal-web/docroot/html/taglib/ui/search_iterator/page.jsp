@@ -22,7 +22,7 @@ SearchContainer searchContainer = (SearchContainer)request.getAttribute("liferay
 boolean paginate = GetterUtil.getBoolean((String)request.getAttribute("liferay-ui:search-iterator:paginate"));
 String type = (String)request.getAttribute("liferay-ui:search:type");
 
-String id = searchContainer.getId();
+String id = searchContainer.getId(request, namespace);
 
 int start = searchContainer.getStart();
 int end = searchContainer.getEnd();
@@ -118,7 +118,7 @@ int sortColumnIndex = -1;
 				else if (i == 0) {
 					cssClass = "first";
 				}
-				else if (i == headerNames.size() - 1) {
+				else if (i == (headerNames.size() - 1)) {
 					cssClass = "last";
 				}
 
@@ -161,7 +161,13 @@ int sortColumnIndex = -1;
 
 							<c:choose>
 								<c:when test="<%= Validator.isNull(orderByJS) %>">
-									<a href="<%= url %>&<%= namespace %><%= searchContainer.getOrderByColParam() %>=<%= orderKey %>&<%= namespace %><%= searchContainer.getOrderByTypeParam() %>=<%= HtmlUtil.escapeURL(orderByType) %>">
+
+									<%
+									url = HttpUtil.setParameter(url, namespace + searchContainer.getOrderByColParam(), orderKey);
+									url = HttpUtil.setParameter(url, namespace + searchContainer.getOrderByTypeParam(), orderByType);
+									%>
+
+									<a href="<%= url %>">
 								</c:when>
 								<c:otherwise>
 									<a href="<%= StringUtil.replace(orderByJS, new String[] { "orderKey", "orderByType" }, new String[] { orderKey, orderByType }) %>">
@@ -270,7 +276,7 @@ int sortColumnIndex = -1;
 				textSearchEntry.setAlign(rowChecker.getAlign());
 				textSearchEntry.setColspan(rowChecker.getColspan());
 				textSearchEntry.setCssClass(rowChecker.getCssClass());
-				textSearchEntry.setName(rowChecker.getRowCheckBox(rowIsChecked, rowIsDisabled, row.getPrimaryKey()));
+				textSearchEntry.setName(rowChecker.getRowCheckBox(request, rowIsChecked, rowIsDisabled, row.getPrimaryKey()));
 				textSearchEntry.setValign(rowChecker.getValign());
 
 				row.addSearchEntry(0, textSearchEntry);

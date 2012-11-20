@@ -27,26 +27,10 @@ public class SOUs_AddExpertiseProfileTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/socialoffice01/so/profile");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@class='lfr-contact-name']/a")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div[@class='lfr-contact-name']/a");
 				assertEquals(RuntimeVariables.replace(
 						"Social01 Office01 User01"),
 					selenium.getText("//div[@class='lfr-contact-name']/a"));
@@ -58,31 +42,15 @@ public class SOUs_AddExpertiseProfileTest extends BaseTestCase {
 					selenium.getText("//li[@data-title='Projects']"));
 				selenium.clickAt("//li[@data-title='Projects']",
 					RuntimeVariables.replace("Add"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//input[contains(@id,'_125_projectsEntryTitle')]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				selenium.type("//input[contains(@id,'_125_projectsEntryTitle')]",
+				selenium.waitForVisible(
+					"//input[contains(@id,'_2_projectsEntryTitle0')]");
+				selenium.type("//input[contains(@id,'_2_projectsEntryTitle0')]",
 					RuntimeVariables.replace("Expertise Title"));
-				selenium.select("//select[contains(@id,'_125_projectsEntryStartDateMonth')]",
+				selenium.select("//select[contains(@id,'_2_projectsEntryStartDateMonth0')]",
 					RuntimeVariables.replace("January"));
 
 				boolean currentExpertiseChecked = selenium.isChecked(
-						"_125_projectsEntryCurrent0Checkbox");
+						"_2_projectsEntryCurrent0Checkbox");
 
 				if (currentExpertiseChecked) {
 					label = 2;
@@ -90,51 +58,18 @@ public class SOUs_AddExpertiseProfileTest extends BaseTestCase {
 					continue;
 				}
 
-				selenium.clickAt("//input[@id='_125_projectsEntryCurrent0Checkbox']",
+				selenium.clickAt("//input[@id='_2_projectsEntryCurrent0Checkbox']",
 					RuntimeVariables.replace("Enabled"));
 
 			case 2:
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//textarea[contains(@id,'_125_projectsEntryDescription')]")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
-				selenium.type("//textarea[contains(@id,'_125_projectsEntryDescription')]",
+				selenium.waitForVisible(
+					"//textarea[@id='_2_projectsEntryDescription0']");
+				selenium.type("//textarea[@id='_2_projectsEntryDescription0']",
 					RuntimeVariables.replace("Expertise Description"));
 				Thread.sleep(5000);
 				selenium.clickAt("//input[@value='Save']",
 					RuntimeVariables.replace("Save"));
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//div[@data-title='Projects']/div/h3")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("//div[@data-title='Projects']/div/h3");
 				assertEquals(RuntimeVariables.replace("Expertise Title:"),
 					selenium.getText("//div[@data-title='Projects']/div/h3"));
 				assertEquals(RuntimeVariables.replace("01 Jan 2012 - Current"),

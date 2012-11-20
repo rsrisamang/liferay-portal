@@ -22,95 +22,37 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class SelectWebContentWCDTest extends BaseTestCase {
 	public void testSelectWebContentWCD() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"link=Web Content Display Permissions Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Web Content Display Permissions Page",
-			RuntimeVariables.replace("Web Content Display Permissions Page"));
+		selenium.clickAt("link=Web Content Display Test Page",
+			RuntimeVariables.replace("Web Content Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("//span[@class='portlet-configuration']/a",
+		assertEquals(RuntimeVariables.replace("Select Web Content"),
+			selenium.getText(
+				"//span[@class='icon-action icon-action-configuration']/a/span"));
+		selenium.clickAt("//span[@class='icon-action icon-action-configuration']/a/span",
 			RuntimeVariables.replace("Select Web Content"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Web Content Name")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
-		selenium.clickAt("link=Web Content Name",
-			RuntimeVariables.replace("Web Content Name"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible(
-							"//span[@class='displaying-article-id-holder']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible(
+			"//iframe[contains(@id,'configurationIframeDialog')]");
+		selenium.selectFrame(
+			"//iframe[contains(@id,'configurationIframeDialog')]");
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/liferay/navigation_interaction.js')]");
+		selenium.waitForVisible("link=WC WebContent Title");
+		selenium.clickAt("link=WC WebContent Title",
+			RuntimeVariables.replace("WC WebContent Title"));
+		selenium.waitForVisible(
+			"//span[@class='displaying-article-id-holder ']");
 		assertEquals(RuntimeVariables.replace(
-				"Displaying Content: Web Content Name (Modified)"),
-			selenium.getText("//span[@class='displaying-article-id-holder']"));
+				"Displaying Content: WC WebContent Title (Modified)"),
+			selenium.getText("//span[@class='displaying-article-id-holder ']"));
 		selenium.clickAt("//input[@value='Save']",
 			RuntimeVariables.replace("Save"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("//div[@class='portlet-msg-success']")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		assertEquals(RuntimeVariables.replace(
 				"You have successfully updated the setup."),
 			selenium.getText("//div[@class='portlet-msg-success']"));
+		selenium.selectFrame("relative=top");
 	}
 }

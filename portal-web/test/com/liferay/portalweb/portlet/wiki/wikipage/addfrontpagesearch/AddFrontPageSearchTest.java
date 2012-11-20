@@ -22,19 +22,18 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddFrontPageSearchTest extends BaseTestCase {
 	public void testAddFrontPageSearch() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Wiki Test Page",
 			RuntimeVariables.replace("Wiki Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_36_keywords']",
 			RuntimeVariables.replace("frontpage"));
 		selenium.clickAt("//input[@value='Search']",
 			RuntimeVariables.replace("Search"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"link=Create a new page on this topic."));
 	}
 }

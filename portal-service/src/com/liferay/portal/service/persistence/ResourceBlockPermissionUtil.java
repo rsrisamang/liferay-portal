@@ -95,22 +95,21 @@ public class ResourceBlockPermissionUtil {
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel)
 	 */
 	public static ResourceBlockPermission update(
-		ResourceBlockPermission resourceBlockPermission, boolean merge)
+		ResourceBlockPermission resourceBlockPermission)
 		throws SystemException {
-		return getPersistence().update(resourceBlockPermission, merge);
+		return getPersistence().update(resourceBlockPermission);
 	}
 
 	/**
-	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, boolean, ServiceContext)
+	 * @see com.liferay.portal.service.persistence.BasePersistence#update(com.liferay.portal.model.BaseModel, ServiceContext)
 	 */
 	public static ResourceBlockPermission update(
-		ResourceBlockPermission resourceBlockPermission, boolean merge,
+		ResourceBlockPermission resourceBlockPermission,
 		ServiceContext serviceContext) throws SystemException {
-		return getPersistence()
-				   .update(resourceBlockPermission, merge, serviceContext);
+		return getPersistence().update(resourceBlockPermission, serviceContext);
 	}
 
 	/**
@@ -160,10 +159,9 @@ public class ResourceBlockPermissionUtil {
 	}
 
 	public static com.liferay.portal.model.ResourceBlockPermission updateImpl(
-		com.liferay.portal.model.ResourceBlockPermission resourceBlockPermission,
-		boolean merge)
+		com.liferay.portal.model.ResourceBlockPermission resourceBlockPermission)
 		throws com.liferay.portal.kernel.exception.SystemException {
-		return getPersistence().updateImpl(resourceBlockPermission, merge);
+		return getPersistence().updateImpl(resourceBlockPermission);
 	}
 
 	/**
@@ -253,10 +251,6 @@ public class ResourceBlockPermissionUtil {
 	/**
 	* Returns the first resource block permission in the ordered set where resourceBlockId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
-	*
 	* @param resourceBlockId the resource block ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	* @return the first matching resource block permission
@@ -274,11 +268,24 @@ public class ResourceBlockPermissionUtil {
 	}
 
 	/**
-	* Returns the last resource block permission in the ordered set where resourceBlockId = &#63;.
+	* Returns the first resource block permission in the ordered set where resourceBlockId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param resourceBlockId the resource block ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the first matching resource block permission, or <code>null</code> if a matching resource block permission could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.ResourceBlockPermission fetchByResourceBlockId_First(
+		long resourceBlockId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByResourceBlockId_First(resourceBlockId,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the last resource block permission in the ordered set where resourceBlockId = &#63;.
 	*
 	* @param resourceBlockId the resource block ID
 	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -297,11 +304,24 @@ public class ResourceBlockPermissionUtil {
 	}
 
 	/**
-	* Returns the resource block permissions before and after the current resource block permission in the ordered set where resourceBlockId = &#63;.
+	* Returns the last resource block permission in the ordered set where resourceBlockId = &#63;.
 	*
-	* <p>
-	* Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	* </p>
+	* @param resourceBlockId the resource block ID
+	* @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	* @return the last matching resource block permission, or <code>null</code> if a matching resource block permission could not be found
+	* @throws SystemException if a system exception occurred
+	*/
+	public static com.liferay.portal.model.ResourceBlockPermission fetchByResourceBlockId_Last(
+		long resourceBlockId,
+		com.liferay.portal.kernel.util.OrderByComparator orderByComparator)
+		throws com.liferay.portal.kernel.exception.SystemException {
+		return getPersistence()
+				   .fetchByResourceBlockId_Last(resourceBlockId,
+			orderByComparator);
+	}
+
+	/**
+	* Returns the resource block permissions before and after the current resource block permission in the ordered set where resourceBlockId = &#63;.
 	*
 	* @param resourceBlockPermissionId the primary key of the current resource block permission
 	* @param resourceBlockId the resource block ID

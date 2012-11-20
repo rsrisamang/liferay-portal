@@ -115,6 +115,10 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 	 * @return the normal model instance
 	 */
 	public static Address toModel(AddressSoap soapModel) {
+		if (soapModel == null) {
+			return null;
+		}
+
 		Address model = new AddressImpl();
 
 		model.setAddressId(soapModel.getAddressId());
@@ -146,6 +150,10 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 	 * @return the normal model instances
 	 */
 	public static List<Address> toModels(AddressSoap[] soapModels) {
+		if (soapModels == null) {
+			return null;
+		}
+
 		List<Address> models = new ArrayList<Address>(soapModels.length);
 
 		for (AddressSoap soapModel : soapModels) {
@@ -627,17 +635,6 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 	}
 
 	@Override
-	public Address toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (Address)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(getCompanyId(),
 			Address.class.getName(), getPrimaryKey());
@@ -648,6 +645,16 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public Address toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (Address)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -975,7 +982,7 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 	}
 
 	private static ClassLoader _classLoader = Address.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			Address.class
 		};
 	private long _addressId;
@@ -1010,5 +1017,5 @@ public class AddressModelImpl extends BaseModelImpl<Address>
 	private boolean _originalPrimary;
 	private boolean _setOriginalPrimary;
 	private long _columnBitmask;
-	private Address _escapedModelProxy;
+	private Address _escapedModel;
 }

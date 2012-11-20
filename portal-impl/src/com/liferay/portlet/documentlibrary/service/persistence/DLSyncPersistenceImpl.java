@@ -37,7 +37,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.RepositoryPersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
@@ -96,18 +95,9 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 			"java.lang.Integer", "java.lang.Integer",
 				"com.liferay.portal.kernel.util.OrderByComparator"
 			});
-	public static final FinderPath FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_M_R = new FinderPath(DLSyncModelImpl.ENTITY_CACHE_ENABLED,
-			DLSyncModelImpl.FINDER_CACHE_ENABLED, DLSyncImpl.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "findByC_M_R",
-			new String[] {
-				Long.class.getName(), Date.class.getName(), Long.class.getName()
-			},
-			DLSyncModelImpl.COMPANYID_COLUMN_BITMASK |
-			DLSyncModelImpl.MODIFIEDDATE_COLUMN_BITMASK |
-			DLSyncModelImpl.REPOSITORYID_COLUMN_BITMASK);
-	public static final FinderPath FINDER_PATH_COUNT_BY_C_M_R = new FinderPath(DLSyncModelImpl.ENTITY_CACHE_ENABLED,
+	public static final FinderPath FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_M_R = new FinderPath(DLSyncModelImpl.ENTITY_CACHE_ENABLED,
 			DLSyncModelImpl.FINDER_CACHE_ENABLED, Long.class,
-			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByC_M_R",
+			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "countByC_M_R",
 			new String[] {
 				Long.class.getName(), Date.class.getName(), Long.class.getName()
 			});
@@ -287,7 +277,14 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, dlSync);
+			if (!session.contains(dlSync)) {
+				dlSync = (DLSync)session.get(DLSyncImpl.class,
+						dlSync.getPrimaryKeyObj());
+			}
+
+			if (dlSync != null) {
+				session.delete(dlSync);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -296,14 +293,16 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 			closeSession(session);
 		}
 
-		clearCache(dlSync);
+		if (dlSync != null) {
+			clearCache(dlSync);
+		}
 
 		return dlSync;
 	}
 
 	@Override
 	public DLSync updateImpl(
-		com.liferay.portlet.documentlibrary.model.DLSync dlSync, boolean merge)
+		com.liferay.portlet.documentlibrary.model.DLSync dlSync)
 		throws SystemException {
 		dlSync = toUnwrappedModel(dlSync);
 
@@ -316,9 +315,14 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, dlSync, merge);
+			if (dlSync.isNew()) {
+				session.save(dlSync);
 
-			dlSync.setNew(false);
+				dlSync.setNew(false);
+			}
+			else {
+				session.merge(dlSync);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -331,32 +335,6 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 
 		if (isNew || !DLSyncModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
-		}
-		else {
-			if ((dlSyncModelImpl.getColumnBitmask() &
-					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_M_R.getColumnBitmask()) != 0) {
-				Object[] args = new Object[] {
-						Long.valueOf(dlSyncModelImpl.getOriginalCompanyId()),
-						
-						dlSyncModelImpl.getOriginalModifiedDate(),
-						Long.valueOf(dlSyncModelImpl.getOriginalRepositoryId())
-					};
-
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_M_R, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_M_R,
-					args);
-
-				args = new Object[] {
-						Long.valueOf(dlSyncModelImpl.getCompanyId()),
-						
-						dlSyncModelImpl.getModifiedDate(),
-						Long.valueOf(dlSyncModelImpl.getRepositoryId())
-					};
-
-				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_M_R, args);
-				FinderCacheUtil.removeResult(FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_M_R,
-					args);
-			}
 		}
 
 		EntityCacheUtil.putResult(DLSyncModelImpl.ENTITY_CACHE_ENABLED,
@@ -374,6 +352,7 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_FILEID, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_FILEID, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_FILEID,
@@ -704,19 +683,12 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 		FinderPath finderPath = null;
 		Object[] finderArgs = null;
 
-		if ((start == QueryUtil.ALL_POS) && (end == QueryUtil.ALL_POS) &&
-				(orderByComparator == null)) {
-			finderPath = FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_C_M_R;
-			finderArgs = new Object[] { companyId, modifiedDate, repositoryId };
-		}
-		else {
-			finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_C_M_R;
-			finderArgs = new Object[] {
-					companyId, modifiedDate, repositoryId,
-					
-					start, end, orderByComparator
-				};
-		}
+		finderPath = FINDER_PATH_WITH_PAGINATION_FIND_BY_C_M_R;
+		finderArgs = new Object[] {
+				companyId, modifiedDate, repositoryId,
+				
+				start, end, orderByComparator
+			};
 
 		List<DLSync> list = (List<DLSync>)FinderCacheUtil.getResult(finderPath,
 				finderArgs, this);
@@ -810,10 +782,6 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 	/**
 	 * Returns the first d l sync in the ordered set where companyId = &#63; and modifiedDate &ge; &#63; and repositoryId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param companyId the company ID
 	 * @param modifiedDate the modified date
 	 * @param repositoryId the repository ID
@@ -825,38 +793,56 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 	public DLSync findByC_M_R_First(long companyId, Date modifiedDate,
 		long repositoryId, OrderByComparator orderByComparator)
 		throws NoSuchSyncException, SystemException {
+		DLSync dlSync = fetchByC_M_R_First(companyId, modifiedDate,
+				repositoryId, orderByComparator);
+
+		if (dlSync != null) {
+			return dlSync;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(", modifiedDate=");
+		msg.append(modifiedDate);
+
+		msg.append(", repositoryId=");
+		msg.append(repositoryId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchSyncException(msg.toString());
+	}
+
+	/**
+	 * Returns the first d l sync in the ordered set where companyId = &#63; and modifiedDate &ge; &#63; and repositoryId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modifiedDate the modified date
+	 * @param repositoryId the repository ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching d l sync, or <code>null</code> if a matching d l sync could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public DLSync fetchByC_M_R_First(long companyId, Date modifiedDate,
+		long repositoryId, OrderByComparator orderByComparator)
+		throws SystemException {
 		List<DLSync> list = findByC_M_R(companyId, modifiedDate, repositoryId,
 				0, 1, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(8);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(", modifiedDate=");
-			msg.append(modifiedDate);
-
-			msg.append(", repositoryId=");
-			msg.append(repositoryId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchSyncException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last d l sync in the ordered set where companyId = &#63; and modifiedDate &ge; &#63; and repositoryId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param companyId the company ID
 	 * @param modifiedDate the modified date
@@ -869,40 +855,58 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 	public DLSync findByC_M_R_Last(long companyId, Date modifiedDate,
 		long repositoryId, OrderByComparator orderByComparator)
 		throws NoSuchSyncException, SystemException {
+		DLSync dlSync = fetchByC_M_R_Last(companyId, modifiedDate,
+				repositoryId, orderByComparator);
+
+		if (dlSync != null) {
+			return dlSync;
+		}
+
+		StringBundler msg = new StringBundler(8);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("companyId=");
+		msg.append(companyId);
+
+		msg.append(", modifiedDate=");
+		msg.append(modifiedDate);
+
+		msg.append(", repositoryId=");
+		msg.append(repositoryId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchSyncException(msg.toString());
+	}
+
+	/**
+	 * Returns the last d l sync in the ordered set where companyId = &#63; and modifiedDate &ge; &#63; and repositoryId = &#63;.
+	 *
+	 * @param companyId the company ID
+	 * @param modifiedDate the modified date
+	 * @param repositoryId the repository ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching d l sync, or <code>null</code> if a matching d l sync could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public DLSync fetchByC_M_R_Last(long companyId, Date modifiedDate,
+		long repositoryId, OrderByComparator orderByComparator)
+		throws SystemException {
 		int count = countByC_M_R(companyId, modifiedDate, repositoryId);
 
 		List<DLSync> list = findByC_M_R(companyId, modifiedDate, repositoryId,
 				count - 1, count, orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(8);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("companyId=");
-			msg.append(companyId);
-
-			msg.append(", modifiedDate=");
-			msg.append(modifiedDate);
-
-			msg.append(", repositoryId=");
-			msg.append(repositoryId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchSyncException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the d l syncs before and after the current d l sync in the ordered set where companyId = &#63; and modifiedDate &ge; &#63; and repositoryId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param syncId the primary key of the current d l sync
 	 * @param companyId the company ID
@@ -1285,7 +1289,7 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 		throws SystemException {
 		Object[] finderArgs = new Object[] { companyId, modifiedDate, repositoryId };
 
-		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_COUNT_BY_C_M_R,
+		Long count = (Long)FinderCacheUtil.getResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_M_R,
 				finderArgs, this);
 
 		if (count == null) {
@@ -1333,7 +1337,7 @@ public class DLSyncPersistenceImpl extends BasePersistenceImpl<DLSync>
 					count = Long.valueOf(0);
 				}
 
-				FinderCacheUtil.putResult(FINDER_PATH_COUNT_BY_C_M_R,
+				FinderCacheUtil.putResult(FINDER_PATH_WITH_PAGINATION_COUNT_BY_C_M_R,
 					finderArgs, count);
 
 				closeSession(session);

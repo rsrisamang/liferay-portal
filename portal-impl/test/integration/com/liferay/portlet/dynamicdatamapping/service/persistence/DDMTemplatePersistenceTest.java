@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -142,7 +142,15 @@ public class DDMTemplatePersistenceTest {
 
 		newDDMTemplate.setScript(ServiceTestUtil.randomString());
 
-		_persistence.update(newDDMTemplate, false);
+		newDDMTemplate.setCacheable(ServiceTestUtil.randomBoolean());
+
+		newDDMTemplate.setSmallImage(ServiceTestUtil.randomBoolean());
+
+		newDDMTemplate.setSmallImageId(ServiceTestUtil.nextLong());
+
+		newDDMTemplate.setSmallImageURL(ServiceTestUtil.randomString());
+
+		_persistence.update(newDDMTemplate);
 
 		DDMTemplate existingDDMTemplate = _persistence.findByPrimaryKey(newDDMTemplate.getPrimaryKey());
 
@@ -182,6 +190,14 @@ public class DDMTemplatePersistenceTest {
 			newDDMTemplate.getLanguage());
 		Assert.assertEquals(existingDDMTemplate.getScript(),
 			newDDMTemplate.getScript());
+		Assert.assertEquals(existingDDMTemplate.getCacheable(),
+			newDDMTemplate.getCacheable());
+		Assert.assertEquals(existingDDMTemplate.getSmallImage(),
+			newDDMTemplate.getSmallImage());
+		Assert.assertEquals(existingDDMTemplate.getSmallImageId(),
+			newDDMTemplate.getSmallImageId());
+		Assert.assertEquals(existingDDMTemplate.getSmallImageURL(),
+			newDDMTemplate.getSmallImageURL());
 	}
 
 	@Test
@@ -358,7 +374,15 @@ public class DDMTemplatePersistenceTest {
 
 		ddmTemplate.setScript(ServiceTestUtil.randomString());
 
-		_persistence.update(ddmTemplate, false);
+		ddmTemplate.setCacheable(ServiceTestUtil.randomBoolean());
+
+		ddmTemplate.setSmallImage(ServiceTestUtil.randomBoolean());
+
+		ddmTemplate.setSmallImageId(ServiceTestUtil.nextLong());
+
+		ddmTemplate.setSmallImageURL(ServiceTestUtil.randomString());
+
+		_persistence.update(ddmTemplate);
 
 		return ddmTemplate;
 	}

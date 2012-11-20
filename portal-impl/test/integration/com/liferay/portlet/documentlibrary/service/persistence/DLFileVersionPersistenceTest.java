@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -148,6 +148,8 @@ public class DLFileVersionPersistenceTest {
 
 		newDLFileVersion.setSize(ServiceTestUtil.nextLong());
 
+		newDLFileVersion.setChecksum(ServiceTestUtil.randomString());
+
 		newDLFileVersion.setStatus(ServiceTestUtil.nextInt());
 
 		newDLFileVersion.setStatusByUserId(ServiceTestUtil.nextLong());
@@ -156,7 +158,7 @@ public class DLFileVersionPersistenceTest {
 
 		newDLFileVersion.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(newDLFileVersion, false);
+		_persistence.update(newDLFileVersion);
 
 		DLFileVersion existingDLFileVersion = _persistence.findByPrimaryKey(newDLFileVersion.getPrimaryKey());
 
@@ -202,6 +204,8 @@ public class DLFileVersionPersistenceTest {
 			newDLFileVersion.getVersion());
 		Assert.assertEquals(existingDLFileVersion.getSize(),
 			newDLFileVersion.getSize());
+		Assert.assertEquals(existingDLFileVersion.getChecksum(),
+			newDLFileVersion.getChecksum());
 		Assert.assertEquals(existingDLFileVersion.getStatus(),
 			newDLFileVersion.getStatus());
 		Assert.assertEquals(existingDLFileVersion.getStatusByUserId(),
@@ -396,6 +400,8 @@ public class DLFileVersionPersistenceTest {
 
 		dlFileVersion.setSize(ServiceTestUtil.nextLong());
 
+		dlFileVersion.setChecksum(ServiceTestUtil.randomString());
+
 		dlFileVersion.setStatus(ServiceTestUtil.nextInt());
 
 		dlFileVersion.setStatusByUserId(ServiceTestUtil.nextLong());
@@ -404,7 +410,7 @@ public class DLFileVersionPersistenceTest {
 
 		dlFileVersion.setStatusDate(ServiceTestUtil.nextDate());
 
-		_persistence.update(dlFileVersion, false);
+		_persistence.update(dlFileVersion);
 
 		return dlFileVersion;
 	}

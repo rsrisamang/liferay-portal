@@ -22,43 +22,24 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AddCustomFieldTest extends BaseTestCase {
 	public void testAddCustomField() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Custom Fields",
 			RuntimeVariables.replace("Custom Fields"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("User"),
 			selenium.getText("//tr[13]/td[1]/a/strong"));
 		selenium.clickAt("//tr[13]/td[1]/a/strong",
 			RuntimeVariables.replace("User"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("//input[@value='Add Custom Field']",
 			RuntimeVariables.replace("Add Custom Field"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_139_name']",
 			RuntimeVariables.replace("Employee"));
 		selenium.typeKeys("//select[@id='_139_type']",
@@ -66,7 +47,6 @@ public class AddCustomFieldTest extends BaseTestCase {
 		selenium.clickAt("//input[@value='Save']",
 			RuntimeVariables.replace("Save"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace(
 				"Your request completed successfully."),
 			selenium.getText("//div[@class='portlet-msg-success']"));

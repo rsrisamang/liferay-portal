@@ -49,6 +49,11 @@
 	<td>socialoffice01@liferay.com</td>
 </tr>
 <tr>
+	<td>pause</td>
+	<td>5000</td>
+	<td></td>
+</tr>
+<tr>
 	<td>clickAt</td>
 	<td>//div[contains(@class, 'lfr-contact-name')]/a</td>
 	<td>User01, Social01</td>
@@ -90,8 +95,13 @@
 </tr>
 <tr>
 	<td>waitForVisible</td>
-	<td>//button[@id='_1_WAR_contactsportlet_unblockButton']</td>
-	<td>Unblock</td>
+	<td>//span[@class='portlet-msg-success']</td>
+	<td>You have blocked this user.</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>//span[@class='portlet-msg-success']</td>
+	<td>You have blocked this user.</td>
 </tr>
 <tr>
 	<td>assertText</td>

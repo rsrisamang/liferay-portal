@@ -21,12 +21,12 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -132,7 +132,7 @@ public class BookmarksFolderPersistenceTest {
 
 		newBookmarksFolder.setDescription(ServiceTestUtil.randomString());
 
-		_persistence.update(newBookmarksFolder, false);
+		_persistence.update(newBookmarksFolder);
 
 		BookmarksFolder existingBookmarksFolder = _persistence.findByPrimaryKey(newBookmarksFolder.getPrimaryKey());
 
@@ -322,7 +322,7 @@ public class BookmarksFolderPersistenceTest {
 
 		bookmarksFolder.setDescription(ServiceTestUtil.randomString());
 
-		_persistence.update(bookmarksFolder, false);
+		_persistence.update(bookmarksFolder);
 
 		return bookmarksFolder;
 	}

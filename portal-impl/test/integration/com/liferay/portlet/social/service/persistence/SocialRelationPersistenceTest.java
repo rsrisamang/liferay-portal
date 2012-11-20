@@ -21,10 +21,10 @@ import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.test.ExecutionTestListeners;
 import com.liferay.portal.service.ServiceTestUtil;
 import com.liferay.portal.service.persistence.BasePersistence;
 import com.liferay.portal.service.persistence.PersistenceExecutionTestListener;
-import com.liferay.portal.test.ExecutionTestListeners;
 import com.liferay.portal.test.LiferayPersistenceIntegrationJUnitTestRunner;
 import com.liferay.portal.test.persistence.TransactionalPersistenceAdvice;
 import com.liferay.portal.util.PropsValues;
@@ -120,7 +120,7 @@ public class SocialRelationPersistenceTest {
 
 		newSocialRelation.setType(ServiceTestUtil.nextInt());
 
-		_persistence.update(newSocialRelation, false);
+		_persistence.update(newSocialRelation);
 
 		SocialRelation existingSocialRelation = _persistence.findByPrimaryKey(newSocialRelation.getPrimaryKey());
 
@@ -289,7 +289,7 @@ public class SocialRelationPersistenceTest {
 
 		socialRelation.setType(ServiceTestUtil.nextInt());
 
-		_persistence.update(socialRelation, false);
+		_persistence.update(socialRelation);
 
 		return socialRelation;
 	}

@@ -79,6 +79,26 @@ if (layoutRevision != null) {
 
 String[] mainSections = PropsValues.LAYOUT_FORM_UPDATE;
 
+if (selLayout.isSupportsEmbeddedPortlets()) {
+	List<Portlet> embeddedPortlets = new ArrayList<Portlet>();
+
+	LayoutTypePortlet selLayoutTypePortlet = (LayoutTypePortlet)selLayout.getLayoutType();
+
+	List<String> portletIds = selLayoutTypePortlet.getPortletIds();
+
+	for (Portlet portlet : selLayoutTypePortlet.getAllPortlets()) {
+		if (!portlet.isSystem() && !portletIds.contains(portlet.getPortletId())) {
+			embeddedPortlets.add(portlet);
+		}
+	}
+
+	if (!embeddedPortlets.isEmpty()) {
+		request.setAttribute("edit_pages.jsp-embeddedPortlets", embeddedPortlets);
+
+		mainSections = ArrayUtil.append(mainSections, "embedded-portlets");
+	}
+}
+
 if (!group.isUser() && selLayout.isTypePortlet()) {
 	mainSections = ArrayUtil.append(mainSections, "customization-settings");
 }
@@ -110,13 +130,13 @@ String[][] categorySections = {mainSections};
 	<aui:input name="layoutId" type="hidden" value="<%= layoutId %>" />
 	<aui:input name="<%= PortletDataHandlerKeys.SELECTED_LAYOUTS %>" type="hidden" />
 
-	<c:if test="<%= layoutRevision != null && !incomplete%>">
+	<c:if test="<%= layoutRevision != null && !incomplete %>">
 		<aui:input name="layoutSetBranchId" type="hidden" value="<%= layoutRevision.getLayoutSetBranchId() %>" />
 	</c:if>
 
 	<c:choose>
 		<c:when test="<%= incomplete %>">
-			<liferay-ui:message arguments="<%= new Object[] {selLayout.getName(locale), layoutSetBranchName} %>" key="the-page-x-is-not-enabled-in-x,-but-is-available-in-other-pages-variations" />
+			<liferay-ui:message arguments="<%= new Object[] {HtmlUtil.escape(selLayout.getName(locale)), HtmlUtil.escape(layoutSetBranchName)} %>" key="the-page-x-is-not-enabled-in-x,-but-is-available-in-other-pages-variations" />
 
 			<aui:input name="incompleteLayoutRevisionId" type="hidden" value="<%= layoutRevision.getLayoutRevisionId() %>" />
 
@@ -127,7 +147,7 @@ String[][] categorySections = {mainSections};
 			%>
 
 			<aui:button-row>
-				<aui:button name="enableLayout" onClick="<%= taglibEnableOnClick %>" value='<%= LanguageUtil.format(pageContext, "enable-in-x", layoutSetBranchName) %>' />
+				<aui:button name="enableLayout" onClick="<%= taglibEnableOnClick %>" value='<%= LanguageUtil.format(pageContext, "enable-in-x", HtmlUtil.escape(layoutSetBranchName)) %>' />
 
 				<aui:button name="deleteLayout" onClick="<%= taglibDeleteOnClick %>" value="delete-in-all-pages-variations" />
 			</aui:button-row>
@@ -188,7 +208,7 @@ String[][] categorySections = {mainSections};
 						%>
 
 						<div class="portlet-msg-alert">
-							<liferay-ui:message arguments="<%= userGroup.getName() %>" key="this-page-cannot-be-modified-because-it-belongs-to-the-user-group-x" />
+							<liferay-ui:message arguments="<%= HtmlUtil.escape(userGroup.getName()) %>" key="this-page-cannot-be-modified-because-it-belongs-to-the-user-group-x" />
 						</div>
 					</c:when>
 					<c:otherwise>
@@ -322,5 +342,5 @@ String[][] categorySections = {mainSections};
 </aui:script>
 
 <%!
-private static String[] _CATEGORY_NAMES = {""};
+private static final String[] _CATEGORY_NAMES = {""};
 %>

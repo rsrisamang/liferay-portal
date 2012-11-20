@@ -22,87 +22,34 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class SearchDMFolderImageQuotesTest extends BaseTestCase {
 	public void testSearchDMFolderImageQuotes() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Documents and Media Test Page")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
 		selenium.clickAt("link=Documents and Media Test Page",
 			RuntimeVariables.replace("Documents and Media Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.type("//input[@id='_20_keywords']",
 			RuntimeVariables.replace("\"DM Folder Image Title\""));
 		selenium.clickAt("//input[@value='Search']",
 			RuntimeVariables.replace("Search"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace(
-							"Searched for \"DM Folder Image Title\" everywhere.")
-										.equals(selenium.getText(
-								"//span[@class='keywords']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//span[@class='keywords']",
+			"Searched for \"DM Folder Image Title\" everywhere.");
 		assertEquals(RuntimeVariables.replace(
 				"Searched for \"DM Folder Image Title\" everywhere."),
 			selenium.getText("//span[@class='keywords']"));
 		assertEquals(RuntimeVariables.replace("DM Folder Image Title"),
 			selenium.getText(
-				"//a[contains(@class,'document-link')]/span[@class='entry-title']"));
+				"//a[contains(@class,'entry-link')]/span[@class='entry-title']"));
 		selenium.type("//input[@id='_20_keywords']",
 			RuntimeVariables.replace("\"DM1 Folder1 Image1 Title1\""));
 		selenium.clickAt("//input[@value='Search']",
 			RuntimeVariables.replace("Search"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace(
-							"Searched for \"DM1 Folder1 Image1 Title1\" everywhere.")
-										.equals(selenium.getText(
-								"//span[@class='keywords']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//span[@class='keywords']",
+			"Searched for \"DM1 Folder1 Image1 Title1\" everywhere.");
 		assertEquals(RuntimeVariables.replace(
 				"Searched for \"DM1 Folder1 Image1 Title1\" everywhere."),
 			selenium.getText("//span[@class='keywords']"));
-		assertFalse(selenium.isElementPresent(
-				"//a[contains(@class,'document-link')]/span[@class='entry-title']"));
+		assertTrue(selenium.isElementNotPresent(
+				"//a[contains(@class,'entry-link')]/span[@class='entry-title']"));
 	}
 }

@@ -23,30 +23,14 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
 public class ViewTasksTaskAssignedToConnectionUTTest extends BaseTestCase {
 	public void testViewTasksTaskAssignedToConnectionUT()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/user/joebloggs/so/dashboard/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Upcoming Tasks")
-										.equals(selenium.getText(
-								"//h1/span[contains(.,'Upcoming Tasks')]"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//h1/span[contains(.,'Upcoming Tasks')]",
+			"Upcoming Tasks");
 		assertEquals(RuntimeVariables.replace("Upcoming Tasks"),
 			selenium.getText("//h1/span[contains(.,'Upcoming Tasks')]"));
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//li[@class='tasks-title normal']/a"));
 		assertFalse(selenium.isTextPresent("Task Description"));
 		assertEquals(RuntimeVariables.replace("View All Tasks"),
@@ -54,13 +38,11 @@ public class ViewTasksTaskAssignedToConnectionUTTest extends BaseTestCase {
 		selenium.clickAt("//div[@class='view-all-tasks']/a",
 			RuntimeVariables.replace("View All Tasks"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Assigned to Me"),
 			selenium.getText("link=Assigned to Me"));
 		selenium.clickAt("link=Assigned to Me",
 			RuntimeVariables.replace("Assigned to Me"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("No tasks were found."),
 			selenium.getText("//div[@class='portlet-msg-info']"));
 		assertEquals(RuntimeVariables.replace("I Have Created"),
@@ -68,30 +50,11 @@ public class ViewTasksTaskAssignedToConnectionUTTest extends BaseTestCase {
 		selenium.clickAt("link=I Have Created",
 			RuntimeVariables.replace("I Have Created"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Task Description"),
 			selenium.getText("link=Task Description"));
 		selenium.clickAt("link=Task Description",
 			RuntimeVariables.replace("Task Description"));
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (RuntimeVariables.replace("Task Description")
-										.equals(selenium.getText(
-								"//h1[@class='header-title']"))) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForText("//h1[@class='header-title']", "Task Description");
 		assertEquals(RuntimeVariables.replace("Task Description"),
 			selenium.getText("//h1[@class='header-title']"));
 		assertEquals(RuntimeVariables.replace(

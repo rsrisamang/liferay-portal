@@ -24,33 +24,16 @@ public class User_ViewWebContent2AssignedToMyRolesStagingTest
 	extends BaseTestCase {
 	public void testUser_ViewWebContent2AssignedToMyRolesStaging()
 		throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isElementPresent("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForElementPresent("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=My Workflow Tasks",
 			RuntimeVariables.replace("My Workflow Tasks"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Review"),
 			selenium.getText("//tr[3]/td[1]/a/span"));
 		assertEquals(RuntimeVariables.replace("Web Content2 Name"),
@@ -66,7 +49,6 @@ public class User_ViewWebContent2AssignedToMyRolesStagingTest
 		selenium.clickAt("//tr[3]/td[2]/a",
 			RuntimeVariables.replace("Web Content2 Name"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("Preview of Web Content"),
 			selenium.getText(
 				"//div[2]/div/div[1]/div/div[2]/div[1]/div[1]/div/span"));

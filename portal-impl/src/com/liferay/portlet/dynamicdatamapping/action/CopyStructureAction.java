@@ -14,6 +14,7 @@
 
 package com.liferay.portlet.dynamicdatamapping.action;
 
+import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.servlet.SessionMessages;
 import com.liferay.portal.kernel.util.LocalizationUtil;
@@ -71,9 +72,12 @@ public class CopyStructureAction extends PortletAction {
 				actionRequest, "closeRedirect");
 
 			if (Validator.isNotNull(closeRedirect)) {
+				LiferayPortletConfig liferayPortletConfig =
+					(LiferayPortletConfig)portletConfig;
+
 				SessionMessages.add(
 					actionRequest,
-					portletConfig.getPortletName() +
+					liferayPortletConfig.getPortletId() +
 						SessionMessages.KEY_SUFFIX_CLOSE_REDIRECT,
 					closeRedirect);
 			}
@@ -157,22 +161,22 @@ public class CopyStructureAction extends PortletAction {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			DDMTemplate.class.getName(), actionRequest);
 
-		boolean copyDetailTemplates = ParamUtil.getBoolean(
-			actionRequest, "copyDetailTemplates");
+		boolean copyDisplayTemplates = ParamUtil.getBoolean(
+			actionRequest, "copyDisplayTemplates");
 
-		if (copyDetailTemplates) {
+		if (copyDisplayTemplates) {
 			DDMTemplateServiceUtil.copyTemplates(
 				classNameId, structureId, newStructureId,
-				DDMTemplateConstants.TEMPLATE_TYPE_DETAIL, serviceContext);
+				DDMTemplateConstants.TEMPLATE_TYPE_DISPLAY, serviceContext);
 		}
 
-		boolean copyListTemplates = ParamUtil.getBoolean(
-			actionRequest, "copyListTemplates");
+		boolean copyFormTemplates = ParamUtil.getBoolean(
+			actionRequest, "copyFormTemplates");
 
-		if (copyListTemplates) {
+		if (copyFormTemplates) {
 			DDMTemplateServiceUtil.copyTemplates(
 				classNameId, structureId, newStructureId,
-				DDMTemplateConstants.TEMPLATE_TYPE_LIST, serviceContext);
+				DDMTemplateConstants.TEMPLATE_TYPE_FORM, serviceContext);
 		}
 	}
 

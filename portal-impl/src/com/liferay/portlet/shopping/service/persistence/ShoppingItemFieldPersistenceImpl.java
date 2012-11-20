@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
@@ -265,7 +264,14 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, shoppingItemField);
+			if (!session.contains(shoppingItemField)) {
+				shoppingItemField = (ShoppingItemField)session.get(ShoppingItemFieldImpl.class,
+						shoppingItemField.getPrimaryKeyObj());
+			}
+
+			if (shoppingItemField != null) {
+				session.delete(shoppingItemField);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -274,15 +280,17 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 			closeSession(session);
 		}
 
-		clearCache(shoppingItemField);
+		if (shoppingItemField != null) {
+			clearCache(shoppingItemField);
+		}
 
 		return shoppingItemField;
 	}
 
 	@Override
 	public ShoppingItemField updateImpl(
-		com.liferay.portlet.shopping.model.ShoppingItemField shoppingItemField,
-		boolean merge) throws SystemException {
+		com.liferay.portlet.shopping.model.ShoppingItemField shoppingItemField)
+		throws SystemException {
 		shoppingItemField = toUnwrappedModel(shoppingItemField);
 
 		boolean isNew = shoppingItemField.isNew();
@@ -294,9 +302,14 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, shoppingItemField, merge);
+			if (shoppingItemField.isNew()) {
+				session.save(shoppingItemField);
 
-			shoppingItemField.setNew(false);
+				shoppingItemField.setNew(false);
+			}
+			else {
+				session.merge(shoppingItemField);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -310,6 +323,7 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 		if (isNew || !ShoppingItemFieldModelImpl.COLUMN_BITMASK_ENABLED) {
 			FinderCacheUtil.clearCache(FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION);
 		}
+
 		else {
 			if ((shoppingItemFieldModelImpl.getColumnBitmask() &
 					FINDER_PATH_WITHOUT_PAGINATION_FIND_BY_ITEMID.getColumnBitmask()) != 0) {
@@ -593,10 +607,6 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 	/**
 	 * Returns the first shopping item field in the ordered set where itemId = &#63;.
 	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
-	 *
 	 * @param itemId the item ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
 	 * @return the first matching shopping item field
@@ -606,32 +616,47 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 	public ShoppingItemField findByItemId_First(long itemId,
 		OrderByComparator orderByComparator)
 		throws NoSuchItemFieldException, SystemException {
+		ShoppingItemField shoppingItemField = fetchByItemId_First(itemId,
+				orderByComparator);
+
+		if (shoppingItemField != null) {
+			return shoppingItemField;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("itemId=");
+		msg.append(itemId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchItemFieldException(msg.toString());
+	}
+
+	/**
+	 * Returns the first shopping item field in the ordered set where itemId = &#63;.
+	 *
+	 * @param itemId the item ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the first matching shopping item field, or <code>null</code> if a matching shopping item field could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public ShoppingItemField fetchByItemId_First(long itemId,
+		OrderByComparator orderByComparator) throws SystemException {
 		List<ShoppingItemField> list = findByItemId(itemId, 0, 1,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("itemId=");
-			msg.append(itemId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchItemFieldException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the last shopping item field in the ordered set where itemId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param itemId the item ID
 	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
@@ -642,34 +667,49 @@ public class ShoppingItemFieldPersistenceImpl extends BasePersistenceImpl<Shoppi
 	public ShoppingItemField findByItemId_Last(long itemId,
 		OrderByComparator orderByComparator)
 		throws NoSuchItemFieldException, SystemException {
+		ShoppingItemField shoppingItemField = fetchByItemId_Last(itemId,
+				orderByComparator);
+
+		if (shoppingItemField != null) {
+			return shoppingItemField;
+		}
+
+		StringBundler msg = new StringBundler(4);
+
+		msg.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+		msg.append("itemId=");
+		msg.append(itemId);
+
+		msg.append(StringPool.CLOSE_CURLY_BRACE);
+
+		throw new NoSuchItemFieldException(msg.toString());
+	}
+
+	/**
+	 * Returns the last shopping item field in the ordered set where itemId = &#63;.
+	 *
+	 * @param itemId the item ID
+	 * @param orderByComparator the comparator to order the set by (optionally <code>null</code>)
+	 * @return the last matching shopping item field, or <code>null</code> if a matching shopping item field could not be found
+	 * @throws SystemException if a system exception occurred
+	 */
+	public ShoppingItemField fetchByItemId_Last(long itemId,
+		OrderByComparator orderByComparator) throws SystemException {
 		int count = countByItemId(itemId);
 
 		List<ShoppingItemField> list = findByItemId(itemId, count - 1, count,
 				orderByComparator);
 
-		if (list.isEmpty()) {
-			StringBundler msg = new StringBundler(4);
-
-			msg.append(_NO_SUCH_ENTITY_WITH_KEY);
-
-			msg.append("itemId=");
-			msg.append(itemId);
-
-			msg.append(StringPool.CLOSE_CURLY_BRACE);
-
-			throw new NoSuchItemFieldException(msg.toString());
-		}
-		else {
+		if (!list.isEmpty()) {
 			return list.get(0);
 		}
+
+		return null;
 	}
 
 	/**
 	 * Returns the shopping item fields before and after the current shopping item field in the ordered set where itemId = &#63;.
-	 *
-	 * <p>
-	 * Useful when paginating results. Returns a maximum of <code>end - start</code> instances. <code>start</code> and <code>end</code> are not primary keys, they are indexes in the result set. Thus, <code>0</code> refers to the first result in the set. Setting both <code>start</code> and <code>end</code> to {@link com.liferay.portal.kernel.dao.orm.QueryUtil#ALL_POS} will return the full result set.
-	 * </p>
 	 *
 	 * @param itemFieldId the primary key of the current shopping item field
 	 * @param itemId the item ID

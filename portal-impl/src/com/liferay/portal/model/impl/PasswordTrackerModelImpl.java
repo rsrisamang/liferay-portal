@@ -215,17 +215,6 @@ public class PasswordTrackerModelImpl extends BaseModelImpl<PasswordTracker>
 	}
 
 	@Override
-	public PasswordTracker toEscapedModel() {
-		if (_escapedModelProxy == null) {
-			_escapedModelProxy = (PasswordTracker)ProxyUtil.newProxyInstance(_classLoader,
-					_escapedModelProxyInterfaces,
-					new AutoEscapeBeanHandler(this));
-		}
-
-		return _escapedModelProxy;
-	}
-
-	@Override
 	public ExpandoBridge getExpandoBridge() {
 		return ExpandoBridgeFactoryUtil.getExpandoBridge(0,
 			PasswordTracker.class.getName(), getPrimaryKey());
@@ -236,6 +225,16 @@ public class PasswordTrackerModelImpl extends BaseModelImpl<PasswordTracker>
 		ExpandoBridge expandoBridge = getExpandoBridge();
 
 		expandoBridge.setAttributes(serviceContext);
+	}
+
+	@Override
+	public PasswordTracker toEscapedModel() {
+		if (_escapedModel == null) {
+			_escapedModel = (PasswordTracker)ProxyUtil.newProxyInstance(_classLoader,
+					_escapedModelInterfaces, new AutoEscapeBeanHandler(this));
+		}
+
+		return _escapedModel;
 	}
 
 	@Override
@@ -399,7 +398,7 @@ public class PasswordTrackerModelImpl extends BaseModelImpl<PasswordTracker>
 	}
 
 	private static ClassLoader _classLoader = PasswordTracker.class.getClassLoader();
-	private static Class<?>[] _escapedModelProxyInterfaces = new Class[] {
+	private static Class<?>[] _escapedModelInterfaces = new Class[] {
 			PasswordTracker.class
 		};
 	private long _passwordTrackerId;
@@ -410,5 +409,5 @@ public class PasswordTrackerModelImpl extends BaseModelImpl<PasswordTracker>
 	private Date _createDate;
 	private String _password;
 	private long _columnBitmask;
-	private PasswordTracker _escapedModelProxy;
+	private PasswordTracker _escapedModel;
 }

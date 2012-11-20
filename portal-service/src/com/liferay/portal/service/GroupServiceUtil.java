@@ -104,13 +104,16 @@ public class GroupServiceUtil {
 	* @param active whether the group is active
 	* @param serviceContext the service context to be applied (optionally
 	<code>null</code>). Can set asset category IDs and asset tag
-	names for the group, and can set whether the group is for staging
+	names for the group, and can set whether the group is for
+	staging
 	* @return the group
-	* @throws PortalException if the user did not have permission to add the
-	group, if a creator could not be found, if the group's
-	information was invalid, if a layout could not be found, or if a
-	valid friendly URL could not be created for the group
+	* @throws PortalException if the user did not have permission to add
+	the group, if a creator could not be found, if the group's
+	information was invalid, if a layout could not be found, or
+	if a valid friendly URL could not be created for the group
 	* @throws SystemException if a system exception occurred
+	* @deprecated {@link #addGroup(long, long, String, String, int, String,
+	boolean, boolean, ServiceContext)}
 	*/
 	public static com.liferay.portal.model.Group addGroup(long parentGroupId,
 		java.lang.String name, java.lang.String description, int type,
@@ -403,6 +406,8 @@ public class GroupServiceUtil {
 	* @param groupId the primary key of the group
 	* @return <code>true</code> if the user is associated with the group;
 	<code>false</code> otherwise
+	* @throws PortalException if the current user did not have permission to
+	view the user or group members
 	* @throws SystemException if a system exception occurred
 	*/
 	public static boolean hasUserGroup(long userId, long groupId)
@@ -412,10 +417,10 @@ public class GroupServiceUtil {
 	}
 
 	/**
-	* Returns a name ordered range of all the site groups and organization
-	* groups that match the name and description, optionally including the
-	* user's inherited organization groups and user groups. System and staged
-	* groups are not included.
+	* Returns an ordered range of all the site groups and organization groups
+	* that match the name and description, optionally including the user's
+	* inherited organization groups and user groups. System and staged groups
+	* are not included.
 	*
 	* <p>
 	* Useful when paginating results. Returns a maximum of <code>end -

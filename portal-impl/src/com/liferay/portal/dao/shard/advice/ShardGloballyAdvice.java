@@ -37,6 +37,8 @@ public class ShardGloballyAdvice implements MethodInterceptor {
 	 * @see ShardIterativelyAdvice
 	 */
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+		Object returnValue = null;
+
 		_shardAdvice.setGlobalCall(new Object());
 
 		try {
@@ -46,24 +48,29 @@ public class ShardGloballyAdvice implements MethodInterceptor {
 			}
 
 			for (String shardName : ShardUtil.getAvailableShardNames()) {
-				ShardDataSourceTargetSource dataSourceTargetSource =
+				ShardDataSourceTargetSource shardDataSourceTargetSource =
 					_shardAdvice.getShardDataSourceTargetSource();
 
-				dataSourceTargetSource.setDataSource(shardName);
+				shardDataSourceTargetSource.setDataSource(shardName);
 
-				ShardSessionFactoryTargetSource shardSessionFactoryTargetSource
-					= _shardAdvice.getShardSessionFactoryTargetSource();
+				ShardSessionFactoryTargetSource
+					shardSessionFactoryTargetSource =
+						_shardAdvice.getShardSessionFactoryTargetSource();
 
 				shardSessionFactoryTargetSource.setSessionFactory(shardName);
 
-				methodInvocation.proceed();
+				Object value = methodInvocation.proceed();
+
+				if (shardName.equals(ShardUtil.getDefaultShardName())) {
+					returnValue = value;
+				}
 			}
 		}
 		finally {
 			_shardAdvice.setGlobalCall(null);
 		}
 
-		return null;
+		return returnValue;
 	}
 
 	public void setShardAdvice(ShardAdvice shardAdvice) {

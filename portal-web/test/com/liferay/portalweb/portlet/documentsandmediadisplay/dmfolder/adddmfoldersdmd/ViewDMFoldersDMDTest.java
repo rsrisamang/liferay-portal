@@ -22,13 +22,13 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class ViewDMFoldersDMDTest extends BaseTestCase {
 	public void testViewDMFoldersDMD() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertEquals(RuntimeVariables.replace("Folder"),
+		assertEquals(RuntimeVariables.replace("Name"),
 			selenium.getText("//tr[1]/th[1]"));
 		assertEquals(RuntimeVariables.replace("# of Folders"),
 			selenium.getText("//tr[1]/th[2]"));
@@ -53,17 +53,14 @@ public class ViewDMFoldersDMDTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("0"),
 			selenium.getText("//tr[5]/td[3]/a"));
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder1 Name"),
 			selenium.getText("//tr[3]/td[1]/a[2]/strong"));
 		selenium.clickAt("//tr[3]/td[1]/a[2]/strong",
 			RuntimeVariables.replace("DM Folder1 Name"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder1 Name"),
 			selenium.getText("//h1[@class='header-title']/span"));
 		assertEquals(RuntimeVariables.replace(
@@ -73,17 +70,14 @@ public class ViewDMFoldersDMDTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("DM Folder1 Name"),
 			selenium.getText("//div[@class='lfr-asset-name']/h4"));
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder2 Name"),
 			selenium.getText("//tr[4]/td[1]/a[2]/strong"));
 		selenium.clickAt("//tr[4]/td[1]/a[2]/strong",
 			RuntimeVariables.replace("DM Folder2 Name"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder2 Name"),
 			selenium.getText("//h1[@class='header-title']/span"));
 		assertEquals(RuntimeVariables.replace(
@@ -93,17 +87,14 @@ public class ViewDMFoldersDMDTest extends BaseTestCase {
 		assertEquals(RuntimeVariables.replace("DM Folder2 Name"),
 			selenium.getText("//div[@class='lfr-asset-name']/h4"));
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Documents and Media Display Test Page",
 			RuntimeVariables.replace("Documents and Media Display Test Page"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder3 Name"),
 			selenium.getText("//tr[5]/td[1]/a[2]/strong"));
 		selenium.clickAt("//tr[5]/td[1]/a[2]/strong",
 			RuntimeVariables.replace("DM Folder3 Name"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		assertEquals(RuntimeVariables.replace("DM Folder3 Name"),
 			selenium.getText("//h1[@class='header-title']/span"));
 		assertEquals(RuntimeVariables.replace(

@@ -35,7 +35,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.model.CacheModel;
 import com.liferay.portal.model.ModelListener;
-import com.liferay.portal.service.persistence.BatchSessionUtil;
 import com.liferay.portal.service.persistence.UserPersistence;
 import com.liferay.portal.service.persistence.impl.BasePersistenceImpl;
 
@@ -268,7 +267,14 @@ public class RatingsStatsPersistenceImpl extends BasePersistenceImpl<RatingsStat
 		try {
 			session = openSession();
 
-			BatchSessionUtil.delete(session, ratingsStats);
+			if (!session.contains(ratingsStats)) {
+				ratingsStats = (RatingsStats)session.get(RatingsStatsImpl.class,
+						ratingsStats.getPrimaryKeyObj());
+			}
+
+			if (ratingsStats != null) {
+				session.delete(ratingsStats);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -277,15 +283,17 @@ public class RatingsStatsPersistenceImpl extends BasePersistenceImpl<RatingsStat
 			closeSession(session);
 		}
 
-		clearCache(ratingsStats);
+		if (ratingsStats != null) {
+			clearCache(ratingsStats);
+		}
 
 		return ratingsStats;
 	}
 
 	@Override
 	public RatingsStats updateImpl(
-		com.liferay.portlet.ratings.model.RatingsStats ratingsStats,
-		boolean merge) throws SystemException {
+		com.liferay.portlet.ratings.model.RatingsStats ratingsStats)
+		throws SystemException {
 		ratingsStats = toUnwrappedModel(ratingsStats);
 
 		boolean isNew = ratingsStats.isNew();
@@ -297,9 +305,14 @@ public class RatingsStatsPersistenceImpl extends BasePersistenceImpl<RatingsStat
 		try {
 			session = openSession();
 
-			BatchSessionUtil.update(session, ratingsStats, merge);
+			if (ratingsStats.isNew()) {
+				session.save(ratingsStats);
 
-			ratingsStats.setNew(false);
+				ratingsStats.setNew(false);
+			}
+			else {
+				session.merge(ratingsStats);
+			}
 		}
 		catch (Exception e) {
 			throw processException(e);
@@ -333,6 +346,7 @@ public class RatingsStatsPersistenceImpl extends BasePersistenceImpl<RatingsStat
 					};
 
 				FinderCacheUtil.removeResult(FINDER_PATH_COUNT_BY_C_C, args);
+
 				FinderCacheUtil.removeResult(FINDER_PATH_FETCH_BY_C_C, args);
 
 				FinderCacheUtil.putResult(FINDER_PATH_FETCH_BY_C_C,

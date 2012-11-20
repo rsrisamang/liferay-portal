@@ -22,44 +22,33 @@ import com.liferay.portalweb.portal.util.RuntimeVariables;
  */
 public class AssertExpiredQuestionTest extends BaseTestCase {
 	public void testAssertExpiredQuestion() throws Exception {
+		selenium.selectWindow("null");
+		selenium.selectFrame("relative=top");
 		selenium.open("/web/guest/home/");
-		loadRequiredJavaScriptModules();
+		selenium.clickAt("//div[@id='dockbar']",
+			RuntimeVariables.replace("Dockbar"));
+		selenium.waitForElementPresent(
+			"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
 		assertEquals(RuntimeVariables.replace("Go to"),
 			selenium.getText("//li[@id='_145_mySites']/a/span"));
 		selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-		for (int second = 0;; second++) {
-			if (second >= 90) {
-				fail("timeout");
-			}
-
-			try {
-				if (selenium.isVisible("link=Control Panel")) {
-					break;
-				}
-			}
-			catch (Exception e) {
-			}
-
-			Thread.sleep(1000);
-		}
-
+		selenium.waitForVisible("link=Control Panel");
 		selenium.clickAt("link=Control Panel",
 			RuntimeVariables.replace("Control Panel"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
 		selenium.clickAt("link=Polls", RuntimeVariables.replace("Polls"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		selenium.clickAt("link=Edited Test Question 2",
+		assertEquals(RuntimeVariables.replace("Edited Test Question 2"),
+			selenium.getText(
+				"//tr[contains(.,'Edited Test Question 2')]/td[1]/a"));
+		selenium.clickAt("//tr[contains(.,'Edited Test Question 2')]/td[1]/a",
 			RuntimeVariables.replace("Edited Test Question 2"));
 		selenium.waitForPageToLoad("30000");
-		loadRequiredJavaScriptModules();
-		assertFalse(selenium.isElementPresent(
+		assertTrue(selenium.isElementNotPresent(
 				"//div[2]/div/span[1]/span/span/input"));
-		assertFalse(selenium.isElementPresent("//span[2]/span/span/input"));
-		assertFalse(selenium.isElementPresent("//span[3]/span/span/input"));
-		assertFalse(selenium.isElementPresent("//span[4]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//span[2]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//span[3]/span/span/input"));
+		assertTrue(selenium.isElementNotPresent("//span[4]/span/span/input"));
 		assertEquals(RuntimeVariables.replace(
 				"Voting is disabled because this poll expired on 1/1/08 12:00 AM."),
 			selenium.getText("//div[6]"));

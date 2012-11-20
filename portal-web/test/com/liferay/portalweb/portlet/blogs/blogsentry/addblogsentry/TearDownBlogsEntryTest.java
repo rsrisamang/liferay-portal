@@ -27,12 +27,12 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 		while (label >= 1) {
 			switch (label) {
 			case 1:
+				selenium.selectWindow("null");
+				selenium.selectFrame("relative=top");
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Blogs Test Page",
 					RuntimeVariables.replace("Blogs Test Page"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
 				boolean blogsEntry1Present = selenium.isElementPresent(
 						"link=Move to the Recycle Bin");
@@ -46,9 +46,6 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"link=Move to the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 
 				boolean blogsEntry2Present = selenium.isElementPresent(
 						"link=Move to the Recycle Bin");
@@ -62,9 +59,6 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"link=Move to the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 
 				boolean blogsEntry3Present = selenium.isElementPresent(
 						"link=Move to the Recycle Bin");
@@ -78,9 +72,6 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"link=Move to the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 
 				boolean blogsEntry4Present = selenium.isElementPresent(
 						"link=Move to the Recycle Bin");
@@ -94,9 +85,6 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"link=Move to the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 
 				boolean blogsEntry5Present = selenium.isElementPresent(
 						"link=Move to the Recycle Bin");
@@ -110,9 +98,6 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 				selenium.click(RuntimeVariables.replace(
 						"link=Move to the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
-				assertTrue(selenium.getConfirmation()
-								   .matches("^Are you sure you want to move this to the Recycle Bin[\\s\\S]$"));
 
 			case 2:
 			case 3:
@@ -120,70 +105,35 @@ public class TearDownBlogsEntryTest extends BaseTestCase {
 			case 5:
 			case 6:
 				selenium.open("/web/guest/home/");
-				loadRequiredJavaScriptModules();
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible(
-									"//li[@id='_145_mySites']/a/span")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.clickAt("//div[@id='dockbar']",
+					RuntimeVariables.replace("Dockbar"));
+				selenium.waitForElementPresent(
+					"//script[contains(@src,'/aui/aui-editable/aui-editable-min.js')]");
+				assertEquals(RuntimeVariables.replace("Go to"),
+					selenium.getText("//li[@id='_145_mySites']/a/span"));
 				selenium.mouseOver("//li[@id='_145_mySites']/a/span");
-
-				for (int second = 0;; second++) {
-					if (second >= 90) {
-						fail("timeout");
-					}
-
-					try {
-						if (selenium.isVisible("link=Control Panel")) {
-							break;
-						}
-					}
-					catch (Exception e) {
-					}
-
-					Thread.sleep(1000);
-				}
-
+				selenium.waitForVisible("link=Control Panel");
 				selenium.clickAt("link=Control Panel",
 					RuntimeVariables.replace("Control Panel"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				selenium.clickAt("link=Recycle Bin",
 					RuntimeVariables.replace("Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 
-				boolean assetPresent = selenium.isElementPresent(
-						"//input[@name='_182_rowIds']");
+				boolean recycleBinPresent = selenium.isElementPresent(
+						"//form[@id='_182_emptyForm']/a");
 
-				if (!assetPresent) {
+				if (!recycleBinPresent) {
 					label = 7;
 
 					continue;
 				}
 
-				assertFalse(selenium.isChecked(
-						"//input[@name='_182_allRowIds']"));
-				selenium.clickAt("//input[@name='_182_allRowIds']",
-					RuntimeVariables.replace("All Rows"));
-				assertTrue(selenium.isChecked("//input[@name='_182_allRowIds']"));
-				selenium.click(RuntimeVariables.replace(
-						"//input[@value='Empty the Recycle Bin']"));
+				assertEquals(RuntimeVariables.replace("Empty the Recycle Bin"),
+					selenium.getText("//form[@id='_182_emptyForm']/a"));
+				selenium.clickAt("//form[@id='_182_emptyForm']/a",
+					RuntimeVariables.replace("Empty the Recycle Bin"));
 				selenium.waitForPageToLoad("30000");
-				loadRequiredJavaScriptModules();
 				assertTrue(selenium.getConfirmation()
 								   .matches("^Are you sure you want to empty the Recycle Bin[\\s\\S]$"));
 

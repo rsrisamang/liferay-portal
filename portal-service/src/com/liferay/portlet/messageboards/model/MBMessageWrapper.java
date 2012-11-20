@@ -825,6 +825,15 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 	}
 
 	/**
+	* Returns <code>true</code> if this message-boards message is denied.
+	*
+	* @return <code>true</code> if this message-boards message is denied; <code>false</code> otherwise
+	*/
+	public boolean isDenied() {
+		return _mbMessage.isDenied();
+	}
+
+	/**
 	* Returns <code>true</code> if this message-boards message is a draft.
 	*
 	* @return <code>true</code> if this message-boards message is a draft; <code>false</code> otherwise
@@ -843,6 +852,24 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 	}
 
 	/**
+	* Returns <code>true</code> if this message-boards message is inactive.
+	*
+	* @return <code>true</code> if this message-boards message is inactive; <code>false</code> otherwise
+	*/
+	public boolean isInactive() {
+		return _mbMessage.isInactive();
+	}
+
+	/**
+	* Returns <code>true</code> if this message-boards message is incomplete.
+	*
+	* @return <code>true</code> if this message-boards message is incomplete; <code>false</code> otherwise
+	*/
+	public boolean isIncomplete() {
+		return _mbMessage.isIncomplete();
+	}
+
+	/**
 	* Returns <code>true</code> if this message-boards message is in the Recycle Bin.
 	*
 	* @return <code>true</code> if this message-boards message is in the Recycle Bin; <code>false</code> otherwise
@@ -858,6 +885,15 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 	*/
 	public boolean isPending() {
 		return _mbMessage.isPending();
+	}
+
+	/**
+	* Returns <code>true</code> if this message-boards message is scheduled.
+	*
+	* @return <code>true</code> if this message-boards message is scheduled; <code>false</code> otherwise
+	*/
+	public boolean isScheduled() {
+		return _mbMessage.isScheduled();
 	}
 
 	public boolean isNew() {
@@ -920,6 +956,10 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 		return new MBMessageWrapper(_mbMessage.toEscapedModel());
 	}
 
+	public com.liferay.portlet.messageboards.model.MBMessage toUnescapedModel() {
+		return new MBMessageWrapper(_mbMessage.toUnescapedModel());
+	}
+
 	@Override
 	public java.lang.String toString() {
 		return _mbMessage.toString();
@@ -953,8 +993,20 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 		return _mbMessage.getBody(translate);
 	}
 
-	public com.liferay.portlet.messageboards.model.MBCategory getCategory() {
+	public com.liferay.portlet.messageboards.model.MBCategory getCategory()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
 		return _mbMessage.getCategory();
+	}
+
+	public java.lang.String getDeletedAttachmentsDir() {
+		return _mbMessage.getDeletedAttachmentsDir();
+	}
+
+	public java.lang.String[] getDeletedAttachmentsFiles()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _mbMessage.getDeletedAttachmentsFiles();
 	}
 
 	public com.liferay.portlet.messageboards.model.MBThread getThread()
@@ -977,6 +1029,12 @@ public class MBMessageWrapper implements MBMessage, ModelWrapper<MBMessage> {
 
 	public boolean isFormatBBCode() {
 		return _mbMessage.isFormatBBCode();
+	}
+
+	public boolean isInTrashThread()
+		throws com.liferay.portal.kernel.exception.PortalException,
+			com.liferay.portal.kernel.exception.SystemException {
+		return _mbMessage.isInTrashThread();
 	}
 
 	public boolean isReply() {
